@@ -1,0 +1,11 @@
+apiVersion: meta.pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: dfds-infra
+spec:
+  crossplane:
+    version: ">=v1.2.1"
+  # dependsOn:
+  #   - provider: dfdsdk/provider-dfds
+  #     version: ">=latest"
+  # TODO: use semantic versioning on provider-dfds
