@@ -60,6 +60,25 @@ spec:
     # named.
     # A MySQLInstance that uses this Composition will also be composed of an
     # Azure MySQLServer.
+
+  - name: securitygroup
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: SecurityGroup
+      spec:
+        forProvider:
+          region: eu-west-1
+          # vpcIdSelector:
+          #   matchControllerRef: true
+          groupName: samdi-rds-security-group
+          description: Allow access to PostgreSQL
+          ingress:
+            - fromPort: 5432
+              toPort: 5432
+              ipProtocol: tcp
+              ipRanges:
+                - cidrIp: 0.0.0.0/0
+                  description: postgresql
   - name: rdinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
@@ -78,8 +97,15 @@ spec:
           engine: postgres
           masterUsername: masteruser
           skipFinalSnapshotBeforeDeletion: true
+          vpcSecurityGroupIDSelector:
+            matchControllerRef: true
+            # matchLabels:
+            #   rdsinstance: backstage-rds
         writeConnectionSecretToRef:
           namespace: crossplane-system
+    patches:
+    - type: PatchSet
+      patchSetName: metadata          
     patches:
     # This resource also uses the "metadata" patch set defined on the
     # Composition.
