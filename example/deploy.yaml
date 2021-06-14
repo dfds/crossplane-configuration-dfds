@@ -1,5 +1,5 @@
 apiVersion: crossplane.dfds.cloud/v1alpha1
-kind: CompositePostgresInstance
+kind: CompositeDatabaseInstance
 metadata:
   # Composite resources are cluster scoped, so there's no need for a namespace.
   name: examplerichardsami
@@ -32,4 +32,4 @@ spec:
   # write these details.
   writeConnectionSecretToRef:
     namespace: crossplane-system
-    name: example-postgresinstance
+    name: example-databaseinstance

@@ -4,7 +4,7 @@ metadata:
   # XRDs follow the constraints of CRD names. They must be named
   # <plural>.<group>, per the plural and group names configured by the
   # crdSpecTemplate below.
-  name: compositepostgresinstances.crossplane.dfds.cloud
+  name: compositedatabaseinstances.crossplane.dfds.cloud
 spec:
   # Composite resources may optionally expose a connection secret - a Kubernetes
   # Secret containing all of the details a pod might need to connect to the
@@ -28,16 +28,16 @@ spec:
   group: crossplane.dfds.cloud
   # The defined kind of composite resource.
   names:
-    kind: CompositePostgresInstance
-    plural: compositepostgresinstances
+    kind: CompositeDatabaseInstance
+    plural: compositedatabaseinstances
   # The kind of claim this composite resource offers. Optional - omit the claim
   # names if you don't wish to offer a claim for this composite resource. Must
   # be different from the composite resource's kind. The established convention
   # is for the claim kind to represent what the resource is, conceptually. e.g.
   # 'MySQLInstance', not `MySQLInstanceClaim`.
   claimNames:
-    kind: PostgresInstance
-    plural: postgresinstances
+    kind: DatabaseInstance
+    plural: databaseinstances
   # A composite resource may be served at multiple versions simultaneously, but
   # all versions must have identical schemas; Crossplane does not yet support
   # conversion between different version schemas.
@@ -74,13 +74,13 @@ spec:
                 type: object
                 properties:
                   engineVersion:
-                    description: PostgresSQL engine version
+                    description: Database engine version
                     type: string
                     enum: ["9.6"]
                   allocatedStorage:
                     type: integer
                   region:
-                    description: Geographic location of this PostgresSQL server.
+                    description: Geographic location of this Database server.
                     type: string
                   dbInstanceClass:
                     type: string
@@ -109,5 +109,5 @@ spec:
             type: object
             properties:
               address:
-                description: Address of this PostgresSQL server.
+                description: Address of this Database server.
                 type: string

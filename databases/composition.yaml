@@ -12,7 +12,7 @@ spec:
   # XRD.
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
-    kind: CompositePostgresInstance
+    kind: CompositeDatabaseInstance
 
   # This Composition defines a patch set with the name "metadata", which consists
   # of 2 individual patches. Patch sets can be referenced from any of the base
@@ -70,7 +70,7 @@ spec:
           region: eu-west-1
           # vpcIdSelector:
           #   matchControllerRef: true
-          groupName: samdi-rds-security-group
+          # groupName: rds-security-group
           description: Allow access to PostgreSQL
           ingress:
             - fromPort: 5432
@@ -79,6 +79,17 @@ spec:
               ipRanges:
                 - cidrIp: 0.0.0.0/0
                   description: postgresql
+    patches:
+    - fromFieldPath: "metadata.name"
+      toFieldPath: "spec.forProvider.groupName"
+      transforms:
+        # Transform the value from the CompositeMySQLInstance using Go string
+        # formatting. This can be used to prefix or suffix a string, or to
+        # convert a number to a string. See https://golang.org/pkg/fmt/ for more
+        # detail.
+      - type: string
+        string:
+          fmt: "%s-rds-security-group"      
   - name: rdinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
@@ -120,7 +131,7 @@ spec:
         # detail.
       - type: string
         string:
-          fmt: "%s-postgressqlserver"
+          fmt: "%s-databaseserver"
     - fromFieldPath: "spec.parameters.engineVersion"
       toFieldPath: "spec.forProvider.engineVersion"
     - fromFieldPath: "spec.parameters.region"
