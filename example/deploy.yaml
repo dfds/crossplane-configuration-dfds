@@ -1,0 +1,35 @@
+apiVersion: crossplane.dfds.cloud/v1alpha1
+kind: CompositePostgresInstance
+metadata:
+  # Composite resources are cluster scoped, so there's no need for a namespace.
+  name: examplerichardsami
+spec:
+  # The schema of the spec.parameters object is defined by the earlier example
+  # of an CompositeResourceDefinition. The location, storageGB, and version fields
+  # are patched onto the ResourceGroup, MySQLServer, and MySQLServerFirewallRule
+  # that this MySQLInstance composes.
+  parameters:
+    region: eu-west-1
+    dbInstanceClass: db.t2.small
+    masterUsername: masteruser
+    allocatedStorage: 40
+    engine: postgres
+    engineVersion: "9.6"
+    skipFinalSnapshotBeforeDeletion: true
+  # Support for a compositionRef is automatically injected into the schema of
+  # all defined composite resources. This allows the resource
+  # author to explicitly reference a Composition that this composite resource
+  # should use - in this case the earlier example-azure Composition. Note that
+  # it is also possible to select a composition by labels - see the below
+  # MySQLInstance for an example of this approach.
+  compositionRef:
+    name: example-aws
+  # Support for a writeConnectionSecretToRef is automatically injected into the
+  # schema of all defined composite resources. This allows the
+  # resource to write a connection secret containing any details required to
+  # connect to it - in this case the hostname, username, and password. Composite
+  # resource authors may omit this reference if they do not need or wish to
+  # write these details.
+  writeConnectionSecretToRef:
+    namespace: crossplane-system
+    name: example-postgresinstance
