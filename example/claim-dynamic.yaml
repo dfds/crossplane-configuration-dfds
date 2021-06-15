@@ -1,0 +1,23 @@
+apiVersion: crossplane.dfds.cloud/v1alpha1
+kind: DatabaseInstance
+metadata:
+  namespace: default
+  name: example
+spec:
+  parameters:
+    region: eu-west-1
+    dbInstanceClass: db.t2.small
+    masterUsername: masteruser
+    allocatedStorage: 30
+    engine: postgres
+    engineVersion: "9.6"
+    skipFinalSnapshotBeforeDeletion: true
+  # Support for a compositionSelector is automatically injected into the schema
+  # of all published infrastructure claim resources. This selector selects
+  # the example-azure composition by its labels.
+  compositionSelector:
+    matchLabels:
+      purpose: example
+      provider: aws
+  writeConnectionSecretToRef:
+    name: example-database-dynmaic

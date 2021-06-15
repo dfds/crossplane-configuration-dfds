@@ -1,0 +1,35 @@
+# The MySQLInstance always has the same API group and version as the
+# resource it requires. Its kind is always suffixed with .
+apiVersion: crossplane.dfds.cloud/v1alpha1
+kind: DatabaseInstance
+metadata:
+  # Infrastructure claims are namespaced.
+  namespace: default
+  name: example-rds-claim
+spec:
+  # The schema of the spec.parameters object is defined by the earlier example
+  # of an CompositeResourceDefinition. The location, storageGB, and version fields
+  # are patched onto the ResourceGroup, MySQLServer, and MySQLServerFirewallRule
+  # composed by the required MySQLInstance.
+  parameters:
+    region: eu-west-1
+    dbInstanceClass: db.t2.small
+    masterUsername: masteruser
+    allocatedStorage: 40
+    engine: postgres
+    engineVersion: "9.6"
+    skipFinalSnapshotBeforeDeletion: true
+  # Support for a resourceRef is automatically injected into the schema of all
+  # resource claims. The resourceRef requests a CompositeMySQLInstance
+  # explicitly.
+  resourceRef:
+    apiVersion: crossplane.dfds.cloud/v1alpha1
+    kind: CompositeDatabaseInstance
+    name: examplerichardsami
+  # Support for a writeConnectionSecretToRef is automatically injected into the
+  # schema of all published infrastructure claim resources. This allows
+  # the resource to write a connection secret containing any details required to
+  # connect to it - in this case the hostname, username, and password.
+  writeConnectionSecretToRef:
+    name: example-rds-claim
+    # namespace: default
