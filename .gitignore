@@ -16,3 +16,6 @@
 
 # Crossplane
 *.xpkg
+
+# Credential files
+creds.conf

@@ -1,0 +1,23 @@
+# The MySQLInstance always has the same API group and version as the
+# resource it requires. Its kind is always suffixed with .
+apiVersion: crossplane.dfds.cloud/v1alpha1
+kind: DatabaseInstance
+metadata:
+  # Infrastructure claims are namespaced.
+  namespace: default
+  name: static-claim-example
+spec:
+  parameters:
+    region: eu-west-1
+    dbInstanceClass: db.t2.small
+    masterUsername: masteruser
+    allocatedStorage: 40
+    engine: postgres
+    engineVersion: "9.6"
+    skipFinalSnapshotBeforeDeletion: true
+  resourceRef:
+    apiVersion: crossplane.dfds.cloud/v1alpha1
+    kind: CompositeDatabaseInstance
+    name: example-dfds-rds
+  writeConnectionSecretToRef:
+    name: example-dfds-rds-databaseinstance
