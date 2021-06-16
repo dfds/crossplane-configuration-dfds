@@ -3,7 +3,7 @@ kind: Composition
 metadata:
   name: compositedatabaseinstances.crossplane.dfds.cloud
   labels:
-    purpose: example
+    purpose: database
     provider: aws
 spec:
   compositeTypeRef:
@@ -61,11 +61,8 @@ spec:
         writeConnectionSecretToRef:
           namespace: crossplane-system
     patches:
-    - type: PatchSet
-      patchSetName: metadata          
-    patches:
-    - type: PatchSet
-      patchSetName: metadata
+    # - type: PatchSet
+    #   patchSetName: metadata
     - fromFieldPath: "metadata.uid"
       toFieldPath: "spec.writeConnectionSecretToRef.name"
       transforms:
@@ -92,29 +89,8 @@ spec:
       value: "5432"
     readinessChecks:
     - type: MatchString
-      fieldPath: "status.atProvider.dbInstanceStatus"
+      fieldPath: "status.atProvider.dbInstanceStatus" # important to have CompositeDatabaseInstance be in ready state = True so claims can work properly
       matchString: "available"
-    # A CompositeMySQLInstance that uses this Composition will also be composed
-    # of an Azure MySQLServerFirewallRule.
-  # - name: firewallrule
-  #   base:
-  #     apiVersion: database.azure.crossplane.io/v1alpha3
-  #     kind: MySQLServerFirewallRule
-  #     spec:
-  #       forProvider:
-  #         resourceGroupNameSelector:
-  #           matchControllerRef: true
-  #         serverNameSelector:
-  #           matchControllerRef: true
-  #         properties:
-  #           startIpAddress: 10.10.0.0
-  #           endIpAddress: 10.10.255.254
-  #           virtualNetworkSubnetIdSelector:
-  #             name: sample-subnet
-  #   patches:
-  #   - type: PatchSet
-  #     patchSetName: metadata
-
   # Some composite resources may be "dynamically provisioned" - i.e. provisioned
   # on-demand to satisfy an application's claim for infrastructure. The
   # writeConnectionSecretsToNamespace field configures the default value used
