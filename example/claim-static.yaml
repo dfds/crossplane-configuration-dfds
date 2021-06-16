@@ -31,5 +31,5 @@ spec:
   # the resource to write a connection secret containing any details required to
   # connect to it - in this case the hostname, username, and password.
   writeConnectionSecretToRef:
-    name: example-rds-claim
+    name: examplerichardsami-databaseinstance
     # namespace: default

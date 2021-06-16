@@ -17,7 +17,9 @@ spec:
   # the example-azure composition by its labels.
   compositionSelector:
     matchLabels:
-      purpose: example
+      purpose: database
       provider: aws
+  
   writeConnectionSecretToRef:
-    name: example-database-dynmaic
+    # namespace: default
+    name: example-database-dynamic
