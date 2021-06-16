@@ -5,7 +5,8 @@ metadata:
 spec:
   crossplane:
     version: ">=v1.2.1"
-  # dependsOn:
-  #   - provider: dfdsdk/provider-dfds
-  #     version: ">=latest"
-  # TODO: use semantic versioning on provider-dfds
+  dependsOn:
+    - provider: dfdsdk/provider-dfds
+      version: "v0.0.1-alpha.0"
+    - provider: crossplane/provider-aws
+      version: "v0.18.1"

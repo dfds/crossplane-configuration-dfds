@@ -145,8 +145,8 @@ spec:
     # readiness checks.
     readinessChecks:
     - type: MatchString
-      fieldPath: "status.atProvider.statusInfos.status"
-      matchString: "True"
+      fieldPath: "status.atProvider.dbInstanceStatus"
+      matchString: "available"
     # A CompositeMySQLInstance that uses this Composition will also be composed
     # of an Azure MySQLServerFirewallRule.
   # - name: firewallrule
