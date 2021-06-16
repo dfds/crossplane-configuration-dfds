@@ -1,66 +1,26 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: example-aws
+  name: compositedatabaseinstances.crossplane.dfds.cloud
   labels:
     purpose: example
     provider: aws
 spec:
-  # This Composition declares that it satisfies the CompositeMySQLInstance
-  # resource defined above - i.e. it patches "from" a CompositeMySQLInstance.
-  # Note that the version in apiVersion must be the referenceable version of the
-  # XRD.
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
     kind: CompositeDatabaseInstance
-
-  # This Composition defines a patch set with the name "metadata", which consists
-  # of 2 individual patches. Patch sets can be referenced from any of the base
-  # resources within the Composition to avoid having to repeat patch definitions.
-  # A PatchSet can contain any of the other patch types, except another PatchSet.
   patchSets:
   - name: metadata
     patches:
-    # When toFieldPath is omitted it defaults to fromFieldPath.
     - fromFieldPath: metadata.labels
-    # Exercise caution when patching labels and annotations. Crossplane replaces
-    # patched objects - it does not merge them. This means that patching from
-    # the 'metadata.annotations' field path will _replace_ all of a composed
-    # resource's annotations, including annotations prefixed with crossplane.io/
-    # that control Crossplane's behaviour. Patching the entire annotations
-    # object can therefore have unexpected consquences and is not recommended.
-    # Instead patch specific annotations by specifying their keys.
     - fromFieldPath: metadata.annotations[crossplane.dfds.cloud/app-name]
   - name: external-name
     patches:
-    # FromCompositeFieldPath is the default patch type and is thus often
-    # omitted for brevity.
     - type: FromCompositeFieldPath
       fromFieldPath: metadata.annotations[crossplane.io/external-name]
-      # By default a patch from a field path that does not exist is a no-op. Use
-      # the 'Required' policy to instead block and return an error when the
-      # field path does not exist.
       policy:
         fromFieldPath: Required
-
-  # This Composition reconciles a CompositeMySQLInstance by patching from
-  # the CompositeMySQLInstance "to" new instances of the infrastructure
-  # resources below. These resources may be the managed resources of an
-  # infrastructure provider such as provider-azure, or other composite
-  # resources.
   resources:
-    # A CompositeMySQLInstance that uses this Composition will be composed of an
-    # Azure ResourceGroup. Note that the 'name' is the name of this entry in the
-    # resources array - it does not affect the name of any ResourceGroup that is
-    # composed using this Composition. Specifying a name is optional but is
-    # *strongly* recommended. When all entries in the resources array are named
-    # entries may be added, deleted, and reordered as long as their names do not
-    # change. When entries are not named the length and order of the resources
-    # array should be treated as immutable. Either all or no entries must be
-    # named.
-    # A MySQLInstance that uses this Composition will also be composed of an
-    # Azure MySQLServer.
-
   - name: securitygroup
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -83,10 +43,6 @@ spec:
     - fromFieldPath: "metadata.name"
       toFieldPath: "spec.forProvider.groupName"
       transforms:
-        # Transform the value from the CompositeMySQLInstance using Go string
-        # formatting. This can be used to prefix or suffix a string, or to
-        # convert a number to a string. See https://golang.org/pkg/fmt/ for more
-        # detail.
       - type: string
         string:
           fmt: "%s-rds-security-group"      
@@ -96,39 +52,23 @@ spec:
       kind: RDSInstance
       spec:
         forProvider:
-          # When this MySQLServer is created it must specify a ResourceGroup in
-          # which it will exist. The below resourceGroupNameSelector corresponds
-          # to the spec.forProvider.resourceGroupName field of the MySQLServer.
-          # It selects a ResourceGroup with a matching controller reference.
-          # Two resources that are part of the same composite resource will have
-          # matching controller references, so this MySQLServer will always
-          # select the ResourceGroup above. If this Composition included more
-          # than one ResourceGroup they could be differentiated by matchLabels.
           dbInstanceClass: db.t2.small
           engine: postgres
           masterUsername: masteruser
           skipFinalSnapshotBeforeDeletion: true
           vpcSecurityGroupIDSelector:
             matchControllerRef: true
-            # matchLabels:
-            #   rdsinstance: backstage-rds
         writeConnectionSecretToRef:
           namespace: crossplane-system
     patches:
     - type: PatchSet
       patchSetName: metadata          
     patches:
-    # This resource also uses the "metadata" patch set defined on the
-    # Composition.
     - type: PatchSet
       patchSetName: metadata
     - fromFieldPath: "metadata.uid"
       toFieldPath: "spec.writeConnectionSecretToRef.name"
       transforms:
-        # Transform the value from the CompositeMySQLInstance using Go string
-        # formatting. This can be used to prefix or suffix a string, or to
-        # convert a number to a string. See https://golang.org/pkg/fmt/ for more
-        # detail.
       - type: string
         string:
           fmt: "%s-databaseserver"
@@ -142,72 +82,16 @@ spec:
           eu-west-1: eu-west-1
     - fromFieldPath: "spec.parameters.allocatedStorage"
       toFieldPath: "spec.forProvider.allocatedStorage"
-    # Patches can also be applied from the composed resource (MySQLServer)
-    # to the composite resource (CompositeMySQLInstance). This MySQLServer
-    # will patch the FQDN generated by the provider back to the status
-    # subresource of the CompositeMySQLInstance. If a claim is referenced
-    # by the composite resource, the claim will also be patched. The
-    # "ToCompositeFieldPath" patch may be desirable in cases where a provider
-    # generated value is needed by other composed resources. The composite
-    # field that is patched back can then be patched forward into other resources.
-    # - type: ToCompositeFieldPath
-    #   fromFieldPath: "status.atProvider.endpoint.address"
-    #   toFieldPath: "status.address"
-    # In addition to a base and patches, this composed MySQLServer declares that
-    # it can fulfil the connectionSecretKeys contract required by the definition
-    # of the CompositeMySQLInstance. This MySQLServer writes a connection secret
-    # with a username, password, and endpoint that may be used to connect to it.
-    # These connection details will also be exposed via the composite resource's
-    # connection secret. Exactly one composed resource must provide each secret
-    # key, but different composed resources may provide different keys.
     connectionDetails:
     - fromConnectionSecretKey: username
     - fromConnectionSecretKey: password
-      # The name of the required CompositeMySQLInstance connection secret key
-      # can be supplied if it is different from the connection secret key
-      # exposed by the MySQLServer.
     - name: hostname
       fromConnectionSecretKey: endpoint
-      # In some cases it may be desirable to inject a fixed connection secret
-      # value, for example to expose fixed, non-sensitive connection details
-      # like standard ports that are not published to the composed resource's
-      # connection secret.
     - type: FromValue
       name: port
       value: "5432"
-    # Readiness checks allow you to define custom readiness checks. All checks
-    # have to return true in order for resource to be considered ready. The
-    # default readiness check is to have the "Ready" condition to be "True".
-    # Currently Crossplane supports the MatchString, MatchInteger, and None
-    # readiness checks.
     readinessChecks:
     - type: MatchString
       fieldPath: "status.atProvider.statusInfos.status"
       matchString: "True"
-    # A CompositeMySQLInstance that uses this Composition will also be composed
-    # of an Azure MySQLServerFirewallRule.
-  # - name: firewallrule
-  #   base:
-  #     apiVersion: database.azure.crossplane.io/v1alpha3
-  #     kind: MySQLServerFirewallRule
-  #     spec:
-  #       forProvider:
-  #         resourceGroupNameSelector:
-  #           matchControllerRef: true
-  #         serverNameSelector:
-  #           matchControllerRef: true
-  #         properties:
-  #           startIpAddress: 10.10.0.0
-  #           endIpAddress: 10.10.255.254
-  #           virtualNetworkSubnetIdSelector:
-  #             name: sample-subnet
-  #   patches:
-  #   - type: PatchSet
-  #     patchSetName: metadata
-
-  # Some composite resources may be "dynamically provisioned" - i.e. provisioned
-  # on-demand to satisfy an application's claim for infrastructure. The
-  # writeConnectionSecretsToNamespace field configures the default value used
-  # when dynamically provisioning a composite resource; it is explained in more
-  # detail below.
   writeConnectionSecretsToNamespace: crossplane-system
