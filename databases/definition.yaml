@@ -34,7 +34,7 @@ spec:
                   engineVersion:
                     description: Database engine version
                     type: string
-                    enum: ["9.6"]
+                    enum: ["10", "11", "12", "13"]
                   allocatedStorage:
                     type: integer
                   region:
@@ -42,7 +42,7 @@ spec:
                     type: string
                   dbInstanceClass:
                     type: string
-                    enum: ["db.t2.small"]
+                    enum: ["db.t2.small", "db.t3.small"]
                   masterUsername:
                     type: string
                   engine:
