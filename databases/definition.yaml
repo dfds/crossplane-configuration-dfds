@@ -19,8 +19,8 @@ spec:
     plural: databaseinstances
   versions:
   - name: v1alpha1
-    served: true # ?
-    referenceable: true # ?
+    served: true 
+    referenceable: true 
     schema:
       openAPIV3Schema:
         type: object
@@ -63,6 +63,9 @@ spec:
           status:
             type: object
             properties:
-              address:
-                description: Address of this Database server.
+              securitygroup:
+                description: Name of the provisioned securitygroup
+                type: string
+              rdsinstance:
+                description: Name of the provisioned rdsinstance
                 type: string
