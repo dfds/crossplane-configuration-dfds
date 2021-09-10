@@ -1,12 +1,9 @@
 #!/bin/bash
-buid_number=v0.0.1-alpha.3
+buid_number=demo-after
 
-cd databases
-rm -rf dfds-infra-*
-kubectl crossplane build configuration
-kubectl crossplane push configuration dfdsdk/dfds-infra:$buid_number
+rm -rf databases/dfds-infra-*.xpkg
+kubectl crossplane build configuration -f databases
+kubectl crossplane push configuration -f databases/dfds-infra-*.xpkg dfdsdk/dfds-infra:$buid_number
 #kubectl crossplane install configuration dfdsdk/dfds-infra:$buid_number
 
-kubectl crossplane update configuration dfdsdk-dfds-infra $buid_number
-
-cd ..
+# kubectl crossplane update configuration dfdsdk-dfds-infra $buid_number

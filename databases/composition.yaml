@@ -10,17 +10,87 @@ spec:
     apiVersion: crossplane.dfds.cloud/v1alpha1
     kind: CompositeDatabaseInstance
   patchSets:
-  - name: metadata
+  - name: object-metadata
     patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name    
+      policy:
+        fromFieldPath: Required       
     - fromFieldPath: metadata.labels
-    - fromFieldPath: metadata.annotations[crossplane.dfds.cloud/app-name]
-  - name: external-name
-    patches:
-    - type: FromCompositeFieldPath
-      fromFieldPath: metadata.annotations[crossplane.io/external-name]
+      toFieldPath: spec.forProvider.manifest.metadata.labels
       policy:
         fromFieldPath: Required
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace    
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-aws"      
+      policy:
+        fromFieldPath: Required        
   resources:
+  - name: role
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: deployed-using-crossplane
+              labels:
+                managed-by: "crossplane"
+            rules:
+            - apiGroups: ["ec2.aws.crossplane.io"]
+              resources: ["securitygroups"]
+              resourceNames: [ ]
+              verbs: ["get"]
+            - apiGroups: ["database.aws.crossplane.io"]
+              resources: ["rdsinstances"]
+              resourceNames: [ ]
+              verbs: ["get"]              
+        providerConfigRef:
+          name: kubernetes-provider        
+    patches:
+    - type: PatchSet
+      patchSetName: object-metadata
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.rules[1].resourceNames[0]
+
+  - name: rolebinding
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: myrb
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: roleref
+            subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: Group
+              name: mynamespace
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: PatchSet
+      patchSetName: object-metadata    
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.roleRef.name
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.forProvider.manifest.subjects[0].name
   - name: securitygroup
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -28,9 +98,6 @@ spec:
       spec:
         forProvider:
           region: eu-west-1
-          # vpcIdSelector:
-          #   matchControllerRef: true
-          # groupName: rds-security-group
           description: Allow access to PostgreSQL
           ingress:
             - fromPort: 5432
@@ -40,19 +107,22 @@ spec:
                 - cidrIp: 0.0.0.0/0
                   description: postgresql
     patches:
-    - fromFieldPath: "metadata.name"
+    - type: PatchSet
+      patchSetName: configname    
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name
+    - fromFieldPath: metadata.name
       toFieldPath: "spec.forProvider.groupName"
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-rds-security-group"      
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.securitygroup"      
   - name: rdinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
       kind: RDSInstance
       spec:
         forProvider:
-          dbInstanceClass: db.t2.small
+          dbInstanceClass: db.t3.small
           engine: postgres
           masterUsername: masteruser
           skipFinalSnapshotBeforeDeletion: true
@@ -61,8 +131,10 @@ spec:
         writeConnectionSecretToRef:
           namespace: crossplane-system
     patches:
-    # - type: PatchSet
-    #   patchSetName: metadata
+    - type: PatchSet
+      patchSetName: configname    
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name    
     - fromFieldPath: "metadata.uid"
       toFieldPath: "spec.writeConnectionSecretToRef.name"
       transforms:
@@ -79,6 +151,11 @@ spec:
           eu-west-1: eu-west-1
     - fromFieldPath: "spec.parameters.allocatedStorage"
       toFieldPath: "spec.forProvider.allocatedStorage"
+    - fromFieldPath: "spec.parameters.dbInstanceClass"
+      toFieldPath: "spec.forProvider.dbInstanceClass"
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.rdsinstance"      
     connectionDetails:
     - fromConnectionSecretKey: username
     - fromConnectionSecretKey: password
@@ -89,11 +166,6 @@ spec:
       value: "5432"
     readinessChecks:
     - type: MatchString
-      fieldPath: "status.atProvider.dbInstanceStatus" # important to have CompositeDatabaseInstance be in ready state = True so claims can work properly
+      fieldPath: "status.atProvider.dbInstanceStatus"
       matchString: "available"
-  # Some composite resources may be "dynamically provisioned" - i.e. provisioned
-  # on-demand to satisfy an application's claim for infrastructure. The
-  # writeConnectionSecretsToNamespace field configures the default value used
-  # when dynamically provisioning a composite resource; it is explained in more
-  # detail below.
   writeConnectionSecretsToNamespace: crossplane-system

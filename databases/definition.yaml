@@ -19,8 +19,8 @@ spec:
     plural: databaseinstances
   versions:
   - name: v1alpha1
-    served: true # ?
-    referenceable: true # ?
+    served: true 
+    referenceable: true 
     schema:
       openAPIV3Schema:
         type: object
@@ -34,7 +34,7 @@ spec:
                   engineVersion:
                     description: Database engine version
                     type: string
-                    enum: ["9.6"]
+                    enum: ["10", "11", "12", "13"]
                   allocatedStorage:
                     type: integer
                   region:
@@ -42,7 +42,7 @@ spec:
                     type: string
                   dbInstanceClass:
                     type: string
-                    enum: ["db.t2.small"]
+                    enum: ["db.t2.small", "db.t3.small"]
                   masterUsername:
                     type: string
                   engine:
@@ -63,6 +63,9 @@ spec:
           status:
             type: object
             properties:
-              address:
-                description: Address of this Database server.
+              securitygroup:
+                description: Name of the provisioned securitygroup
+                type: string
+              rdsinstance:
+                description: Name of the provisioned rdsinstance
                 type: string
