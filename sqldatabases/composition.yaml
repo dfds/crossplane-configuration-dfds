@@ -126,6 +126,9 @@ spec:
           engine: postgres
           masterUsername: masteruser
           skipFinalSnapshotBeforeDeletion: true
+          autoMinorVersionUpgrade: true
+          applyModificationsImmediately: true
+          allowMajorVersionUpgrade: false
           vpcSecurityGroupIDSelector:
             matchControllerRef: true
         writeConnectionSecretToRef:
@@ -155,6 +158,12 @@ spec:
       toFieldPath: "spec.forProvider.allocatedStorage"
     - fromFieldPath: "spec.parameters.administratorUsername"
       toFieldPath: "spec.forProvider.masterUsername"
+    - fromFieldPath: "spec.parameters.allowMajorVersionUpgrade"
+      toFieldPath: "spec.forProvider.allowMajorVersionUpgrade"
+    - fromFieldPath: "spec.parameters.applyModificationsImmediately"
+      toFieldPath: "spec.forProvider.applyModificationsImmediately"
+    - fromFieldPath: "spec.parameters.autoMinorVersionUpgrade"
+      toFieldPath: "spec.forProvider.autoMinorVersionUpgrade"
     - type: CombineFromComposite
       combine:
         variables: 

@@ -60,6 +60,12 @@ spec:
                     enum: ["postgres"]
                   skipFinalSnapshotBeforeDeletion:
                     type: boolean
+                  applyModificationsImmediately:
+                    type: boolean
+                  allowMajorVersionUpgrade:
+                    type: boolean
+                  autoMinorVersionUpgrade:
+                    type: boolean
                 required:
                 - region
                 - instanceClass
