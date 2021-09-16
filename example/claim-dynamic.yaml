@@ -1,16 +1,17 @@
 apiVersion: crossplane.dfds.cloud/v1alpha1
-kind: DatabaseInstance
+kind: SqlDatabaseInstance
 metadata:
   namespace: default
   name: dynamic-claim-example
 spec:
   parameters:
     region: eu-west-1
-    dbInstanceClass: db.t2.small
-    masterUsername: masteruser
-    allocatedStorage: 30
-    engine: postgres
-    engineVersion: "9.6"
+    instanceSize: small
+    instanceClass: burstable
+    administratorUsername: masteruser
+    storageSize: 30
+    databaseEngine: postgres
+    databaseEngineVersion: "13"
     skipFinalSnapshotBeforeDeletion: true
   compositionSelector:
     matchLabels:

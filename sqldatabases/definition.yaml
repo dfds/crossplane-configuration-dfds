@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: compositedatabaseinstances.crossplane.dfds.cloud
+  name: compositesqldatabaseinstances.crossplane.dfds.cloud
 spec:
   connectionSecretKeys:
   - username
@@ -9,14 +9,14 @@ spec:
   - hostname
   - port
   defaultCompositionRef:
-    name: compositedatabaseinstances.crossplane.dfds.cloud
+    name: compositesqldatabaseinstances.crossplane.dfds.cloud
   group: crossplane.dfds.cloud
   names:
-    kind: CompositeDatabaseInstance
-    plural: compositedatabaseinstances
+    kind: CompositeSqlDatabaseInstance
+    plural: compositesqldatabaseinstances
   claimNames:
-    kind: DatabaseInstance
-    plural: databaseinstances
+    kind: SqlDatabaseInstance
+    plural: sqldatabaseinstances
   versions:
   - name: v1alpha1
     served: true 
@@ -31,19 +31,29 @@ spec:
               parameters:
                 type: object
                 properties:
-                  engineVersion:
+                  databaseEngine:
+                    type: string
+                    enum: ["postgres"]
+                    default: "postgres"
+                  databaseEngineVersion:
                     description: Database engine version
                     type: string
                     enum: ["10", "11", "12", "13"]
-                  allocatedStorage:
+                    default: "13"
+                  storageSize:
                     type: integer
                   region:
                     description: Geographic location of this Database server.
                     type: string
-                  dbInstanceClass:
+                  instanceSize:
                     type: string
-                    enum: ["db.t2.small", "db.t3.small"]
-                  masterUsername:
+                    enum: ["small", "medium", "large"]
+                    default: "small"
+                  instanceClass:
+                    type: string
+                    enum: ["burstable", "general", "memory"]
+                    default: "burstable"
+                  administratorUsername:
                     type: string
                   engine:
                     type: string
@@ -51,12 +61,11 @@ spec:
                   skipFinalSnapshotBeforeDeletion:
                     type: boolean
                 required:
-                - engineVersion
-                - allocatedStorage
                 - region
-                - dbInstanceClass
-                - masterUsername
-                - engine
+                - instanceClass
+                - instanceSize
+                - administratorUsername
+                - databaseEngine
                 - skipFinalSnapshotBeforeDeletion
             required:
             - parameters

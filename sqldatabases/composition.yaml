@@ -1,14 +1,14 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: compositedatabaseinstances.crossplane.dfds.cloud
+  name: compositesqldatabaseinstances.crossplane.dfds.cloud
   labels:
     purpose: database
     provider: aws
 spec:
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
-    kind: CompositeDatabaseInstance
+    kind: CompositeSqlDatabaseInstance
   patchSets:
   - name: object-metadata
     patches:
@@ -141,7 +141,9 @@ spec:
       - type: string
         string:
           fmt: "%s-databaseserver"
-    - fromFieldPath: "spec.parameters.engineVersion"
+    - fromFieldPath: "spec.parameters.databaseEngine"
+      toFieldPath: "spec.forProvider.engine"
+    - fromFieldPath: "spec.parameters.databaseEngineVersion"
       toFieldPath: "spec.forProvider.engineVersion"
     - fromFieldPath: "spec.parameters.region"
       toFieldPath: "spec.forProvider.region"
@@ -149,10 +151,25 @@ spec:
       - type: map
         map:
           eu-west-1: eu-west-1
-    - fromFieldPath: "spec.parameters.allocatedStorage"
+    - fromFieldPath: "spec.parameters.storageSize"
       toFieldPath: "spec.forProvider.allocatedStorage"
-    - fromFieldPath: "spec.parameters.dbInstanceClass"
-      toFieldPath: "spec.forProvider.dbInstanceClass"
+    - fromFieldPath: "spec.parameters.administratorUsername"
+      toFieldPath: "spec.forProvider.masterUsername"
+    - type: CombineFromComposite
+      combine:
+        variables: 
+          - fromFieldPath: spec.parameters.instanceClass          
+          - fromFieldPath: spec.parameters.instanceSize 
+        strategy: string        
+        string:
+          fmt: "%s-%s"
+      toFieldPath: spec.forProvider.dbInstanceClass
+      transforms:
+      - type: map
+        map:
+          burstable-small: db.t3.small
+          burstable-medium: db.t3.medium
+          burstable-large: db.t3.large
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
       toFieldPath: "status.rdsinstance"      
