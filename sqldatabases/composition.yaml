@@ -122,13 +122,6 @@ spec:
       kind: RDSInstance
       spec:
         forProvider:
-          dbInstanceClass: placeholder
-          engine: placeholder
-          masterUsername: placeholder
-          skipFinalSnapshotBeforeDeletion: true # no overrides?
-          autoMinorVersionUpgrade: true # placeholder
-          applyModificationsImmediately: true # placeholder
-          allowMajorVersionUpgrade: false # placeholder
           vpcSecurityGroupIDSelector:
             matchControllerRef: true
         writeConnectionSecretToRef:
@@ -153,9 +146,21 @@ spec:
       transforms:
       - type: map
         map:
-          eu-west-1: eu-west-1
+          ireland: eu-west-1
+          germany: eu-central-1
     - fromFieldPath: "spec.parameters.storageSize"
       toFieldPath: "spec.forProvider.allocatedStorage"
+    - fromFieldPath: "spec.parameters.storageType"
+      toFieldPath: "spec.forProvider.storageType"
+      transforms:
+      - type: map
+        map:
+          ssd: gp2
+          magnetic: standard
+    - fromFieldPath: "spec.parameters.maintenanceWindow"
+      toFieldPath: "spec.forProvider.preferredMaintenanceWindow"
+    - fromFieldPath: "spec.parameters.backupWindow"
+      toFieldPath: "spec.forProvider.preferredBackupWindow"
     - fromFieldPath: "spec.parameters.administratorUsername"
       toFieldPath: "spec.forProvider.masterUsername"
     - fromFieldPath: "spec.parameters.allowMajorVersionUpgrade"
@@ -164,6 +169,8 @@ spec:
       toFieldPath: "spec.forProvider.applyModificationsImmediately"
     - fromFieldPath: "spec.parameters.autoMinorVersionUpgrade"
       toFieldPath: "spec.forProvider.autoMinorVersionUpgrade"
+    - fromFieldPath: "spec.parameters.skipFinalSnapshotBeforeDeletion"
+      toFieldPath: "spec.forProvider.skipFinalSnapshotBeforeDeletion"
     - type: CombineFromComposite
       combine:
         variables: 
@@ -179,6 +186,12 @@ spec:
           burstable-small: db.t3.small
           burstable-medium: db.t3.medium
           burstable-large: db.t3.large
+          standard-small: db.m6g.large
+          standard-medium: db.m6g.xlarge
+          standard-large: db.m6g.2large
+          memory-small: db.r6g.large
+          memory-medium: db.r6g.xlarge
+          memory-large: db.r6g.2xlarge
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
       toFieldPath: "status.rdsinstance"      

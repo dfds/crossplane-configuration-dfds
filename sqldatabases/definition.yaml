@@ -32,6 +32,7 @@ spec:
                 type: object
                 properties:
                   databaseEngine:
+                    description: Database engine to use
                     type: string
                     enum: ["postgres"]
                     default: "postgres"
@@ -40,44 +41,64 @@ spec:
                     type: string
                     enum: ["10", "11", "12", "13"]
                     default: "13"
+                  storageType:
+                    description: Type of storage to use
+                    type: string
+                    enum: ["ssd", "magnetic"]
+                    default: "ssd"
                   storageSize:
+                    description: Size of storage in Gb
                     type: integer
+                    default: 20
                   region:
                     description: Geographic location of this Database server.
                     type: string
+                    enum: ["ireland", "germany"]
+                    default: "ireland"
                   instanceSize:
+                    description: Specification of database instance
                     type: string
                     enum: ["small", "medium", "large"]
                     default: "small"
                   instanceClass:
+                    description: Class of database instance
                     type: string
                     enum: ["burstable", "general", "memory"]
                     default: "burstable"
                   administratorUsername:
+                    description: SQL administrator account username
                     type: string
                     default: masteruser
-                  engine:
-                    type: string
-                    enum: ["postgres"]
-                    default: "postgres"
-                  skipFinalSnapshotBeforeDeletion: # not used?
+                  skipFinalSnapshotBeforeDeletion:
+                    description: Skip a final snapshot before deleting the database (data will be lost upon delete)
                     type: boolean
+                    default: false
                   applyModificationsImmediately:
+                    description: Apply changes outside of a maintenance window
                     type: boolean
                     default: false
                   allowMajorVersionUpgrade:
+                    description: Allow AWS to automatically upgrade major version of the database (new features, breaking changes)
                     type: boolean
                     default: false
                   autoMinorVersionUpgrade:
+                    description: Allow AWS to automatically upgrade minor version of the database (non-breaking patches, fixes)
                     type: boolean
                     default: true
-                required: # verified?
+                  maintenanceWindow:
+                    description: Time period each week during which automatic maintenance or applied changes can occur
+                    type: string
+                    default: "sun:02:00-sun:04:00"
+                  backupWindow:
+                    description: Time period each week during which automatic backups can occur
+                    type: string
+                    default: "00:00-01:00"
+                required: 
                 - region
                 - instanceClass
                 - instanceSize
                 - administratorUsername
                 - databaseEngine
-                - skipFinalSnapshotBeforeDeletion
             required:
             - parameters
           status:

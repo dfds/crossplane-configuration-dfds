@@ -5,11 +5,11 @@ metadata:
   name: dynamic-claim-example
 spec:
   parameters:
-    region: eu-west-1
+    region: ireland
     instanceSize: small
     instanceClass: burstable
     administratorUsername: masteruser
-    storageSize: 30
+    storageSize: 5
     databaseEngine: postgres
     databaseEngineVersion: "13"
     skipFinalSnapshotBeforeDeletion: true
