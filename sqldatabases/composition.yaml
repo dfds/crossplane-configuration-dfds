@@ -27,7 +27,7 @@ spec:
       transforms:
       - type: string
         string:
-          fmt: "%s-aws"      
+          fmt: "%s-aws"
       policy:
         fromFieldPath: Required        
   resources:
@@ -73,7 +73,7 @@ spec:
             apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
             metadata:
-              name: myrb
+              name: placeholder
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
@@ -81,7 +81,7 @@ spec:
             subjects:
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
-              name: mynamespace
+              name: placeholder
         providerConfigRef:
           name: kubernetes-provider
     patches:
@@ -122,13 +122,13 @@ spec:
       kind: RDSInstance
       spec:
         forProvider:
-          dbInstanceClass: db.t3.small
-          engine: postgres
-          masterUsername: masteruser
-          skipFinalSnapshotBeforeDeletion: true
-          autoMinorVersionUpgrade: true
-          applyModificationsImmediately: true
-          allowMajorVersionUpgrade: false
+          dbInstanceClass: placeholder
+          engine: placeholder
+          masterUsername: placeholder
+          skipFinalSnapshotBeforeDeletion: true # no overrides?
+          autoMinorVersionUpgrade: true # placeholder
+          applyModificationsImmediately: true # placeholder
+          allowMajorVersionUpgrade: false # placeholder
           vpcSecurityGroupIDSelector:
             matchControllerRef: true
         writeConnectionSecretToRef:

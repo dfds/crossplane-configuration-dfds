@@ -55,18 +55,23 @@ spec:
                     default: "burstable"
                   administratorUsername:
                     type: string
+                    default: masteruser
                   engine:
                     type: string
                     enum: ["postgres"]
-                  skipFinalSnapshotBeforeDeletion:
+                    default: "postgres"
+                  skipFinalSnapshotBeforeDeletion: # not used?
                     type: boolean
                   applyModificationsImmediately:
                     type: boolean
+                    default: false
                   allowMajorVersionUpgrade:
                     type: boolean
+                    default: false
                   autoMinorVersionUpgrade:
                     type: boolean
-                required:
+                    default: true
+                required: # verified?
                 - region
                 - instanceClass
                 - instanceSize
