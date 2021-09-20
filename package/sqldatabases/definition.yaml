@@ -17,10 +17,10 @@ spec:
   claimNames:
     kind: SqlDatabaseInstance
     plural: sqldatabaseinstances
-  versions:
+  versions: 
   - name: v1alpha1
-    served: true 
-    referenceable: true 
+    served: true
+    referenceable: true
     schema:
       openAPIV3Schema:
         type: object
@@ -88,12 +88,16 @@ spec:
                   maintenanceWindow:
                     description: Time period each week during which automatic maintenance or applied changes can occur
                     type: string
+                    pattern: '^(sun|mon|tue|wed|fri|sat|sun):([01][0-9]|2[0-3]):([0-5][0-9])-(sun|mon|tue|wed|fri|sat|sun):([01][0-9]|2[0-3]):([0-5][0-9])$'
                     default: "sun:02:00-sun:04:00"
+                    example: "A valid example: sun:02:00-sun:04:00"
                   backupWindow:
                     description: Time period each week during which automatic backups can occur
                     type: string
+                    pattern: '^([01][0-9]|2[0-3]):([0-5][0-9])-([01][0-9]|2[0-3]):([0-5][0-9])$'
                     default: "00:00-01:00"
-                required: 
+                    example: "A valid example: 01:00-02:00"
+                required: # why require when we have defaults?
                 - region
                 - instanceClass
                 - instanceSize
@@ -104,9 +108,36 @@ spec:
           status:
             type: object
             properties:
-              securitygroup:
-                description: Name of the provisioned securitygroup
-                type: string
-              rdsinstance:
-                description: Name of the provisioned rdsinstance
-                type: string
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  vpc:
+                    description: Name of the provisioned vpc
+                    type: string
+                  securitygroup:
+                    description: Name of the provisioned securitygroup
+                    type: string
+                  rdsinstance:
+                    description: Name of the provisioned rdsinstance
+                    type: string
+                  clusterrole: 
+                    description: Name of the provisioned clusterrole
+                    type: string
+                  clusterrolebinding:
+                    description: Name of the provisioned clusterrolebinding
+                    type: string
+              dbInstanceConditions:
+                description: >
+                  Freeform field containing information about the RDS instance condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: ".status.dbInstanceConditions[0].status"
+    - name: Last Sync Date
+      type: string
+      jsonPath: ".status.dbInstanceConditions[0].lastTransitionTime"

@@ -3,7 +3,6 @@ kind: Composition
 metadata:
   name: compositesqldatabaseinstances.crossplane.dfds.cloud
   labels:
-    purpose: database
     provider: aws
 spec:
   compositeTypeRef:
@@ -29,7 +28,7 @@ spec:
         string:
           fmt: "%s-aws"
       policy:
-        fromFieldPath: Required        
+        fromFieldPath: Required
   resources:
   - name: role
     base:
@@ -62,6 +61,9 @@ spec:
       toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
     - fromFieldPath: metadata.name
       toFieldPath: spec.forProvider.manifest.rules[1].resourceNames[0]
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.clusterrole" 
 
   - name: rolebinding
     base:
@@ -91,6 +93,10 @@ spec:
       toFieldPath: spec.forProvider.manifest.roleRef.name
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.forProvider.manifest.subjects[0].name
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.clusterrolebinding"
+
   - name: securitygroup
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -115,7 +121,7 @@ spec:
       toFieldPath: "spec.forProvider.groupName"
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.securitygroup"      
+      toFieldPath: "status.createdResources.securitygroup"      
   - name: rdinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
@@ -194,7 +200,12 @@ spec:
           memory-large: db.r6g.2xlarge
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.rdsinstance"      
+      toFieldPath: "status.createdResources.rdsinstance"  
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.dbInstanceConditions
+      policy:
+        fromFieldPath: Optional          
     connectionDetails:
     - fromConnectionSecretKey: username
     - fromConnectionSecretKey: password
