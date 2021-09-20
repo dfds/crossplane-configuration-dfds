@@ -175,8 +175,14 @@ spec:
       toFieldPath: "spec.forProvider.applyModificationsImmediately"
     - fromFieldPath: "spec.parameters.autoMinorVersionUpgrade"
       toFieldPath: "spec.forProvider.autoMinorVersionUpgrade"
-    - fromFieldPath: "spec.parameters.skipFinalSnapshotBeforeDeletion"
-      toFieldPath: "spec.forProvider.skipFinalSnapshotBeforeDeletion"
+    - fromFieldPath: "spec.parameters.isNonProduction"
+      toFieldPath: "spec.forProvider.skipFinalSnapshotBeforeDeletion"          
+    - fromFieldPath: spec.claimRef.name    
+      toFieldPath: spec.forProvider.finalDBSnapshotIdentifier
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-final"
     - type: CombineFromComposite
       combine:
         variables: 
