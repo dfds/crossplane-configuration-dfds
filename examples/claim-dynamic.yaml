@@ -5,7 +5,7 @@ metadata:
   name: dynamic-claim-example
 spec:
   parameters:
-    isNonProduction: true
+    isProduction: false
   compositionSelector:
     matchLabels:
       provider: aws
