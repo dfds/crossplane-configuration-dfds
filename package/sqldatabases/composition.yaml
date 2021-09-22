@@ -128,6 +128,7 @@ spec:
       kind: RDSInstance
       spec:
         forProvider:
+          finalDBSnapshotIdentifier: null
           vpcSecurityGroupIDSelector:
             matchControllerRef: true
         writeConnectionSecretToRef:
@@ -175,14 +176,35 @@ spec:
       toFieldPath: "spec.forProvider.applyModificationsImmediately"
     - fromFieldPath: "spec.parameters.autoMinorVersionUpgrade"
       toFieldPath: "spec.forProvider.autoMinorVersionUpgrade"
-    - fromFieldPath: "spec.parameters.isNonProduction"
-      toFieldPath: "spec.forProvider.skipFinalSnapshotBeforeDeletion"          
-    - fromFieldPath: spec.claimRef.name    
-      toFieldPath: spec.forProvider.finalDBSnapshotIdentifier
+    - fromFieldPath: "spec.parameters.isProduction"
+      toFieldPath: "spec.forProvider.skipFinalSnapshotBeforeDeletion"
       transforms:
-      - type: string
-        string:
-          fmt: "%s-final"
+      - type: convert
+        convert:
+          toType: string
+      - type: map
+        map:
+          "true": "false"
+          "false": "true"
+      - type: convert
+        convert:
+          toType: bool
+    # - fromFieldPath: spec.claimRef.name    
+    #   toFieldPath: spec.forProvider.finalDBSnapshotIdentifier
+    #   transforms:
+    #   - type: string
+    #     string:
+    #       fmt: "%s-final"
+    - fromFieldPath: "spec.parameters.isProduction" #"spec.forProvider.skipFinalSnapshotBeforeDeletion"
+      toFieldPath: "spec.forProvider.finalDBSnapshotIdentifier"
+      transforms:
+      - type: convert
+        convert:
+          toType: string      
+      - type: map
+        map:
+          "false": ""
+          "true": "something" # workaround: convert boolean to integer then multiply by a random number
     - type: CombineFromComposite
       combine:
         variables: 
