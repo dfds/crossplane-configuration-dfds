@@ -189,22 +189,8 @@ spec:
       - type: convert
         convert:
           toType: bool
-    # - fromFieldPath: spec.claimRef.name    
-    #   toFieldPath: spec.forProvider.finalDBSnapshotIdentifier
-    #   transforms:
-    #   - type: string
-    #     string:
-    #       fmt: "%s-final"
-    - fromFieldPath: "spec.parameters.isProduction" #"spec.forProvider.skipFinalSnapshotBeforeDeletion"
+    - fromFieldPath: "spec.parameters.finalBackupName"
       toFieldPath: "spec.forProvider.finalDBSnapshotIdentifier"
-      transforms:
-      - type: convert
-        convert:
-          toType: string      
-      - type: map
-        map:
-          "false": ""
-          "true": "something" # workaround: convert boolean to integer then multiply by a random number
     - type: CombineFromComposite
       combine:
         variables: 

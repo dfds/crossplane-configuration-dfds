@@ -95,7 +95,10 @@ spec:
                     example: "A valid example: 01:00-02:00"
                   isProduction:
                     description: Is a production database
-                    type: boolean                   
+                    type: boolean
+                  finalBackupName:
+                    description: If you have specified this as a production database you need to set a name for the final backup
+                    type: string        
                 required:
                 - isProduction
             required:
