@@ -48,11 +48,10 @@ stages:
             displayName: Build configuration
 
           - script: |
-              cd package
-              kubectl crossplane push configuration
+              docker login --username $(DOCKERHUB_USERNAME) --password $(DOCKERHUB_PASSWORD)
             displayName: Docker login
 
           - script: |
               cd package
-              kubectl crossplane push configuration
+              kubectl crossplane push configuration dfdsdk/dfds-infra:$(Build.SourceBranch)
             displayName: Push configuration
