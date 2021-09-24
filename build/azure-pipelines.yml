@@ -39,7 +39,7 @@ stages:
           
           - script: |
               cd package
-              rm *.pkg
+              rm -f *.xpkg
             displayName: Remove existing xpg
 
           - script: |
