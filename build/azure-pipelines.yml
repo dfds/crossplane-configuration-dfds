@@ -52,7 +52,7 @@ stages:
             displayName: Docker login
 
           - script: |
-              export PACKAGEVERSION=`cut -d "/" -f3- <<< $VERTEST`
+              export PACKAGEVERSION=`cut -d "/" -f3- <<< $(Build.SourceBranch)`
               cd package
-              kubectl crossplane push configuration dfdsdk/dfds-infra:$(PACKAGEVERSION)
+              kubectl crossplane push configuration dfdsdk/dfds-infra:$PACKAGEVERSION
             displayName: Push configuration
