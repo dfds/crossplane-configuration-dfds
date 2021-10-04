@@ -2,14 +2,15 @@ apiVersion: crossplane.dfds.cloud/v1alpha1
 kind: SqlDatabaseInstance
 metadata:
   namespace: default
-  name: dynamic-claim-example
+  name: dynamic-claim-production-example
 spec:
   parameters:
-    isProduction: false
+    isProduction: true
+    finalBackupName: dynamic-claim-production-example-final-snapshot
     deletionPolicy: Orphan
   compositionSelector:
     matchLabels:
       provider: aws
   
   writeConnectionSecretToRef:
-    name: dynamic-claim-example-secret
+    name: dynamic-claim-production-example-secret
