@@ -121,7 +121,10 @@ spec:
       toFieldPath: "spec.forProvider.groupName"
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.securitygroup"      
+      toFieldPath: "status.createdResources.securitygroup"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy  
+      
   - name: rdinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
@@ -220,6 +223,8 @@ spec:
       toFieldPath: status.dbInstanceConditions
       policy:
         fromFieldPath: Optional          
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy  
     connectionDetails:
     - fromConnectionSecretKey: username
     - fromConnectionSecretKey: password
