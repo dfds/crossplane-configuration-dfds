@@ -66,7 +66,9 @@ You can update your manifest to change properties of the database. Try adding `s
 
 Simply run `kubectl delete -f examples/sqldatabases/claim-dynamic-nonproduction.yaml` to delete the deployed database or run `kubectl delete claim dynamic-claim-sql-nonprod-example`
 
-# Folder structure
+# Development
+
+## Folder structure
 
 The folder structure of this repository is as follows:
 
@@ -79,3 +81,11 @@ The folder structure of this repository is as follows:
     configuration at the top level
 
 New resources should go into a sub-folder inside packages and an example of the resource should go into a sub-folder of the same name under examples.
+
+## Building
+
+There is a script at `build/build.sh` that you can provide parameter values for (docker repo name, tag) and execute in order to build and publish a version of this configuration package.
+
+## Releases
+
+Release images are created by pipeline whenever a new release is created in Github
