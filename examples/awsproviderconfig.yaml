@@ -2,11 +2,11 @@
 apiVersion: aws.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: default
+  name: my-namespace-aws
 spec:
   credentials:
     source: Secret
     secretRef:
-      namespace: default
+      namespace: my-namespace
       name: aws-creds
-      key: key
+      key: creds

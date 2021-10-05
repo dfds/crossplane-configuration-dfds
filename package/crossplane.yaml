@@ -9,4 +9,4 @@ spec:
     - provider: crossplane/provider-aws
       version: ">=v0.18.1"
     - provider: crossplane/provider-kubernetes
-      version: "v0.0.0-25.g59b8955-main"
+      version: "v0.1.0"

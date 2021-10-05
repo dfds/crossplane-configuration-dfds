@@ -1,0 +1,145 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: compositesqldatabaseinstances.crossplane.dfds.cloud
+spec:
+  connectionSecretKeys:
+  - username
+  - password
+  - hostname
+  - port
+  defaultCompositionRef:
+    name: compositesqldatabaseinstances.crossplane.dfds.cloud
+  group: crossplane.dfds.cloud
+  names:
+    kind: CompositeSqlDatabaseInstance
+    plural: compositesqldatabaseinstances
+  claimNames:
+    kind: SqlDatabaseInstance
+    plural: sqldatabaseinstances
+  versions: 
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  databaseEngine:
+                    description: Database engine to use
+                    type: string
+                    enum: ["postgres"]
+                    default: "postgres"
+                  databaseEngineVersion:
+                    description: Database engine version
+                    type: string
+                    enum: ["10", "11", "12", "13"]
+                    default: "13"
+                  storageType:
+                    description: Type of storage to use
+                    type: string
+                    enum: ["ssd", "magnetic"]
+                    default: "ssd"
+                  storageSize:
+                    description: Size of storage in Gb
+                    type: integer
+                    default: 20
+                  region:
+                    description: Geographic location of this Database server.
+                    type: string
+                    enum: ["ireland", "germany"]
+                    default: "ireland"
+                  instanceSize:
+                    description: Specification of database instance
+                    type: string
+                    enum: ["small", "medium", "large"]
+                    default: "small"
+                  instanceClass:
+                    description: Class of database instance
+                    type: string
+                    enum: ["burstable", "general", "memory"]
+                    default: "burstable"
+                  administratorUsername:
+                    description: SQL administrator account username
+                    type: string
+                    default: masteruser
+                  applyModificationsImmediately:
+                    description: Apply changes outside of a maintenance window
+                    type: boolean
+                    default: false
+                  allowMajorVersionUpgrade:
+                    description: Allow AWS to automatically upgrade major version of the database (new features, breaking changes)
+                    type: boolean
+                    default: false
+                  autoMinorVersionUpgrade:
+                    description: Allow AWS to automatically upgrade minor version of the database (non-breaking patches, fixes)
+                    type: boolean
+                    default: true
+                  maintenanceWindow:
+                    description: Time period each week during which automatic maintenance or applied changes can occur
+                    type: string
+                    pattern: '^(sun|mon|tue|wed|fri|sat|sun):([01][0-9]|2[0-3]):([0-5][0-9])-(sun|mon|tue|wed|fri|sat|sun):([01][0-9]|2[0-3]):([0-5][0-9])$'
+                    default: "sun:02:00-sun:04:00"
+                    example: "A valid example: sun:02:00-sun:04:00"
+                  backupWindow:
+                    description: Time period each week during which automatic backups can occur
+                    type: string
+                    pattern: '^([01][0-9]|2[0-3]):([0-5][0-9])-([01][0-9]|2[0-3]):([0-5][0-9])$'
+                    default: "00:00-01:00"
+                    example: "A valid example: 01:00-02:00"
+                  isProduction:
+                    description: Is a production database
+                    type: boolean
+                  finalBackupName:
+                    description: If you have specified this as a production database you need to set a name for the final backup
+                    type: string
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                required:
+                - isProduction
+            required:
+            - parameters
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  vpc:
+                    description: Name of the provisioned vpc
+                    type: string
+                  securitygroup:
+                    description: Name of the provisioned securitygroup
+                    type: string
+                  rdsinstance:
+                    description: Name of the provisioned rdsinstance
+                    type: string
+                  clusterrole: 
+                    description: Name of the provisioned clusterrole
+                    type: string
+                  clusterrolebinding:
+                    description: Name of the provisioned clusterrolebinding
+                    type: string
+              dbInstanceConditions:
+                description: >
+                  Freeform field containing information about the RDS instance condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: ".status.dbInstanceConditions[0].status"
+    - name: Last Sync Date
+      type: string
+      jsonPath: ".status.dbInstanceConditions[0].lastTransitionTime"

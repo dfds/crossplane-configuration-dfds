@@ -1,0 +1,60 @@
+trigger:
+  branches:
+    include:
+      - refs/tags/v*
+  paths:
+    include:
+      - package
+
+pr: none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - group: crossplane-configuration-package
+
+stages:
+  - stage: deploy_package
+    displayName: "Deploy Crossplane Configuration Package"
+
+    jobs:
+      - job: build_deploy
+        displayName: "Build and deploy Crossplane configuration package"
+
+        steps:
+          - script: |
+              export KUBECTL_VERSION=1.21.4
+              curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o kubectl \
+              && curl -Os https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256 \
+              && bash -c 'echo "$(<kubectl.sha256) kubectl" | sha256sum --check' \
+              && chmod +x kubectl \
+              && mv kubectl /usr/local/bin/ \
+              && rm -f kubectl.sha256
+            displayName: Install Kubectl
+
+          - script: |
+              export CROSSPLANE_VERSION=v1.4.0
+              curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | CHANNEL=stable VERSION=${CROSSPLANE_VERSION} sh \
+              && mv kubectl-crossplane /usr/local/bin
+            displayName: Install Crossplane
+          
+          - script: |
+              cd package
+              rm -f *.xpkg
+            displayName: Remove existing xpg
+
+          - script: |
+              cd package
+              kubectl crossplane build configuration
+            displayName: Build configuration
+
+          - script: |
+              docker login --username $(DOCKERHUB_USERNAME) --password $(DOCKERHUB_PASSWORD)
+            displayName: Docker login
+
+          - script: |
+              export PACKAGEVERSION=`cut -d "/" -f3- <<< $(Build.SourceBranch)`
+              cd package
+              kubectl crossplane push configuration dfdsdk/dfds-infra:$PACKAGEVERSION
+            displayName: Push configuration

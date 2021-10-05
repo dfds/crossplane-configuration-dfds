@@ -1,14 +1,13 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: compositedatabaseinstances.crossplane.dfds.cloud
+  name: compositesqldatabaseinstances.crossplane.dfds.cloud
   labels:
-    purpose: database
     provider: aws
 spec:
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
-    kind: CompositeDatabaseInstance
+    kind: CompositeSqlDatabaseInstance
   patchSets:
   - name: object-metadata
     patches:
@@ -27,9 +26,9 @@ spec:
       transforms:
       - type: string
         string:
-          fmt: "%s-aws"      
+          fmt: "%s-aws"
       policy:
-        fromFieldPath: Required        
+        fromFieldPath: Required
   resources:
   - name: role
     base:
@@ -62,6 +61,9 @@ spec:
       toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
     - fromFieldPath: metadata.name
       toFieldPath: spec.forProvider.manifest.rules[1].resourceNames[0]
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.clusterrole" 
 
   - name: rolebinding
     base:
@@ -73,7 +75,7 @@ spec:
             apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
             metadata:
-              name: myrb
+              name: placeholder
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
@@ -81,7 +83,7 @@ spec:
             subjects:
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
-              name: mynamespace
+              name: placeholder
         providerConfigRef:
           name: kubernetes-provider
     patches:
@@ -91,6 +93,10 @@ spec:
       toFieldPath: spec.forProvider.manifest.roleRef.name
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.forProvider.manifest.subjects[0].name
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.clusterrolebinding"
+
   - name: securitygroup
     base:
       apiVersion: ec2.aws.crossplane.io/v1beta1
@@ -115,17 +121,17 @@ spec:
       toFieldPath: "spec.forProvider.groupName"
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.securitygroup"      
+      toFieldPath: "status.createdResources.securitygroup"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy  
+      
   - name: rdinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
       kind: RDSInstance
       spec:
         forProvider:
-          dbInstanceClass: db.t3.small
-          engine: postgres
-          masterUsername: masteruser
-          skipFinalSnapshotBeforeDeletion: true
+          finalDBSnapshotIdentifier: null
           vpcSecurityGroupIDSelector:
             matchControllerRef: true
         writeConnectionSecretToRef:
@@ -141,21 +147,84 @@ spec:
       - type: string
         string:
           fmt: "%s-databaseserver"
-    - fromFieldPath: "spec.parameters.engineVersion"
+    - fromFieldPath: "spec.parameters.databaseEngine"
+      toFieldPath: "spec.forProvider.engine"
+    - fromFieldPath: "spec.parameters.databaseEngineVersion"
       toFieldPath: "spec.forProvider.engineVersion"
     - fromFieldPath: "spec.parameters.region"
       toFieldPath: "spec.forProvider.region"
       transforms:
       - type: map
         map:
-          eu-west-1: eu-west-1
-    - fromFieldPath: "spec.parameters.allocatedStorage"
+          ireland: eu-west-1
+          germany: eu-central-1
+    - fromFieldPath: "spec.parameters.storageSize"
       toFieldPath: "spec.forProvider.allocatedStorage"
-    - fromFieldPath: "spec.parameters.dbInstanceClass"
-      toFieldPath: "spec.forProvider.dbInstanceClass"
+    - fromFieldPath: "spec.parameters.storageType"
+      toFieldPath: "spec.forProvider.storageType"
+      transforms:
+      - type: map
+        map:
+          ssd: gp2
+          magnetic: standard
+    - fromFieldPath: "spec.parameters.maintenanceWindow"
+      toFieldPath: "spec.forProvider.preferredMaintenanceWindow"
+    - fromFieldPath: "spec.parameters.backupWindow"
+      toFieldPath: "spec.forProvider.preferredBackupWindow"
+    - fromFieldPath: "spec.parameters.administratorUsername"
+      toFieldPath: "spec.forProvider.masterUsername"
+    - fromFieldPath: "spec.parameters.allowMajorVersionUpgrade"
+      toFieldPath: "spec.forProvider.allowMajorVersionUpgrade"
+    - fromFieldPath: "spec.parameters.applyModificationsImmediately"
+      toFieldPath: "spec.forProvider.applyModificationsImmediately"
+    - fromFieldPath: "spec.parameters.autoMinorVersionUpgrade"
+      toFieldPath: "spec.forProvider.autoMinorVersionUpgrade"
+    - fromFieldPath: "spec.parameters.isProduction"
+      toFieldPath: "spec.forProvider.skipFinalSnapshotBeforeDeletion"
+      transforms:
+      - type: convert
+        convert:
+          toType: string
+      - type: map
+        map:
+          "true": "false"
+          "false": "true"
+      - type: convert
+        convert:
+          toType: bool
+    - fromFieldPath: "spec.parameters.finalBackupName"
+      toFieldPath: "spec.forProvider.finalDBSnapshotIdentifier"
+    - type: CombineFromComposite
+      combine:
+        variables: 
+          - fromFieldPath: spec.parameters.instanceClass          
+          - fromFieldPath: spec.parameters.instanceSize 
+        strategy: string        
+        string:
+          fmt: "%s-%s"
+      toFieldPath: spec.forProvider.dbInstanceClass
+      transforms:
+      - type: map
+        map:
+          burstable-small: db.t3.small
+          burstable-medium: db.t3.medium
+          burstable-large: db.t3.large
+          standard-small: db.m6g.large
+          standard-medium: db.m6g.xlarge
+          standard-large: db.m6g.2large
+          memory-small: db.r6g.large
+          memory-medium: db.r6g.xlarge
+          memory-large: db.r6g.2xlarge
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.rdsinstance"      
+      toFieldPath: "status.createdResources.rdsinstance"  
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.dbInstanceConditions
+      policy:
+        fromFieldPath: Optional          
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy  
     connectionDetails:
     - fromConnectionSecretKey: username
     - fromConnectionSecretKey: password
