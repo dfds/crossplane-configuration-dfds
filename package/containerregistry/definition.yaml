@@ -1,10 +1,10 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: compositeecr.crossplane.dfds.cloud
+  name: compositeecrs.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: compositeecr.crossplane.dfds.cloud
+    name: compositeecrs.crossplane.dfds.cloud
   group: crossplane.dfds.cloud
   names:
     kind: CompositeECR
@@ -40,13 +40,6 @@ spec:
                     type: string
                     enum: ["eu-west-1", "eu-central-1"]
                     default: "eu-west-1"
-                  # allowPullFromAccounts:
-                  #   description: Accounts allow to consume the container repository.
-                  #   items:
-                  #     type: string
-                  #   type: array
-                  #   default: [""]
-                  #   example: ["arn:aws:iam::738063116313:root"]
                   deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string

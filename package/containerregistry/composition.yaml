@@ -111,10 +111,6 @@ spec:
       toFieldPath: spec.forProvider.region
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
-    readinessChecks:
-    - type: MatchString
-      fieldPath: "status.conditions.status"
-      matchString: "True"
 
   - name: ecr-policy
     base:
@@ -122,6 +118,8 @@ spec:
       kind: RepositoryPolicy
       spec:
         forProvider:
+          repositoryNameSelector:
+            matchControllerRef: true
           policy:
             statements:
               - sid: "Allow pull from Kubernetes/Oxygen account"
@@ -134,13 +132,7 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: configname
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.repositoryName
     - fromFieldPath: spec.parameters.region
       toFieldPath: spec.forProvider.region
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
-    readinessChecks:
-    - type: MatchString
-      fieldPath: "status.conditions.status"
-      matchString: "True"
