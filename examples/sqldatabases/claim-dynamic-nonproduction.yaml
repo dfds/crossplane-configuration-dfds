@@ -1,5 +1,5 @@
 apiVersion: crossplane.dfds.cloud/v1alpha1
-kind: SqlDatabaseInstance
+kind: DummySqlDatabaseInstance
 metadata:
   namespace: default
   name: dynamic-claim-sql-nonprod-example
@@ -9,6 +9,6 @@ spec:
   compositionSelector:
     matchLabels:
       provider: aws
-  
+
   writeConnectionSecretToRef:
     name: dynamic-claim-sql-nonprod-example-secret

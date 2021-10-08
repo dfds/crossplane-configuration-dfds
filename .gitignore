@@ -19,3 +19,6 @@
 
 # Credential files
 creds.conf
+
+# Makefile
+Makefile

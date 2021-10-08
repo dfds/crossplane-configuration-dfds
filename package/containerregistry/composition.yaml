@@ -1,0 +1,146 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: compositeecr.crossplane.dfds.cloud
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: crossplane.dfds.cloud/v1alpha1
+    kind: CompositeECR
+  patchSets:
+  - name: object-metadata
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name
+      policy:
+        fromFieldPath: Required
+    - fromFieldPath: metadata.labels
+      toFieldPath: spec.forProvider.manifest.metadata.labels
+      policy:
+        fromFieldPath: Required
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-aws"
+      policy:
+        fromFieldPath: Required
+  resources:
+  - name: role
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: deployed-using-crossplane
+              labels:
+                managed-by: crossplane
+            rules:
+            - apiGroups: ["ecr.aws.crossplane.io"]
+              resources: ["repositorypolicy", "repository"]
+              resourceNames: [ ]
+              verbs: ["get"]
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: PatchSet
+      patchSetName: object-metadata
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.clusterrole
+
+  - name: rolebinding
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: placeholder
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: roleref
+            subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: Group
+              name: placeholder
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: PatchSet
+      patchSetName: object-metadata
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.roleRef.name
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.forProvider.manifest.subjects[0].name
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.clusterrolebinding
+
+  - name: ecr
+    base:
+      apiVersion: ecr.aws.crossplane.io/v1alpha1
+      kind: Repository
+      spec:
+        forProvider:
+          tags:
+            - key: managed-by
+              value: crossplane
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: spec.parameters.enableSecurityScanOnPush
+      toFieldPath: spec.forProvider.imageScanningConfiguration.scanOnPush
+    - fromFieldPath: spec.parameters.mutability
+      toFieldPath: spec.forProvider.imageTagMutability
+    - fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.region
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    readinessChecks:
+    - type: MatchString
+      fieldPath: "status.conditions.status"
+      matchString: "True"
+
+  - name: ecr-policy
+    base:
+      apiVersion: ecr.aws.crossplane.io/v1alpha1
+      kind: RepositoryPolicy
+      spec:
+        forProvider:
+          policy:
+            statements:
+              - sid: "Allow pull from Kubernetes/Oxygen account"
+                effect: Allow
+                principal:
+                  awsPrincipals:
+                    - iamRoleArn: arn:aws:iam::738063116313:root
+                action: ["ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage","ecr:BatchCheckLayerAvailability"]
+            version: 2008-10-17
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.repositoryName
+    - fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.region
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    readinessChecks:
+    - type: MatchString
+      fieldPath: "status.conditions.status"
+      matchString: "True"
