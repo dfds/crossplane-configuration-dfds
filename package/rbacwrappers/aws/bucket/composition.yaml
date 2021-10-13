@@ -105,8 +105,6 @@ spec:
       patchSetName: configname    
     - fromFieldPath: metadata.name
       toFieldPath: metadata.name    
-    - fromFieldPath: spec.parameters.locationConstraint
-      toFieldPath: spec.forProvider.locationConstraint
-    - fromFieldPath: spec.parameters.acl
-      toFieldPath: spec.forProvider.acl
+    - fromFieldPath: spec.parameters
+      toFieldPath: spec.forProvider
     
