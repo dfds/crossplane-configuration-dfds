@@ -33,22 +33,30 @@ spec:
                         type: string
                   acl:
                     type: string
-                  # corsConfiguration:
-                  #   type: object
-                  #   properties:
-                  #     corsRules:
-                  #       type: object
-                  #       properties:
-                  #         allowedHeaders:
-                  #           type: []string
-                  #         allowedMethods:
-                  #           type: []string
-                  #         allowedOrigins:
-                  #           type: []string
-                  #         exposeHeaders:
-                  #           type: []string
-                  #         maxAgeSeconds:
-                  #           type: integer
+                  corsConfiguration:
+                    type: object
+                    properties:
+                      corsRules:
+                        type: object
+                        properties:
+                          allowedHeaders:
+                            type: array
+                            items:
+                              type: string
+                          allowedMethods:
+                            type: array
+                            items:
+                              type: string
+                          allowedOrigins:
+                            type: array
+                            items:
+                              type: string
+                          exposeHeaders:
+                            type: array
+                            items:
+                              type: string
+                          maxAgeSeconds:
+                            type: integer
                   grantFullControl:
                     type: string
                   grantRead:

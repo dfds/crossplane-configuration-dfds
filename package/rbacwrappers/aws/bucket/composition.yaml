@@ -8,6 +8,7 @@ spec:
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
     kind: CompositeDFDSAWSBucket
+
   patchSets:
   - name: object-metadata
     patches:
@@ -29,6 +30,7 @@ spec:
           fmt: "%s-aws"
       policy:
         fromFieldPath: Required
+
   resources:
   - name: role
     base:
@@ -90,4 +92,22 @@ spec:
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
       toFieldPath: "status.createdResources.clusterrolebinding"
+
+  - name: bucket
+    base:
+      apiVersion: s3.aws.crossplane.io/v1beta1
+      kind: Bucket
+      spec:
+        forProvider:
+        writeConnectionSecretToRef:
+          namespace: crossplane-system
+    patches:
+    - type: PatchSet
+      patchSetName: configname    
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name    
+    - fromFieldPath: "metadata.uid"
+    
+
+
   writeConnectionSecretsToNamespace: crossplane-system
