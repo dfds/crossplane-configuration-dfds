@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: dfdsawsbuckets.crossplane.dfds.cloud
+  name: compositedfdsawsbuckets.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
     name: dfdsawsbuckets.crossplane.dfds.cloud
   group: crossplane.dfds.cloud
   names:
     kind: CompositeDFDSAWSBucket
-    plural: CompositeDFDSAWSBuckets
+    plural: compositedfdsawsbuckets
   claimNames:
     kind: DFDSAWSBucket
-    plural: DFDSAWSBuckets
+    plural: dfdsawsbuckets
   versions: 
   - name: v1alpha1
     served: true

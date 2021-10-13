@@ -99,15 +99,14 @@ spec:
       kind: Bucket
       spec:
         forProvider:
-        writeConnectionSecretToRef:
-          namespace: crossplane-system
+          locationConstraint: eu-west-1
     patches:
     - type: PatchSet
       patchSetName: configname    
     - fromFieldPath: metadata.name
       toFieldPath: metadata.name    
-    - fromFieldPath: "metadata.uid"
+    - fromFieldPath: spec.parameters.locationConstraint
+      toFieldPath: spec.forProvider.locationConstraint
+    - fromFieldPath: spec.parameters.acl
+      toFieldPath: spec.forProvider.acl
     
-
-
-  writeConnectionSecretsToNamespace: crossplane-system
