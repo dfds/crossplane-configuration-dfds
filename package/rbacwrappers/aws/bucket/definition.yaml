@@ -1,0 +1,89 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: dfdsawsbuckets.crossplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: dfdsawsbuckets.crossplane.dfds.cloud
+  group: crossplane.dfds.cloud
+  names:
+    kind: CompositeDFDSAWSBucket
+    plural: CompositeDFDSAWSBuckets
+  claimNames:
+    kind: DFDSAWSBucket
+    plural: DFDSAWSBuckets
+  versions: 
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  accelerateConfiguration:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                  acl:
+                    type: string
+                  # corsConfiguration:
+                  #   type: object
+                  #   properties:
+                  #     corsRules:
+                  #       type: object
+                  #       properties:
+                  #         allowedHeaders:
+                  #           type: []string
+                  #         allowedMethods:
+                  #           type: []string
+                  #         allowedOrigins:
+                  #           type: []string
+                  #         exposeHeaders:
+                  #           type: []string
+                  #         maxAgeSeconds:
+                  #           type: integer
+                  grantFullControl:
+                    type: string
+                  grantRead:
+                    type: string
+                  grantReadAcp:
+                    type: string
+                  grantWrite:
+                    type: string
+                  grantWriteAcp:
+                    type: string
+                  # lifecycleConfiguration:
+                  #   type: object
+                  locationConstraint:
+                    type: string
+                  # loggingConfiguration:
+                  #   type: object
+                  # notificationConfiguration:
+                  #   type: object
+                  # objectLockEnabledForBucket:
+                  # paymentConfiguration:
+                  #   type: object
+                  # publicAccessBlockConfiguration:
+                  #   type: object
+                  # replicationConfiguration:
+                  #   type: object
+                  # serverSideEncryptionConfiguration:
+                  #   type: object
+                  # tagging:
+                  #   type: object
+                  # versioningConfiguration:
+                  #   type: object
+                  # websiteConfiguration:
+                  #   type: object
+                required:
+                - locationConstraint
+            required:
+            - parameters
+          
