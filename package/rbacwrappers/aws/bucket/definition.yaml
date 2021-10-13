@@ -67,8 +67,81 @@ spec:
                     type: string
                   grantWriteAcp:
                     type: string
-                  # lifecycleConfiguration:
-                  #   type: object
+                  lifecycleConfiguration:
+                    type: object
+                    properties:
+                      rules:
+                        type: object
+                        properties:
+                          abortInCompleteMultipartUpload:
+                            type: object
+                            properties:
+                              daysAfterInitiation:
+                                type: integer
+                          expiration:
+                            type: object
+                            properties:
+                              date:
+                                type: string
+                              days:
+                                type: integer
+                              expiredObjectDeleteMarker:
+                                type: boolean
+                          filter:
+                            type: object
+                            properties:
+                              and:
+                                type: object
+                                properties:
+                                  prefix:
+                                    type: string
+                                  tags:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        key:
+                                          type: string
+                                        value:
+                                          type: string
+                              prefix:
+                                type: string
+                              tag:
+                                type: object
+                                properties:
+                                  key:
+                                    type: string
+                                  value:
+                                    type: string
+                          id:
+                            type: string
+                          noncurrentVersionExpiration:
+                            type: object
+                            properties:
+                              noncurrentDays:
+                                type: integer
+                          noncurrentVersionTransitions:
+                            type: object
+                            properties:
+                              noncurrentDays:
+                                type: integer
+                              storageClass:
+                                type: string
+                          status:
+                            type: string
+                          transitions:
+                            type: array
+                            items: 
+                              type: object
+                              properties:
+                                date:
+                                  type: string
+                                days:
+                                  type: integer
+                                storageClass:
+                                  type: string
+
+
                   locationConstraint:
                     type: string
                   # loggingConfiguration:
