@@ -103,8 +103,6 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: configname    
-    - fromFieldPath: metadata.name
-      toFieldPath: metadata.name    
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
     
