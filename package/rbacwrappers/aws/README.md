@@ -57,9 +57,15 @@ versions:
                 properties:
 ```
 
-We should then add properties of the resources under `properties:` we defined above. We can copy and paste 
-these from the source code of the resource in aws-provider (using the desired release tag). For example, `https://github.com/crossplane/provider-aws/blob/v0.19.1/package/crds/s3.aws.crossplane.io_buckets.yaml` and copy the forProvider.properties
+We should then add properties of the resources under the third `properties:` we defined above. We can copy and paste 
+these from the source code of the resource in aws-provider (using the desired release tag). For example, `https://raw.githubusercontent.com/crossplane/provider-aws/v0.20.1/package/crds/s3.aws.crossplane.io_buckets.yaml` and copy the forProvider.properties
 
+And make sure we end with making parameters required:
+
+```
+            required:
+            - parameters
+```
 
 ### Create a composition.yaml
 
