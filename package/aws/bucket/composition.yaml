@@ -27,9 +27,9 @@ spec:
       apiVersion: crossplane.dfds.cloud/v1alpha1
       kind: XRBAC
       spec:
-        resourceType: 
+        resourceTypes:
         - buckets
-        apiGroup: 
+        apiGroups:
         - s3.aws.crossplane.io
     patches:
     - fromFieldPath: metadata.name
