@@ -1,0 +1,86 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xrbacs.crossplane.dfds.cloud
+  labels:
+    provider: k8s
+spec:
+  compositeTypeRef:
+    apiVersion: crossplane.dfds.cloud/v1alpha1
+    kind: XRBAC
+  patchSets:
+  - name: object-metadata
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name    
+      policy:
+        fromFieldPath: Required       
+    - fromFieldPath: metadata.labels
+      toFieldPath: spec.forProvider.manifest.metadata.labels
+      policy:
+        fromFieldPath: Required
+  resources:
+  - name: role
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: deployed-using-crossplane
+              labels:
+                managed-by: "crossplane"
+            rules:
+            - apiGroups: [ ]
+              resources: [ ]
+              resourceNames: [ ]
+              verbs: ["get"]
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: PatchSet
+      patchSetName: object-metadata
+    - fromFieldPath: spec.apiGroup
+      toFieldPath: spec.forProvider.manifest.rules[0].apiGroups
+    - fromFieldPath: spec.resourceType
+      toFieldPath: spec.forProvider.manifest.rules[0].resources
+    - fromFieldPath: spec.resourceName
+      toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.clusterrole"
+
+  - name: rolebinding
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: placeholder
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: roleref
+            subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: Group
+              name: placeholder
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: PatchSet
+      patchSetName: object-metadata    
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.roleRef.name
+    - fromFieldPath: spec.resourceNamespace
+      toFieldPath: spec.forProvider.manifest.subjects[0].name
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.clusterrolebinding"
