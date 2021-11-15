@@ -20,11 +20,11 @@ spec:
           spec:
             type: object
             properties:          
-              apiGroups:
+              apiGroup:
                 type: array
                 items:
                   type: string
-              resourceTypes:
+              resourceType:
                 type: array
                 items:
                   type: string                    
@@ -33,8 +33,8 @@ spec:
               resourceNamespace:
                 type: string
             required:
-            - apiGroups
-            - resourceTypes # just resources?
+            - apiGroup
+            - resourceType
             - resourceName
             - resourceNamespace
           status:
@@ -49,4 +49,4 @@ spec:
                     type: string
                   clusterrolebinding:
                     description: Name of the provisioned clusterrolebinding
-                    type: string            
+                    type: string

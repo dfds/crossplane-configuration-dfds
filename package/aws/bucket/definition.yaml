@@ -10,7 +10,7 @@ spec:
     kind: XAWSBucket
     plural: xawsbuckets
   claimNames:
-    kind: awsbucket
+    kind: AWSBucket
     plural: awsbuckets
   versions: 
   - name: v1alpha1
