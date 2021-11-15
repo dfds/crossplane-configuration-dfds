@@ -43,9 +43,9 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: object-metadata
-    - fromFieldPath: spec.apiGroup
+    - fromFieldPath: spec.apiGroups
       toFieldPath: spec.forProvider.manifest.rules[0].apiGroups
-    - fromFieldPath: spec.resourceType
+    - fromFieldPath: spec.resourceTypes
       toFieldPath: spec.forProvider.manifest.rules[0].resources
     - fromFieldPath: spec.resourceName
       toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
