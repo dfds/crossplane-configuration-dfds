@@ -9,12 +9,6 @@ spec:
     apiVersion: crossplane.dfds.cloud/v1alpha1
     kind: XRBAC
   patchSets:
-  - name: object-metadata
-    patches:
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.metadata.name    
-      policy:
-        fromFieldPath: Required       
     - fromFieldPath: metadata.labels
       toFieldPath: spec.forProvider.manifest.metadata.labels
       policy:

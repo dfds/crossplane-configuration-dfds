@@ -1,7 +1,7 @@
-apiVersion: crossplane.dfds.cloud/v1alpha1
-kind: DFDSAWSBucket
+apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+kind: XAWSBucket
 metadata:
-  name: s3testdfdswrapper
+  name: S3BucketClaim
   namespace: default
 spec:
   parameters:
