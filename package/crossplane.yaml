@@ -7,6 +7,6 @@ spec:
     version: ">=v1.2.1"
   dependsOn:
     - provider: crossplane/provider-aws
-      version: ">=v0.18.1"
+      version: ">=v0.20.1"
     - provider: crossplane/provider-kubernetes
       version: "v0.1.0"
