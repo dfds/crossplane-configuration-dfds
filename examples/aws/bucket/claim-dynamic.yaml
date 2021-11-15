@@ -1,8 +1,8 @@
 apiVersion: storage.crossplane.dfds.cloud/v1alpha1
 kind: XAWSBucket
 metadata:
-  name: S3BucketClaim
-  namespace: default
+  name: s3bucketclaim
+  namespace: dynamic-forms-dxp-enxjg
 spec:
   parameters:
     locationConstraint: eu-west-1
