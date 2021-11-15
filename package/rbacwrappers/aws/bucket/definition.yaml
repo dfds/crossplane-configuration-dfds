@@ -1441,7 +1441,6 @@ spec:
                     type: object
                 required:
                 - locationConstraint
-                type: object
             required:
             - parameters
           
