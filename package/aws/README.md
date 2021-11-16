@@ -1,11 +1,29 @@
 # Overview
 
 Contained here are RBAC compositions around individual AWS resources to allow for multi-tenancy. We call them 
-'RBAC Wrappers'
+'RBAC Wrappers'. We need these to implement generic AWS resources into our existing multi-tenancy RBAC setup
+
+## DFDS Multi-Tenancy
+
+### Cluster Level
+At Cluster level, users are allowed to list namespaces and pods and not much else. This is defined in a ClusterRole which is 
+assigned to a ReadOnly group, of which the cluster user is a member of by assuming their 'Capability' role.
+
+### Namespace level
+At Namespace level, users are allowed to perform a larger number of actions to create and view deployments, volumes etc etc. 
+This is defined in a Role deployed in their namespace to which they are bound.
+
+### The problem
+As the Crossplane resource sit at Cluster level rather than Namespace level, teams need to be given permission to create AWS 
+resources but only view and manage the individual resources they have created. To achieve this, we use our RBAC solution.
+
+### The solution
+Our solution is to have an rbac composite resource into which we can pass the resource type and API group, and also patch in the resource name. 
+This will create a clusterrole and clusterrole binding, with access to modify the created resource restricted to the creating namespace's group.
 
 ## Creating an RBAC Wrapper
 
-The process of creating an RBAC Wrapper is as follows:
+The process of creating an RBAC Wrapper for an AWS resource is as follows:
 
 ### Requirements
 
@@ -13,35 +31,35 @@ The process of creating an RBAC Wrapper is as follows:
 
 ### Folder structure
 
-The resource folder must sit in the package/rbacwrappers/aws folder. The folder name must match the AWS resource name. 
-For example: `package/rbacwrappers/aws/bucket` for the `bucket` resource from provider-aws.
+The resource folder must sit in the package//aws folder. The folder name must match the AWS resource name. 
+For example: `package/aws/bucket` for the `bucket` resource from provider-aws.
 
 ### Create a definition.yaml
 
-The file should be defined with the following section to define the name of the resources. We will use dfdsawsbucket as 
+The file should be defined with the following section to define the name of the resources. We will use Bucket as 
 our example:
 
 ```
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: compositedfdsawsbuckets.crossplane.dfds.cloud
+  name: xawsbuckets.storage.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: dfdsawsbuckets.crossplane.dfds.cloud
-  group: crossplane.dfds.cloud
+    name: awsbuckets.storage.crossplane.dfds.cloud
+  group: storage.crossplane.dfds.cloud
   names:
-    kind: CompositeDFDSAWSBucket
-    plural: compositedfdsawsbuckets
+    kind: XAWSBucket
+    plural: xawsbuckets
   claimNames:
-    kind: DFDSAWSBucket
-    plural: dfdsawsbuckets
+    kind: awsbucket
+    plural: awsbuckets
 ```
 
 Next in the file, we should declare a version for our resource and lay out the schema:
 
 ```
-versions: 
+  versions: 
   - name: v1alpha1
     served: true
     referenceable: true
@@ -69,37 +87,26 @@ And make sure we end with making parameters required:
 
 ### Create a composition.yaml
 
-The file should be composed with the following section to define the composition. We will use dfdsawsbuckets as our example:
+The file should be composed with the following section to define the composition. We will continue to use bucket as our example:
 
 ```
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: compositedfdsawsbuckets.crossplane.dfds.cloud
+  name: xawsbuckets.storage.crossplane.dfds.cloud
   labels:
     provider: aws
 spec:
   compositeTypeRef:
-    apiVersion: crossplane.dfds.cloud/v1alpha1
-    kind: CompositeDFDSAWSBucket
+    apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+    kind: XAWSBucket
 ```
 
-Next in the file, we should define our patchsets. One for object-metadata which will fill in a name and labels from the supplied metadata when we deploy a resource and 
-reference the patchset from it. Also, one for the providerConfig which will automatically set the providerConfig reference to our convention of 
+Next in the file, we should define our patchsets. One for the providerConfig which will automatically set the providerConfig reference to our convention of 
 `[namespace]-[cloudprovider]`. I.e `default-aws` if the resource is deployed into the default namespace:
 
 ```
   patchSets:
-  - name: object-metadata
-    patches:
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.metadata.name    
-      policy:
-        fromFieldPath: Required       
-    - fromFieldPath: metadata.labels
-      toFieldPath: spec.forProvider.manifest.metadata.labels
-      policy:
-        fromFieldPath: Required
   - name: configname
     patches:
     - fromFieldPath: spec.claimRef.namespace    
@@ -112,75 +119,8 @@ reference the patchset from it. Also, one for the providerConfig which will auto
         fromFieldPath: Required
 ```
 
-We must then define our resources and any patches that apply to them. Firstly, our RBAC clusterrole and clusterrolebinding which allows for 
-appropriate multi-tenancy in our cluster. Change the rules as appropriate for the resource we are deploying. Here we are using the s3bucket as an example: 
+We must then define our resource for depoyment. Firstly, our bucket resource and also our rbac resource, which is our solution to work with multi-tenancy. 
 
-```
-resources:
-  - name: role
-    base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
-      spec:
-        forProvider:
-          manifest:
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: ClusterRole
-            metadata:
-              name: deployed-using-crossplane
-              labels:
-                managed-by: "crossplane"
-            rules:
-            - apiGroups: ["s3.aws.crossplane.io"]
-              resources: ["buckets"]
-              resourceNames: [ ]
-              verbs: ["get"]           
-        providerConfigRef:
-          name: kubernetes-provider        
-    patches:
-    - type: PatchSet
-      patchSetName: object-metadata
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
-    - type: ToCompositeFieldPath
-      fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.clusterrole" 
-
-  - name: rolebinding
-    base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
-      spec:
-        forProvider:
-          manifest:
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: ClusterRoleBinding
-            metadata:
-              name: placeholder
-            roleRef:
-              apiGroup: rbac.authorization.k8s.io
-              kind: ClusterRole
-              name: roleref
-            subjects:
-            - apiGroup: rbac.authorization.k8s.io
-              kind: Group
-              name: placeholder
-        providerConfigRef:
-          name: kubernetes-provider
-    patches:
-    - type: PatchSet
-      patchSetName: object-metadata    
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.roleRef.name
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.forProvider.manifest.subjects[0].name
-    - type: ToCompositeFieldPath
-      fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.clusterrolebinding"
-```
-
-Finally, we need our actual wrapped resource itself and apply the configname patchset and also a patch for all parameters from the definition 
-to the forProvider fields. In this case, our resource is a Bucket:
 
 ```
 - name: bucket
@@ -192,7 +132,36 @@ to the forProvider fields. In this case, our resource is a Bucket:
           locationConstraint: eu-west-1
     patches:
     - type: PatchSet
-      patchSetName: configname    
+      patchSetName: configname
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name          
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
+    - fromFieldPath: metadata.annotations[crossplane.io/composition-resource-name]
 ```
+
+Finally, we need to define our rbac resource. We need to pass the appropriate values from our bucket resource into the `resourceTypes` and `apiGroups` attributes. Our resourceType is `buckets`, which is a plural version of the `kind` and the API group for it is `s3.aws.crossplane.io` which we can get from `apiVersion` of the bucket resource.
+
+```
+resources:
+  - name: rbac
+    base:
+      apiVersion: crossplane.dfds.cloud/v1alpha1
+      kind: XRBAC
+      spec:
+        resourceTypes:
+        - buckets
+        apiGroups:
+        - s3.aws.crossplane.io
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace
+```
+
+### Create an example
+
+To test our composition, we should create an example(s) in the `examples\aws\[resource]` folder and provide the values we'd use to create the original resource. 
+We should then try to deploy these and confirm that it behaves as expected.
+
