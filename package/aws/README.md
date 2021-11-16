@@ -152,7 +152,6 @@ We must then define our resource for depoyment. Firstly, our bucket resource and
       toFieldPath: metadata.name          
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
-    - fromFieldPath: metadata.annotations[crossplane.io/composition-resource-name]
 ```
 
 Finally, we need to define our rbac resource. We need to pass the appropriate values from our bucket resource into the `resourceTypes` and `apiGroups` attributes. Our resourceType is `buckets`, which is a plural version of the `kind` and the API group for it is `s3.aws.crossplane.io` which we can get from `apiVersion` of the bucket resource.
