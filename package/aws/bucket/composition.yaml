@@ -31,11 +31,18 @@ spec:
         - buckets
         apiGroups: 
         - s3.aws.crossplane.io
-    patches:
+        providerConfigRef:
+          name: kubernetes-provider       
+    patches: 
     - fromFieldPath: metadata.name
       toFieldPath: spec.resourceName
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.resourceNamespace
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional    
 
   - name: bucket
     base:
@@ -51,4 +58,6 @@ spec:
       toFieldPath: metadata.name          
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
-    - fromFieldPath: metadata.annotations[crossplane.io/composition-resource-name]
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.bucket"      

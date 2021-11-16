@@ -11,7 +11,7 @@ spec:
   patchSets:
   - name: object-metadata
     patches:
-    - fromFieldPath: metadata.name
+    - fromFieldPath: spec.resourceName
       toFieldPath: spec.forProvider.manifest.metadata.name    
       policy:
         fromFieldPath: Required       
@@ -38,8 +38,6 @@ spec:
               resources: [ ]
               resourceNames: [ ]
               verbs: ["get"]
-        providerConfigRef:
-          name: kubernetes-provider
     patches:
     - type: PatchSet
       patchSetName: object-metadata
@@ -49,9 +47,13 @@ spec:
       toFieldPath: spec.forProvider.manifest.rules[0].resources
     - fromFieldPath: spec.resourceName
       toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
+    - fromFieldPath: spec.providerConfigRef.name
+      toFieldPath: spec.providerConfigRef.name
     - type: ToCompositeFieldPath
-      fromFieldPath: "metadata.name"
+      fromFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
       toFieldPath: "status.createdResources.clusterrole"
+      policy:
+        fromFieldPath: Optional 
 
   - name: rolebinding
     base:
@@ -77,10 +79,12 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: object-metadata    
-    - fromFieldPath: metadata.name
+    - fromFieldPath: spec.resourceName
       toFieldPath: spec.forProvider.manifest.roleRef.name
     - fromFieldPath: spec.resourceNamespace
       toFieldPath: spec.forProvider.manifest.subjects[0].name
     - type: ToCompositeFieldPath
-      fromFieldPath: "metadata.name"
+      fromFieldPath: spec.forProvider.manifest.roleRef.name
       toFieldPath: "status.createdResources.clusterrolebinding"
+      policy:
+        fromFieldPath: Optional       

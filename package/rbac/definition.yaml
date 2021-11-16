@@ -32,11 +32,21 @@ spec:
                 type: string            
               resourceNamespace:
                 type: string
+              providerConfigRef:
+                type: object
+                description: "A reference to the ProviderConfig of the cluster that services should be deployed to."
+                properties:
+                  name:
+                    type: string
+                    description: "Name of the Kubernetes provider configuration."
+                required:
+                - name
             required:
             - apiGroups
             - resourceTypes
             - resourceName
             - resourceNamespace
+            - providerConfigRef
           status:
             type: object
             properties:
