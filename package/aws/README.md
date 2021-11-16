@@ -21,6 +21,21 @@ resources but only view and manage the individual resources they have created. T
 Our solution is to have an rbac composite resource into which we can pass the resource type and API group, and also patch in the resource name. 
 This will create a clusterrole and clusterrole binding, with access to modify the created resource restricted to the creating namespace's group.
 
+```
+                                   ___________________________________
+                                   |                                  |
+                                   | _______________________________  |
+ _____________________             | |                              | |
+|                     |  <---------|-|--           RBAC             | |               ___________________
+|  ClusterRole        |            | |______________________________| |               |                  |
+|  ClusterRoleBinding |            | ________________________________ |  <----------- |  Dynamic Claim   |
+|_____________________|            | |                              | |               |__________________|
+                                   | |         AWS Resource         | |
+                                   | |______________________________| |
+                                   |        Composite Resource        |
+                                   |__________________________________|
+```
+
 ## Creating an RBAC Wrapper
 
 The process of creating an RBAC Wrapper for an AWS resource is as follows:
