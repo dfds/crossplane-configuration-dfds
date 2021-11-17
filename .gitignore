@@ -19,3 +19,6 @@
 
 # Credential files
 creds.conf
+
+# Config file
+*.config

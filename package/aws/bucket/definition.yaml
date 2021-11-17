@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: compositedfdsawsbuckets.crossplane.dfds.cloud
+  name: xawsbuckets.storage.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: dfdsawsbuckets.crossplane.dfds.cloud
-  group: crossplane.dfds.cloud
+    name: awsbuckets.storage.crossplane.dfds.cloud
+  group: storage.crossplane.dfds.cloud
   names:
-    kind: CompositeDFDSAWSBucket
-    plural: compositedfdsawsbuckets
+    kind: XAWSBucket
+    plural: xawsbuckets
   claimNames:
-    kind: DFDSAWSBucket
-    plural: dfdsawsbuckets
+    kind: AWSBucket
+    plural: awsbuckets
   versions: 
   - name: v1alpha1
     served: true
@@ -20,6 +20,20 @@ spec:
       openAPIV3Schema:
         type: object
         properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  bucket:
+                    description: Name of the provisioned bucket
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true                    
           spec:
             type: object
             properties:
