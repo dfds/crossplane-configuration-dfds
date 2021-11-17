@@ -167,6 +167,8 @@ resources:
         - buckets
         apiGroups:
         - s3.aws.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider        
     patches:
     - fromFieldPath: metadata.name
       toFieldPath: spec.resourceName
