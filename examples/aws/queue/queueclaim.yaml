@@ -1,0 +1,10 @@
+apiVersion: messaging.crossplane.dfds.cloud/v1alpha1
+kind: AWSQueue
+metadata:
+  name: sqstestdfdswrapper
+spec:
+  parameters:
+    region: eu-west-1
+  compositionSelector:
+    matchLabels:
+      provider: aws
