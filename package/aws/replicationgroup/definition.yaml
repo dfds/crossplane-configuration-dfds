@@ -1,0 +1,82 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawsreplicationgroups.cache.crossplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: awsreplicationgroups.cache.crossplane.dfds.cloud
+  group: cache.crossplane.dfds.cloud
+  names:
+    kind: XAWSReplicationGroup
+    plural: xawsreplicationgroups
+  claimNames:
+    kind: AWSReplicationGroup
+    plural: awsreplicationgroups
+  versions: 
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  bucket:
+                    description: Name of the provisioned replicationgroup
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  applyModificationsImmediately:
+                    description: "If true, this parameter causes the modifications
+                      in this request and any pending modifications to be applied,
+                      asynchronously and as soon as possible, regardless of the PreferredMaintenanceWindow
+                      setting for the replication group. \n If false, changes to the
+                      nodes in the replication group are applied on the next maintenance
+                      reboot, or the next failure reboot, whichever occurs first."
+                    type: boolean
+                  cacheNodeType:
+                    description: 'CacheNodeType specifies the compute and memory capacity
+                      of the nodes in the node group (shard). For a complete listing
+                      of node types and specifications, see: * Amazon ElastiCache
+                      Product Features and Details (http://aws.amazon.com/elasticache/details)
+                      * Cache Node Type-Specific Parameters for Memcached (http://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/ParameterGroups.Memcached.html#ParameterGroups.Memcached.NodeSpecific)
+                      * Cache Node Type-Specific Parameters for Redis (http://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/ParameterGroups.Redis.html#ParameterGroups.Redis.NodeSpecific)'
+                    type: string
+                  cacheSecurityGroupNameRefs:
+                    description: CacheSecurityGroupNameRefs are references to SecurityGroups
+                      used to set the CacheSecurityGroupNames.
+                    items:
+                      description: A Reference to a named object.
+                      properties:
+                        name:
+                          description: Name of the referenced object.
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    type: array
+                  engine:
+                    description: Engine is the name of the cache engine (memcached
+                      or redis) to be used for the clusters in this replication group.
+                    type: string
+                  replicationGroupDescription:
+                    description: ReplicationGroupDescription is the description for
+                      the replication group.
+                    type: string
+                  region:
+                    description: AWS Region.
+                    type: string
