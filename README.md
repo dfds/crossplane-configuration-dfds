@@ -21,7 +21,7 @@ The following are required in order to use the configuration package
 
 ## Installing the Configuration Package
 
-- Execute `kubectl crossplane install dfdsdk/dfds-infra` to get the latest version, or use a release tag to install a specific version
+- Execute `docker pull dfdsdk/dfds-infra && kubectl crossplane install provider dfdsdk/dfds-infra` to get the latest version, or use a release tag to install a specific version
 
 ## Upgrading the Configuration Package
 
