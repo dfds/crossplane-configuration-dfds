@@ -1,0 +1,52 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xrolepolicyattachment.identity.crossplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: rolepolicyattachment.identity.crossplane.dfds.cloud
+  group: identity.crossplane.dfds.cloud
+  names:
+    kind: XIAMRolePolicyAttachment
+    plural: xiamrolepolicyattachments
+  claimNames:
+    kind: IAMRolePolicyAttachment
+    plural: iamrolepolicyattachments
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        spec:
+          type: object
+          properties:
+            parameters:
+              type: object
+              properties:
+                policyArn:
+                  type: string
+                policyArnRef:
+                  type: object
+                policyArnSelector:
+                  type: object
+                  properties:
+                    matchControllerRef:
+                      type: boolean
+                    matchLabels:
+                      type: object
+                roleName:
+                  type: string
+                roleNameRef:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                roleNameSelector:
+                  type: object
+                  properties:
+                    matchControllerRef:
+                      type: boolean
+                    matchLabels:
+                      type: object

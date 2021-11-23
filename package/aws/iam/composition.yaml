@@ -1,0 +1,35 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xrolepolicyattachment.identity.crossplane.dfds.cloud
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: identity.crossplane.dfds.cloud/v1alpha1
+    kind: XIAMRolePolicyAttachment
+
+  patchSets:
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace    
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-aws"
+      policy:
+        fromFieldPath: Required    
+  
+  resources:
+    - name: iamRolePolicyAttachment
+      base:
+        apiVersion: identity.aws.crossplane.io/v1beta1
+        kind: IAMRolePolicyAttachment
+      patches:
+      - type: PatchSet
+        patchSetName: configname
+      - fromFieldPath: metadata.name
+        toFieldPath: metadata.name          
+      - fromFieldPath: spec.parameters
+        toFieldPath: spec.forProvider
