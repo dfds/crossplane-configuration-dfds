@@ -16,12 +16,29 @@ default VPC.
 The following are required in order to use the configuration package
 
 - A Kubernetes cluster
+- Crossplane installed through Helm
 - An AWS account with an IAM key and secret that has sufficient permissions to deploy resources
 - Crossplane CLI installed on local machine
 
+## Installing Crossplane
+
+```bash
+kubectl create namespace crossplane-system
+helm repo add crossplane-stable https://charts.crossplane.io/stable
+helm repo update
+helm install crossplane --namespace crossplane-system crossplane-stable/crossplane --version <version>
+```
+
 ## Installing the Configuration Package
 
-- Execute `docker pull dfdsdk/dfds-infra && kubectl crossplane install provider dfdsdk/dfds-infra` to get the latest version, or use a release tag to install a specific version
+- Execute `docker pull dfdsdk/dfds-infra && kubectl crossplane install configuration dfdsdk/dfds-infra` to get the latest version, or use a release tag to install a specific version:
+
+```bash
+kubectl crossplane install configuration dfdsdk/dfds-infra <tag>
+```
+
+You can find the list of tags at <https://hub.docker.com/repository/docker/dfdsdk/dfds-infra>
+
 
 ## Upgrading the Configuration Package
 
