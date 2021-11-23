@@ -38,7 +38,7 @@ stages:
               curl -sL https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh | CHANNEL=stable VERSION=${CROSSPLANE_VERSION} sh \
               && mv kubectl-crossplane /usr/local/bin
             displayName: Install Crossplane
-          
+
           - script: |
               cd package
               rm -f *.xpkg
@@ -54,7 +54,7 @@ stages:
             displayName: Docker login
 
           - script: |
-              export PACKAGEVERSION=`cut -d "/" -f3- <<< $(Build.SourceBranch)`
+              export PACKAGEVERSION=`sed s#/#-#g <<< $(Build.SourceBranch)`
               cd package
               kubectl crossplane push configuration dfdsdk/dfds-infra:$PACKAGEVERSION
             displayName: Push configuration
