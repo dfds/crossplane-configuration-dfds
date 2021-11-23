@@ -54,7 +54,7 @@ stages:
             displayName: Docker login
 
           - script: |
-              export PACKAGEVERSION=`sed s#/#-#g <<< $(Build.SourceBranch)`
+              export PACKAGEVERSION=`(sed s#/#-#g | sed s#refs-heads-##g) <<< $(Build.SourceBranch)`
               cd package
               kubectl crossplane push configuration dfdsdk/dfds-infra:$PACKAGEVERSION
             displayName: Push configuration
