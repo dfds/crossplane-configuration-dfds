@@ -49,6 +49,27 @@ The process of creating an RBAC Wrapper for an AWS resource is as follows:
 The resource folder must sit in the package//aws folder. The folder name must match the AWS resource name. 
 For example: `package/aws/bucket` for the `bucket` resource from provider-aws.
 
+### Naming conventions
+
+We use the following naming conventions in our RBAC Wrapper compositions.
+
+#### Namespace
+
+Our namespace must be [group].crossplane.dfds.cloud. [group] should be a generic descriptive category such as:
+
+- storage
+- networking
+- compute
+- messaging
+
+#### XRD
+
+Our Composite Resource Definitions should follow the naming of X[cloud][resource-name-defined-by-crossplane]. X stands for Composite. For example, if the resource is an AWS Bucket then the name of XAWSBucket. If the resource is an Azure Blob Storage Container then the name would be XAzureContainer. Apply the plural resource name where appropriate.
+
+#### Claim
+
+The claimNames for the resource should be the same as the XRD but with X omitted. Apply the plural resource name where appropriate.
+
 ### Create a definition.yaml
 
 The file should be defined with the following section to define the name of the resources. We will use Bucket as 
@@ -91,13 +112,13 @@ Next in the file, we should declare a version for our resource and lay out the s
 ```
 
 We should then add properties of the resources under the third `properties:` we defined above. We can copy and paste 
-these from the source code of the resource in aws-provider (using the desired release tag). For example, `https://raw.githubusercontent.com/crossplane/provider-aws/v0.20.1/package/crds/s3.aws.crossplane.io_buckets.yaml` and copy the forProvider.properties
+these from the source code of the resource in aws-provider (using the desired release tag). For example, https://raw.githubusercontent.com/crossplane/provider-aws/v0.20.1/package/crds/s3.aws.crossplane.io_buckets.yaml and copy the forProvider.properties. The full list of resource source code can be found here: https://github.com/crossplane/provider-aws/tree/v0.20.1/package/crds
 
-And make sure we end with making parameters required:
+And make sure we end with making the required parameters from the raw resource required in our XRD:
 
 ```
-            required:
-            - parameters
+                required:
+                - locationConstraint
 ```
 
 ### Create a composition.yaml
@@ -138,7 +159,8 @@ We must then define our resource for depoyment. Firstly, our bucket resource and
 
 
 ```
-- name: bucket
+  resources:
+  - name: bucket
     base:
       apiVersion: s3.aws.crossplane.io/v1beta1
       kind: Bucket
@@ -147,34 +169,42 @@ We must then define our resource for depoyment. Firstly, our bucket resource and
           locationConstraint: eu-west-1
     patches:
     - type: PatchSet
-      patchSetName: configname
-    - fromFieldPath: metadata.name
-      toFieldPath: metadata.name          
+      patchSetName: configname   
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.bucket"     
 ```
+Note that the patches apply our configname patchset from above. In addition, we patch the parameters defined in our definition.yaml through to this resource type by applying it to spec.forProvider. We also produce a status output that will show the raw resource name when you describe the XRD.
 
 Finally, we need to define our rbac resource. We need to pass the appropriate values from our bucket resource into the `resourceTypes` and `apiGroups` attributes. Our resourceType is `buckets`, which is a plural version of the `kind` and the API group for it is `s3.aws.crossplane.io` which we can get from `apiVersion` of the bucket resource.
 
 ```
-resources:
   - name: rbac
     base:
       apiVersion: crossplane.dfds.cloud/v1alpha1
       kind: XRBAC
       spec:
-        resourceTypes:
+        resourceTypes: 
         - buckets
-        apiGroups:
+        apiGroups: 
         - s3.aws.crossplane.io
         providerConfigRef:
-          name: kubernetes-provider        
-    patches:
+          name: kubernetes-provider       
+    patches: 
     - fromFieldPath: metadata.name
       toFieldPath: spec.resourceName
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.resourceNamespace
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional    
 ```
+
+Note that our patches pass resource name and namespace values through from our claim to the XRBAC resource.
 
 ### Create an example
 
