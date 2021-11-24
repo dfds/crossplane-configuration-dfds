@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawssecuritygroups.ec2.crossplane.dfds.cloud
+  name: xawssecuritygroups.network.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awssecuritygroups.ec2.crossplane.dfds.cloud
-  group: ec2.crossplane.dfds.cloud
+    name: awssecuritygroups.network.crossplane.dfds.cloud
+  group: network.crossplane.dfds.cloud
   names:
     kind: XAWSSecurityGroup
     plural: xawssecuritygroups

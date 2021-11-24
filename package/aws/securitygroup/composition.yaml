@@ -1,12 +1,12 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawssecuritygroups.ec2.crossplane.dfds.cloud
+  name: xawssecuritygroups.network.crossplane.dfds.cloud
   labels:
     provider: aws
 spec:
   compositeTypeRef:
-    apiVersion: ec2.crossplane.dfds.cloud/v1alpha1
+    apiVersion: network.crossplane.dfds.cloud/v1alpha1
     kind: XAWSSecurityGroup
 
   patchSets:

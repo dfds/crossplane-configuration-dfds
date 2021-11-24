@@ -1,4 +1,4 @@
-apiVersion: ec2.crossplane.dfds.cloud/v1alpha1
+apiVersion: network.crossplane.dfds.cloud/v1alpha1
 kind: AWSSecurityGroup
 metadata:
   name: securitygrouptestdfdswrapper
