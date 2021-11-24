@@ -418,3 +418,8 @@ spec:
                       must specify TransitEncryptionEnabled as true, an AuthToken,
                       and a CacheSubnetGroup."
                     type: boolean
+                required:
+                - applyModificationsImmediately
+                - cacheNodeType
+                - engine
+                - replicationGroupDescription
