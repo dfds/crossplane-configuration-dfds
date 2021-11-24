@@ -1,0 +1,58 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xawsreplicationgroups.cache.crossplane.dfds.cloud
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: cache.crossplane.dfds.cloud/v1alpha1
+    kind: XAWSReplicationGroup
+  patchSets:
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace    
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-aws"
+      policy:
+        fromFieldPath: Required
+  resources:
+  - name: rbac
+    base:
+      apiVersion: crossplane.dfds.cloud/v1alpha1
+      kind: XRBAC
+      spec:
+        resourceTypes: 
+        - replicationgroups
+        apiGroups: 
+        - cache.aws.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider       
+    patches: 
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional    
+
+  - name: replicationgroup
+    base:
+      apiVersion: cache.aws.crossplane.io/v1beta1
+      kind: ReplicationGroup
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name          
+    - fromFieldPath: spec.parameters
+      toFieldPath: spec.forProvider
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.replicationgroup"      

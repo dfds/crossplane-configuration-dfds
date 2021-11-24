@@ -1,7 +1,7 @@
 apiVersion: crossplane.dfds.cloud/v1alpha1
 kind: SqlDatabaseInstance
 metadata:
-  namespace: default
+  namespace: my-namespace
   name: dynamic-claim-sql-nonprod-example
 spec:
   parameters:
