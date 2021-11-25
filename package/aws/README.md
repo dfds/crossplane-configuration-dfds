@@ -64,7 +64,7 @@ Our namespace must be [group].crossplane.dfds.cloud. [group] should be a generic
 
 #### XRD
 
-Our Composite Resource Definitions should follow the naming of X[cloud][resource-name-defined-by-crossplane]. X stands for Composite. For example, if the resource is an AWS Bucket then the name of XAWSBucket. If the resource is an Azure Blob Storage Container then the name would be XAzureContainer. Apply the plural resource name where appropriate.
+Our Composite Resource Definitions should follow the naming of X[vendor-name][resource-name-defined-by-crossplane]. X stands for Composite. For example, if the resource is an AWS Bucket then the name of XAWSBucket. If the resource is an Azure Blob Storage Container then the name would be XAzureContainer. Apply the plural resource name where appropriate.
 
 #### Claim
 
@@ -112,7 +112,8 @@ Next in the file, we should declare a version for our resource and lay out the s
 ```
 
 We should then add properties of the resources under the third `properties:` we defined above. We can copy and paste 
-these from the source code of the resource in aws-provider (using the desired release tag). For example, https://raw.githubusercontent.com/crossplane/provider-aws/v0.20.1/package/crds/s3.aws.crossplane.io_buckets.yaml and copy the forProvider.properties. The full list of resource source code can be found here: https://github.com/crossplane/provider-aws/tree/v0.20.1/package/crds
+these from the source code of the resource in aws-provider (using the desired release tag). For example, https://raw.githubusercontent.com/crossplane/provider-aws/master/package/crds/s3.aws.crossplane.io_buckets.yaml and copy the forProvider.properties. The full list of resource source code can be found here: https://github.com/crossplane/provider-aws/tree/master/package/crds (make sure to select the correct tag for our current version specified in 
+`package/crossplane.yaml` from the github dropdown)
 
 And make sure we end with making the required parameters from the raw resource required in our XRD:
 
