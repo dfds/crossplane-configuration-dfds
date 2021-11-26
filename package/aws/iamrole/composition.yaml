@@ -1,0 +1,58 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xawsiamroles.identity.crossplane.dfds.cloud
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: identity.crossplane.dfds.cloud/v1alpha1
+    kind: XAWSIAMRole
+  patchSets:
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-aws"
+      policy:
+        fromFieldPath: Required
+  resources:
+  - name: iamrole
+    base:
+      apiVersion: identity.aws.crossplane.io/v1beta1
+      kind: IAMRole
+      spec:
+        forProvider:
+          locationConstraint: eu-west-1
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: spec.parameters
+      toFieldPath: spec.forProvider
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.iamrole"
+  - name: rbac
+    base:
+      apiVersion: crossplane.dfds.cloud/v1alpha1
+      kind: XRBAC
+      spec:
+        resourceTypes:
+        - iamroles
+        apiGroups:
+        - identity.aws.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional
