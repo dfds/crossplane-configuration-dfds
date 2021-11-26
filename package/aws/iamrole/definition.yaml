@@ -12,7 +12,7 @@ spec:
   claimNames:
     kind: AWSIAMRole
     plural: awsiamroles
-versions:
+  versions:
   - name: v1alpha1
     served: true
     referenceable: true
