@@ -9,6 +9,3 @@ spec:
   compositionSelector:
     matchLabels:
       provider: aws
-  
-  writeConnectionSecretToRef:
-    name: dynamic-claim-sql-nonprod-example-secret
