@@ -125,7 +125,7 @@ spec:
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy  
       
-  - name: rdinstance
+  - name: rdsinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
       kind: RDSInstance
@@ -135,18 +135,21 @@ spec:
           vpcSecurityGroupIDSelector:
             matchControllerRef: true
         writeConnectionSecretToRef:
-          namespace: crossplane-system
+            namespace: crossplane-system
+            name: rdsinstance
     patches:
     - type: PatchSet
       patchSetName: configname    
     - fromFieldPath: metadata.name
       toFieldPath: metadata.name    
-    - fromFieldPath: "metadata.uid"
+    - fromFieldPath: "spec.claimRef.name"
       toFieldPath: "spec.writeConnectionSecretToRef.name"
       transforms:
       - type: string
         string:
-          fmt: "%s-databaseserver"
+          fmt: "%s-connection"
+    - fromFieldPath: "spec.claimRef.namespace"
+      toFieldPath: "spec.writeConnectionSecretToRef.namespace"
     - fromFieldPath: "spec.parameters.databaseEngine"
       toFieldPath: "spec.forProvider.engine"
     - fromFieldPath: "spec.parameters.databaseEngineVersion"
@@ -237,4 +240,3 @@ spec:
     - type: MatchString
       fieldPath: "status.atProvider.dbInstanceStatus"
       matchString: "available"
-  writeConnectionSecretsToNamespace: crossplane-system

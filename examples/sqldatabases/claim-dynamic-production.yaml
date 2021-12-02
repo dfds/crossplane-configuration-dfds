@@ -1,7 +1,7 @@
 apiVersion: crossplane.dfds.cloud/v1alpha1
 kind: SqlDatabaseInstance
 metadata:
-  namespace: default
+  namespace: my-namespace
   name: dynamic-claim-sql-prod-example
 spec:
   parameters:
@@ -11,6 +11,3 @@ spec:
   compositionSelector:
     matchLabels:
       provider: aws
-  
-  writeConnectionSecretToRef:
-    name: dynamic-claim-sql-prod-example-secret
