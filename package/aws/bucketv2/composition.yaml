@@ -1,0 +1,53 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xawsbuckets.storage.crossplane.dfds.cloud
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: storage.crossplane.dfds.cloud/v1alpha2
+    kind: XAWSBucket
+
+  patchSets:
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace    
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-aws"
+      policy:
+        fromFieldPath: Required
+
+  resources:
+  - name: bucket
+    base:
+      apiVersion: s3.aws.crossplane.io/v1beta1
+      kind: Bucket
+      spec:
+        forProvider:
+          locationConstraint: eu-west-1
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name          
+
+    # - fromFieldPath: spec.parameters # v1
+    #   toFieldPath: spec.forProvider 
+
+    - type: ToCompositeFieldPath
+      fromFieldPath: "metadata.name"
+      toFieldPath: "status.createdResources.bucket"
+
+    - fromFieldPath: "spec.parameters.region" # v2
+      toFieldPath: "spec.forProvider.locationConstraint"
+      transforms:
+      - type: map
+        map:
+          ireland: eu-west-1
+          germany: eu-central-1
+    - fromFieldPath: "spec.parameters.acl" # v2
+      toFieldPath: "spec.forProvider.acl"         

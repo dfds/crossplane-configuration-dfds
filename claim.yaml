@@ -1,0 +1,39 @@
+apiVersion: v1
+items:
+- apiVersion: storage.crossplane.dfds.cloud/v1alpha2
+  kind: AWSBucket
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"storage.crossplane.dfds.cloud/v1alpha1","kind":"AWSBucket","metadata":{"annotations":{},"name":"s3testsamdiv1","namespace":"default"},"spec":{"compositionSelector":{"matchLabels":{"provider":"aws"}},"parameters":{"acl":"public-read","locationConstraint":"eu-west-1"}}}
+    creationTimestamp: "2021-12-02T08:18:33Z"
+    finalizers:
+    - finalizer.apiextensions.crossplane.io
+    generation: 2
+    name: s3testsamdiv1
+    namespace: default
+    resourceVersion: "584426"
+    uid: 60805898-7785-4892-bf47-a8ce4a61d680
+  spec:
+    compositionSelector:
+      matchLabels:
+        provider: aws
+    compositionUpdatePolicy: Automatic
+    parameters:
+      acl: public-read
+    resourceRef:
+      apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+      kind: XAWSBucket
+      name: s3testsamdiv1-nnkrd
+  status:
+    conditions:
+    - lastTransitionTime: "2021-12-02T08:19:03Z"
+      reason: Available
+      status: "True"
+      type: Ready
+    createdResources:
+      bucket: s3testsamdiv1-nnkrd
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

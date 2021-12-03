@@ -1,0 +1,14 @@
+apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+kind: AWSBucket
+metadata: 
+  name: s3testsamdiv1
+  namespace: default
+spec:
+  # compositionUpdatePolicy: Manual
+
+  parameters:
+    locationConstraint: eu-west-1
+    acl: public-read
+  compositionSelector:
+    matchLabels:
+      provider: aws

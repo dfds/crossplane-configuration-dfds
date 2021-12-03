@@ -1,0 +1,81 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apiextensions.crossplane.io/v1","kind":"Composition","metadata":{"annotations":{},"labels":{"provider":"aws"},"name":"xawsbuckets.storage.crossplane.dfds.cloud"},"spec":{"compositeTypeRef":{"apiVersion":"storage.crossplane.dfds.cloud/v1alpha2","kind":"XAWSBucket"},"patchSets":[{"name":"configname","patches":[{"fromFieldPath":"spec.claimRef.namespace","policy":{"fromFieldPath":"Required"},"toFieldPath":"spec.providerConfigRef.name","transforms":[{"string":{"fmt":"%s-aws"},"type":"string"}]}]}],"resources":[{"base":{"apiVersion":"crossplane.dfds.cloud/v1alpha1","kind":"XRBAC","spec":{"apiGroups":["s3.aws.crossplane.io"],"providerConfigRef":{"name":"kubernetes-provider"},"resourceTypes":["buckets"]}},"name":"rbac","patches":[{"fromFieldPath":"metadata.name","toFieldPath":"spec.resourceName"},{"fromFieldPath":"spec.claimRef.namespace","toFieldPath":"spec.resourceNamespace"},{"fromFieldPath":"status.createdResources","policy":{"fromFieldPath":"Optional"},"toFieldPath":"status.createdResources.rbac","type":"ToCompositeFieldPath"}]},{"base":{"apiVersion":"s3.aws.crossplane.io/v1beta1","kind":"Bucket","spec":{"forProvider":{"locationConstraint":"eu-west-1"}}},"name":"bucket","patches":[{"patchSetName":"configname","type":"PatchSet"},{"fromFieldPath":"metadata.name","toFieldPath":"metadata.name"},{"fromFieldPath":"spec.parameters","toFieldPath":"spec.forProvider"},{"fromFieldPath":"metadata.name","toFieldPath":"status.createdResources.bucket","type":"ToCompositeFieldPath"},{"fromFieldPath":"spec.parameters.region","toFieldPath":"spec.forProvider.region","transforms":[{"map":{"germany":"eu-central-1","ireland":"eu-west-1"},"type":"map"}]}]}]}}
+  creationTimestamp: "2021-12-01T09:43:54Z"
+  generation: 6
+  labels:
+    provider: aws
+  name: xawsbuckets.storage.crossplane.dfds.cloud
+  resourceVersion: "526738"
+  uid: 27341bb1-5c8a-4797-8918-812ea412f25f
+spec:
+  compositeTypeRef:
+    apiVersion: storage.crossplane.dfds.cloud/v1alpha2
+    kind: XAWSBucket
+  patchSets:
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace
+      policy:
+        fromFieldPath: Required
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - string:
+          fmt: '%s-aws'
+          type: Format
+        type: string
+      type: FromCompositeFieldPath
+  resources:
+  - base:
+      apiVersion: crossplane.dfds.cloud/v1alpha1
+      kind: XRBAC
+      spec:
+        apiGroups:
+        - s3.aws.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider
+        resourceTypes:
+        - buckets
+    name: rbac
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+      type: FromCompositeFieldPath
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace
+      type: FromCompositeFieldPath
+    - fromFieldPath: status.createdResources
+      policy:
+        fromFieldPath: Optional
+      toFieldPath: status.createdResources.rbac
+      type: ToCompositeFieldPath
+  - base:
+      apiVersion: s3.aws.crossplane.io/v1beta1
+      kind: Bucket
+      spec:
+        forProvider:
+          locationConstraint: eu-west-1
+    name: bucket
+    patches:
+    - patchSetName: configname
+      type: PatchSet
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name
+      type: FromCompositeFieldPath
+    - fromFieldPath: spec.parameters
+      toFieldPath: spec.forProvider
+      type: FromCompositeFieldPath
+    - fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.bucket
+      type: ToCompositeFieldPath
+    - fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.region
+      transforms:
+      - map:
+          germany: eu-central-1
+          ireland: eu-west-1
+        type: map
+      type: FromCompositeFieldPath

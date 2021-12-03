@@ -1,0 +1,11 @@
+apiVersion: storage.crossplane.dfds.cloud/v1alpha2
+kind: AWSBucket
+metadata:
+  name: s3testsamdiv21
+  namespace: default
+spec:
+  parameters:
+    region: ireland
+  compositionSelector:
+    matchLabels:
+      provider: aws

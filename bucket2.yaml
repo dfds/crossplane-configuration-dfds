@@ -1,0 +1,46 @@
+apiVersion: s3.aws.crossplane.io/v1beta1
+kind: Bucket
+metadata:
+  annotations:
+    crossplane.io/composition-resource-name: bucket
+    crossplane.io/external-name: s3testsamdiv2-6gfzz
+  creationTimestamp: "2021-12-01T13:08:32Z"
+  finalizers:
+  - finalizer.managedresource.crossplane.io
+  generateName: s3testsamdiv2-6gfzz-
+  generation: 2
+  labels:
+    crossplane.io/claim-name: s3testsamdiv2
+    crossplane.io/claim-namespace: default
+    crossplane.io/composite: s3testsamdiv2-6gfzz
+  name: s3testsamdiv2-6gfzz
+  ownerReferences:
+  - apiVersion: storage.crossplane.dfds.cloud/v1alpha2
+    controller: true
+    kind: XAWSBucket
+    name: s3testsamdiv2-6gfzz
+    uid: 0b77988a-0189-4010-b709-5221b0278acc
+  resourceVersion: "545557"
+  uid: 82b6ee5e-8d7c-432f-bd1c-a7f3aaf732fb
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    locationConstraint: eu-west-1
+    paymentConfiguration:
+      payer: BucketOwner
+  providerConfigRef:
+    name: default-aws
+status:
+  atProvider:
+    arn: arn:aws:s3:::s3testsamdiv2-6gfzz
+  conditions:
+  - lastTransitionTime: "2021-12-01T13:08:33Z"
+    reason: Creating
+    status: "False"
+    type: Ready
+  - lastTransitionTime: "2021-12-01T13:11:19Z"
+    message: "observe failed: MissingSecurityHeader: Your request was missing a required
+      header\n\tstatus code: 400, request id: CZM4PJ9NK3P422C4, host id: hKHI54sW5xHED/sUKoxapTrWrCTPbmnHHt1dIDC+b5tCCGFqNBGSxUAdFrhPhv3zV95y8pyNabQ="
+    reason: ReconcileError
+    status: "False"
+    type: Synced
