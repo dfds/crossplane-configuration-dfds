@@ -48,3 +48,15 @@ https://crossplane.io/docs/v1.4/reference/composition.html
 
 
 helm --namespace crossplane-system upgrade crossplane crossplane-stable/crossplane --version 1.4 --set args='{--enable-composition-revisions}'
+
+
+
+
+# if this is not true => cannot delete resource in v1! How to upgrade existing resource to latest if possible?
+
+    #1 New change to API result in bumping version in XRD and will result in composition changed to to use it
+    # Create resources
+    #2 Ensure existing resource work under the existing APIv1 (Need to preserve API + impementation)
+    #3 Ensure APIv1 resources can be deleted from cluster when needed
+    #4 Ensure new resources provisioned using new APIv2 (API+implementation)
+    

@@ -14,8 +14,8 @@ spec:
     plural: awsbuckets
   versions: 
   - name: v1alpha2
-    served: true
-    referenceable: true
+    served: false
+    referenceable: false
     schema:
       openAPIV3Schema:
         type: object
@@ -49,7 +49,7 @@ spec:
                     type: string
   - name: v1alpha1
     served: true
-    referenceable: false
+    referenceable: true
     schema:
       openAPIV3Schema:
         type: object

@@ -1,10 +1,8 @@
 apiVersion: storage.crossplane.dfds.cloud/v1alpha1
 kind: AWSBucket
-metadata: # copy-dotcom-dev
-  name: s3testdfdswrapperv1
+metadata: 
+  name: s3testsamdiv1
   namespace: default
-  annotations:
-    crossplane.io/external-name: copy-bucket1
 spec:
   parameters:
     locationConstraint: eu-west-1
@@ -12,3 +10,6 @@ spec:
   compositionSelector:
     matchLabels:
       provider: aws
+
+
+  # compositionUpdatePolicy: Manual

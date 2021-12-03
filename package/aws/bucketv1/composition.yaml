@@ -6,7 +6,7 @@ metadata:
     provider: aws
 spec:
   compositeTypeRef:
-    apiVersion: storage.crossplane.dfds.cloud/v1alpha2
+    apiVersion: storage.crossplane.dfds.cloud/v1alpha1 # v1
     kind: XAWSBucket
 
   patchSets:
@@ -33,16 +33,9 @@ spec:
     - type: PatchSet
       patchSetName: configname
     - fromFieldPath: metadata.name
-      toFieldPath: metadata.name
+      toFieldPath: metadata.name          
+    - fromFieldPath: spec.parameters # v1
+      toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
       toFieldPath: "status.createdResources.bucket"
-    - fromFieldPath: "spec.parameters.region" # v2
-      toFieldPath: "spec.forProvider.locationConstraint"
-      transforms:
-      - type: map
-        map:
-          ireland: eu-west-1
-          germany: eu-central-1
-    - fromFieldPath: "spec.parameters.acl" # v2
-      toFieldPath: "spec.forProvider.acl"         
