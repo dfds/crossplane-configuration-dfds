@@ -28,7 +28,7 @@ spec:
       kind: XRBAC
       spec:
         resourceTypes:
-        - iamrolepolices
+        - iamrolepolicyattachments
         apiGroups:
         - identity.aws.crossplane.io
         providerConfigRef:
