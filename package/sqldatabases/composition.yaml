@@ -123,15 +123,9 @@ spec:
       fromFieldPath: "metadata.name"
       toFieldPath: "status.createdResources.securitygroup"
     - fromFieldPath: spec.parameters.deletionPolicy
-<<<<<<< HEAD
       toFieldPath: spec.deletionPolicy
 
-  - name: rdinstance
-=======
-      toFieldPath: spec.deletionPolicy  
-      
   - name: rdsinstance
->>>>>>> 962c3e39a8de92e678ae917f584955a68999a70e
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
       kind: RDSInstance
@@ -147,13 +141,8 @@ spec:
     - type: PatchSet
       patchSetName: configname
     - fromFieldPath: metadata.name
-<<<<<<< HEAD
       toFieldPath: metadata.name
-    - fromFieldPath: "metadata.uid"
-=======
-      toFieldPath: metadata.name    
     - fromFieldPath: "spec.claimRef.name"
->>>>>>> 962c3e39a8de92e678ae917f584955a68999a70e
       toFieldPath: "spec.writeConnectionSecretToRef.name"
       transforms:
       - type: string
