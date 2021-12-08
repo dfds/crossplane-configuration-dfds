@@ -9,16 +9,6 @@ spec:
     apiVersion: crossplane.dfds.cloud/v1alpha1
     kind: CompositeECR
   patchSets:
-  - name: object-metadata
-    patches:
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.metadata.name
-      policy:
-        fromFieldPath: Required
-    - fromFieldPath: metadata.labels
-      toFieldPath: spec.forProvider.manifest.metadata.labels
-      policy:
-        fromFieldPath: Required
   - name: configname
     patches:
     - fromFieldPath: spec.claimRef.namespace
@@ -26,70 +16,31 @@ spec:
       transforms:
       - type: string
         string:
-          fmt: "%s-aws"
+            fmt: "%s-aws"
       policy:
         fromFieldPath: Required
   resources:
-  - name: role
+  - name: rbac
     base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
+      apiVersion: crossplane.dfds.cloud/v1alpha1
+      kind: XRBAC
       spec:
-        forProvider:
-          manifest:
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: ClusterRole
-            metadata:
-              name: deployed-using-crossplane
-              labels:
-                managed-by: crossplane
-            rules:
-            - apiGroups: ["ecr.aws.crossplane.io"]
-              resources: ["repositorypolicy", "repository"]
-              resourceNames: [ ]
-              verbs: ["get"]
+        resourceTypes:
+        - repositories
+        apiGroups:
+        - ecr.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:
-    - type: PatchSet
-      patchSetName: object-metadata
     - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
-    - type: ToCompositeFieldPath
-      fromFieldPath: metadata.name
-      toFieldPath: status.createdResources.clusterrole
-
-  - name: rolebinding
-    base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
-      spec:
-        forProvider:
-          manifest:
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: ClusterRoleBinding
-            metadata:
-              name: placeholder
-            roleRef:
-              apiGroup: rbac.authorization.k8s.io
-              kind: ClusterRole
-              name: roleref
-            subjects:
-            - apiGroup: rbac.authorization.k8s.io
-              kind: Group
-              name: placeholder
-        providerConfigRef:
-          name: kubernetes-provider
-    patches:
-    - type: PatchSet
-      patchSetName: object-metadata
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.roleRef.name
+      toFieldPath: spec.resourceName
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.forProvider.manifest.subjects[0].name
+      toFieldPath: spec.resourceNamespace
     - type: ToCompositeFieldPath
-      fromFieldPath: metadata.name
-      toFieldPath: status.createdResources.clusterrolebinding
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional
 
   - name: ecr
     base:
@@ -127,7 +78,7 @@ spec:
                 principal:
                   awsPrincipals:
                     - iamRoleArn: arn:aws:iam::738063116313:root
-                action: ["ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage","ecr:BatchCheckLayerAvailability"]
+                action: ["ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage", "ecr:BatchCheckLayerAvailability"]
             version: 2008-10-17
     patches:
     - type: PatchSet

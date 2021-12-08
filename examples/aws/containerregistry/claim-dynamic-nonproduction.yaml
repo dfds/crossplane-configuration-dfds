@@ -1,7 +1,7 @@
 apiVersion: crossplane.dfds.cloud/v1alpha1
 kind: ECR
 metadata:
-  namespace: default
+  namespace: my-namespace
   name: dynamic-claim-ecr-example
 spec:
   parameters:
