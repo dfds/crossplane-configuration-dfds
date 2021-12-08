@@ -22,3 +22,6 @@ creds.conf
 
 # Makefile
 Makefile
+
+# Config file
+*.config

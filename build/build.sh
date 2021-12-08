@@ -10,6 +10,7 @@ kubectl delete configuration.pkg dfdsdk-dfds-infra
 
 cd ../package
 rm -f *.xpkg
+kubectl delete configuration.pkg dfdsdk-dfds-infra
 kubectl crossplane build configuration
 kubectl crossplane push configuration $repo:$tag
 kubectl crossplane install configuration $repo:$tag

@@ -1,0 +1,12 @@
+apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+kind: AWSBucket
+metadata:
+  name: s3testdfdswrapper
+  namespace: dynamic-forms-dxp-enxjg
+spec:
+  parameters:
+    locationConstraint: eu-west-1
+    acl: public-read
+  compositionSelector:
+    matchLabels:
+      provider: aws
