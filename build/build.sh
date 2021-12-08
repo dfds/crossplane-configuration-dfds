@@ -4,7 +4,7 @@
 
 # Replace the following variables with your docker repo and desired tag
 repo=dfdsdk/dfds-infra
-tag=wicar
+tag=myversion
 
 cd ../package
 rm -f *.xpkg
