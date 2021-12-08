@@ -1,0 +1,8 @@
+apiVersion: identity.crossplane.dfds.cloud/v1alpha1
+kind: IAMRolePolicyAttachment
+metadata:
+  name: s3-readonly
+spec:
+  parameters:
+    policyArn: arn:aws:iam::000000000000:policy/s3-bucket-read-all
+    roleName: crossplane-s3-readall    
