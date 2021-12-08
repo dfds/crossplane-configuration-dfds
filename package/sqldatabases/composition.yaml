@@ -12,16 +12,16 @@ spec:
   - name: object-metadata
     patches:
     - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.metadata.name    
+      toFieldPath: spec.forProvider.manifest.metadata.name
       policy:
-        fromFieldPath: Required       
+        fromFieldPath: Required
     - fromFieldPath: metadata.labels
       toFieldPath: spec.forProvider.manifest.metadata.labels
       policy:
         fromFieldPath: Required
   - name: configname
     patches:
-    - fromFieldPath: spec.claimRef.namespace    
+    - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.providerConfigRef.name
       transforms:
       - type: string
@@ -51,9 +51,9 @@ spec:
             - apiGroups: ["database.aws.crossplane.io"]
               resources: ["rdsinstances"]
               resourceNames: [ ]
-              verbs: ["get"]              
+              verbs: ["get"]
         providerConfigRef:
-          name: kubernetes-provider        
+          name: kubernetes-provider
     patches:
     - type: PatchSet
       patchSetName: object-metadata
@@ -63,7 +63,7 @@ spec:
       toFieldPath: spec.forProvider.manifest.rules[1].resourceNames[0]
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.clusterrole" 
+      toFieldPath: "status.createdResources.clusterrole"
 
   - name: rolebinding
     base:
@@ -88,7 +88,7 @@ spec:
           name: kubernetes-provider
     patches:
     - type: PatchSet
-      patchSetName: object-metadata    
+      patchSetName: object-metadata
     - fromFieldPath: metadata.name
       toFieldPath: spec.forProvider.manifest.roleRef.name
     - fromFieldPath: spec.claimRef.namespace
@@ -114,7 +114,7 @@ spec:
                   description: postgresql
     patches:
     - type: PatchSet
-      patchSetName: configname    
+      patchSetName: configname
     - fromFieldPath: metadata.name
       toFieldPath: metadata.name
     - fromFieldPath: metadata.name
@@ -123,8 +123,8 @@ spec:
       fromFieldPath: "metadata.name"
       toFieldPath: "status.createdResources.securitygroup"
     - fromFieldPath: spec.parameters.deletionPolicy
-      toFieldPath: spec.deletionPolicy  
-      
+      toFieldPath: spec.deletionPolicy
+
   - name: rdsinstance
     base:
       apiVersion: database.aws.crossplane.io/v1beta1
@@ -139,9 +139,9 @@ spec:
             name: rdsinstance
     patches:
     - type: PatchSet
-      patchSetName: configname    
+      patchSetName: configname
     - fromFieldPath: metadata.name
-      toFieldPath: metadata.name    
+      toFieldPath: metadata.name
     - fromFieldPath: "spec.claimRef.name"
       toFieldPath: "spec.writeConnectionSecretToRef.name"
       transforms:
@@ -199,10 +199,10 @@ spec:
       toFieldPath: "spec.forProvider.finalDBSnapshotIdentifier"
     - type: CombineFromComposite
       combine:
-        variables: 
-          - fromFieldPath: spec.parameters.instanceClass          
-          - fromFieldPath: spec.parameters.instanceSize 
-        strategy: string        
+        variables:
+          - fromFieldPath: spec.parameters.instanceClass
+          - fromFieldPath: spec.parameters.instanceSize
+        strategy: string
         string:
           fmt: "%s-%s"
       toFieldPath: spec.forProvider.dbInstanceClass
@@ -220,14 +220,14 @@ spec:
           memory-large: db.r6g.2xlarge
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.rdsinstance"  
+      toFieldPath: "status.createdResources.rdsinstance"
     - type: ToCompositeFieldPath
       fromFieldPath: status.conditions
       toFieldPath: status.dbInstanceConditions
       policy:
-        fromFieldPath: Optional          
+        fromFieldPath: Optional
     - fromFieldPath: spec.parameters.deletionPolicy
-      toFieldPath: spec.deletionPolicy  
+      toFieldPath: spec.deletionPolicy
     connectionDetails:
     - fromConnectionSecretKey: username
     - fromConnectionSecretKey: password

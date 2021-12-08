@@ -1,0 +1,85 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: compositeecrs.crossplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: compositeecrs.crossplane.dfds.cloud
+  group: crossplane.dfds.cloud
+  names:
+    kind: CompositeECR
+    plural: compositeecrs
+  claimNames:
+    kind: ECR
+    plural: ecrs
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  enableSecurityScanOnPush:
+                    description: Enable image security scan on push.
+                    type: boolean
+                    default: false
+                  mutability:
+                    description: Allow for mutable tags, i.e. tags can be overwritten.
+                    type: string
+                    enum: ["MUTABLE", "IMMUTABLE"]
+                    default: "IMMUTABLE"
+                  region:
+                    description: Geographic location of resources.
+                    type: string
+                    enum: ["eu-west-1", "eu-central-1"]
+                    default: "eu-west-1"
+                  deletionPolicy:
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                required:
+                - region
+                - mutability
+                - enableSecurityScanOnPush
+            required:
+            - parameters
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  repository:
+                    description: Name of the provisioned repository
+                    type: string
+                  repositorypolicy:
+                    description: Name of the provisioned repositorypolicy
+                    type: string
+                  clusterrole:
+                    description: Name of the provisioned clusterrole
+                    type: string
+                  clusterrolebinding:
+                    description: Name of the provisioned clusterrolebinding
+                    type: string
+    #           dbInstanceConditions:
+    #             description: >
+    #               Freeform field containing information about the RDS instance condition, e.g. reconcile errors due to bad parameters
+    #             type: array
+    #             items:
+    #               type: object
+    #               x-kubernetes-preserve-unknown-fields: true
+    # additionalPrinterColumns:
+    # - name: Synced
+    #   type: string
+    #   jsonPath: ".status.dbInstanceConditions[0].status"
+    # - name: Last Sync Date
+    #   type: string
+    #   jsonPath: ".status.dbInstanceConditions[0].lastTransitionTime"

@@ -1,0 +1,13 @@
+apiVersion: crossplane.dfds.cloud/v1alpha1
+kind: ECR
+metadata:
+  namespace: default
+  name: dynamic-claim-ecr-example
+spec:
+  parameters:
+    enableSecurityScanOnPush: false
+    mutability: "IMMUTABLE"
+    region: "eu-west-1"
+  compositionSelector:
+    matchLabels:
+      provider: aws

@@ -6,6 +6,8 @@
 repo=dfdsdk/dfds-infra
 tag=myversion
 
+kubectl delete configuration.pkg dfdsdk-dfds-infra
+
 cd ../package
 rm -f *.xpkg
 kubectl delete configuration.pkg dfdsdk-dfds-infra
