@@ -1,10 +1,10 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xrolepolicyattachment.identity.crossplane.dfds.cloud
+  name: xiamrolepolicyattachments.identity.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: rolepolicyattachment.identity.crossplane.dfds.cloud
+    name: iamrolepolicyattachments.identity.crossplane.dfds.cloud
   group: identity.crossplane.dfds.cloud
   names:
     kind: XIAMRolePolicyAttachment
@@ -19,34 +19,35 @@ spec:
     schema:
       openAPIV3Schema:
         type: object
-        spec:
-          type: object
-          properties:
-            parameters:
-              type: object
-              properties:
-                policyArn:
-                  type: string
-                policyArnRef:
-                  type: object
-                policyArnSelector:
-                  type: object
-                  properties:
-                    matchControllerRef:
-                      type: boolean
-                    matchLabels:
-                      type: object
-                roleName:
-                  type: string
-                roleNameRef:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                roleNameSelector:
-                  type: object
-                  properties:
-                    matchControllerRef:
-                      type: boolean
-                    matchLabels:
-                      type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  policyArn:
+                    type: string
+                  policyArnRef:
+                    type: object
+                  policyArnSelector:
+                    type: object
+                    properties:
+                      matchControllerRef:
+                        type: boolean
+                      matchLabels:
+                        type: object
+                  roleName:
+                    type: string
+                  roleNameRef:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                  roleNameSelector:
+                    type: object
+                    properties:
+                      matchControllerRef:
+                        type: boolean
+                      matchLabels:
+                        type: object

@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xrolepolicyattachment.identity.crossplane.dfds.cloud
+  name: xiamrolepolicyattachments.identity.crossplane.dfds.cloud
   labels:
     provider: aws
 spec:
@@ -22,14 +22,31 @@ spec:
         fromFieldPath: Required    
   
   resources:
-    - name: iamRolePolicyAttachment
-      base:
-        apiVersion: identity.aws.crossplane.io/v1beta1
-        kind: IAMRolePolicyAttachment
-      patches:
-      - type: PatchSet
-        patchSetName: configname
-      - fromFieldPath: metadata.name
-        toFieldPath: metadata.name          
-      - fromFieldPath: spec.parameters
-        toFieldPath: spec.forProvider
+  - name: rbac
+    base:
+      apiVersion: crossplane.dfds.cloud/v1alpha1
+      kind: XRBAC
+      spec:
+        resourceTypes:
+        - iamrolepolices
+        apiGroups:
+        - identity.aws.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace  
+ 
+  - name: iamRolePolicyAttachment
+    base:
+      apiVersion: identity.aws.crossplane.io/v1beta1
+      kind: IAMRolePolicyAttachment
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name          
+    - fromFieldPath: spec.forProvider
+      toFieldPath: spec.parameters
