@@ -1,9 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsbuckets.storage.crossplane.dfds.cloud
-  labels:
-    provider: aws
+  name: xawsbuckets.storage.crossplane.dfds.cloud  
 spec:
   compositeTypeRef:
     apiVersion: storage.crossplane.dfds.cloud/v1alpha1

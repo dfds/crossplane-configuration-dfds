@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: compositeecrs.crossplane.dfds.cloud
+  name: xawsecrs.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: compositeecrs.crossplane.dfds.cloud
+    name: xawsecrs.crossplane.dfds.cloud
   group: crossplane.dfds.cloud
   names:
-    kind: CompositeECR
-    plural: compositeecrs
+    kind: XAWSECR
+    plural: xawsecrs
   claimNames:
-    kind: ECR
-    plural: ecrs
+    kind: AWSECR
+    plural: awsecrs
   versions:
   - name: v1alpha1
     served: true
@@ -20,6 +20,23 @@ spec:
       openAPIV3Schema:
         type: object
         properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  repository:
+                    description: Name of the provisioned repository
+                    type: string
+                  repositorypolicy:
+                    description: Name of the provisioned repositorypolicy
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true          
           spec:
             type: object
             properties:
@@ -50,36 +67,3 @@ spec:
                 - enableSecurityScanOnPush
             required:
             - parameters
-          status:
-            type: object
-            properties:
-              createdResources:
-                description: list of resources created for this claim
-                type: object
-                properties:
-                  repository:
-                    description: Name of the provisioned repository
-                    type: string
-                  repositorypolicy:
-                    description: Name of the provisioned repositorypolicy
-                    type: string
-                  clusterrole:
-                    description: Name of the provisioned clusterrole
-                    type: string
-                  clusterrolebinding:
-                    description: Name of the provisioned clusterrolebinding
-                    type: string
-    #           dbInstanceConditions:
-    #             description: >
-    #               Freeform field containing information about the RDS instance condition, e.g. reconcile errors due to bad parameters
-    #             type: array
-    #             items:
-    #               type: object
-    #               x-kubernetes-preserve-unknown-fields: true
-    # additionalPrinterColumns:
-    # - name: Synced
-    #   type: string
-    #   jsonPath: ".status.dbInstanceConditions[0].status"
-    # - name: Last Sync Date
-    #   type: string
-    #   jsonPath: ".status.dbInstanceConditions[0].lastTransitionTime"

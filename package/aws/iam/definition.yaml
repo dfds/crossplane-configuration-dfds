@@ -4,7 +4,7 @@ metadata:
   name: xiamrolepolicyattachments.identity.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: iamrolepolicyattachments.identity.crossplane.dfds.cloud
+    name: xiamrolepolicyattachments.identity.crossplane.dfds.cloud
   group: identity.crossplane.dfds.cloud
   names:
     kind: XIAMRolePolicyAttachment

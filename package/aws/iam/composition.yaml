@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: iamrolepolicyattachments.identity.crossplane.dfds.cloud
+  name: xiamrolepolicyattachments.identity.crossplane.dfds.cloud
   labels:
     provider: aws
 spec:
