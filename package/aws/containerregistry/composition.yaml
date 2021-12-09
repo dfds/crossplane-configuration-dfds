@@ -2,8 +2,6 @@ apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
   name: xawsecrs.crossplane.dfds.cloud
-  labels:
-    provider: aws
 spec:
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
