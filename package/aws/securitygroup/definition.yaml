@@ -4,7 +4,7 @@ metadata:
   name: xawssecuritygroups.network.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awssecuritygroups.network.crossplane.dfds.cloud
+    name: xawssecuritygroups.network.crossplane.dfds.cloud
   group: network.crossplane.dfds.cloud
   names:
     kind: XAWSSecurityGroup

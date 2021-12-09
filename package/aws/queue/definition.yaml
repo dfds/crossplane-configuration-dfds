@@ -4,7 +4,7 @@ metadata:
   name: xawsqueues.messaging.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awsqueues.messaging.crossplane.dfds.cloud
+    name: xawsqueues.messaging.crossplane.dfds.cloud
   group: messaging.crossplane.dfds.cloud
   names:
     kind: XAWSQueue

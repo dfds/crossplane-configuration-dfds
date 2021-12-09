@@ -53,7 +53,7 @@ spec:
               value: crossplane
     patches:
     - type: PatchSet
-      patchSetName: configname
+      patchSetName: configname    
     - fromFieldPath: spec.parameters.enableSecurityScanOnPush
       toFieldPath: spec.forProvider.imageScanningConfiguration.scanOnPush
     - fromFieldPath: spec.parameters.mutability
@@ -62,6 +62,11 @@ spec:
       toFieldPath: spec.forProvider.region
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.repository
+      policy:
+        fromFieldPath: Optional
 
   - name: ecr-policy
     base:
@@ -87,3 +92,8 @@ spec:
       toFieldPath: spec.forProvider.region
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.repositorypolicy
+      policy:
+        fromFieldPath: Optional
