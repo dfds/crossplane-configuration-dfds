@@ -1,12 +1,12 @@
 apiVersion: cache.crossplane.dfds.cloud/v1alpha1
 kind: AWSReplicationGroup
 metadata:
-  name: replicationgrouptestdfdswrapper
+  name: replicationgroupdfds
   namespace: my-namespace
 spec:
   parameters:
     applyModificationsImmediately: true
-    cacheNodeType: 'cache.r6g.large'
-    region: 'eu-west-1'
-    engine: 'redis'
-    replicationGroupDescription: 'My description'
+    cacheNodeType: cache.r6g.large
+    region: eu-west-1
+    engine: redis
+    replicationGroupDescription: My description

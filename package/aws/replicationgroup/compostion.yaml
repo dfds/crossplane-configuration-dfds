@@ -53,4 +53,9 @@ spec:
       toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.replicationgroup"      
+      toFieldPath: "status.createdResources.replicationgroup"
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional      

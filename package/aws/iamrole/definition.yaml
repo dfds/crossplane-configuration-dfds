@@ -4,7 +4,7 @@ metadata:
   name: xawsiamroles.identity.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awsiamroles.identity.crossplane.dfds.cloud
+    name: xawsiamroles.identity.crossplane.dfds.cloud
   group: identity.crossplane.dfds.cloud
   names:
     kind: XAWSIAMRole
@@ -20,6 +20,20 @@ spec:
       openAPIV3Schema:
         type: object
         properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  iamrole:
+                    description: Name of the provisioned IAM role
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true         
           spec:
             type: object
             properties:

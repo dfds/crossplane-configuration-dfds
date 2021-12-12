@@ -2,6 +2,7 @@ apiVersion: messaging.crossplane.dfds.cloud/v1alpha1
 kind: AWSQueue
 metadata:
   name: sqsdfds
+  namespace: my-namespace
 spec:
   parameters:
     region: eu-west-1
