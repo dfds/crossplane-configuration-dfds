@@ -26,6 +26,10 @@ spec:
               parameters:
                 type: object
                 properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"                
                   policyArn:
                     type: string
                   policyArnRef:

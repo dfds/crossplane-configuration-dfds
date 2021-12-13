@@ -61,3 +61,7 @@ spec:
       toFieldPath: status.instanceConditions
       policy:
         fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy         

@@ -65,6 +65,10 @@ spec:
       toFieldPath: status.createdResources.repository
       policy:
         fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]" # enables using external name in claims      
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
 
   - name: ecr-policy
     base:
@@ -95,3 +99,7 @@ spec:
       toFieldPath: status.createdResources.repositorypolicy
       policy:
         fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
