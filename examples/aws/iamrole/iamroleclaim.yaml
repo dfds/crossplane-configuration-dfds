@@ -1,7 +1,7 @@
 apiVersion: identity.crossplane.dfds.cloud/v1alpha1
 kind: AWSIAMRole
 metadata:
-  name: identitytestdfdswrapper
+  name: identitydfds
   namespace: my-namespace
 spec:
   parameters:
@@ -26,6 +26,3 @@ spec:
             }
         ]
       }
-  compositionSelector:
-    matchLabels:
-      provider: aws

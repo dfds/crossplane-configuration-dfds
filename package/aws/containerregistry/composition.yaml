@@ -1,13 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: compositeecr.crossplane.dfds.cloud
-  labels:
-    provider: aws
+  name: xawsecrs.crossplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
-    kind: CompositeECR
+    kind: XAWSECR
   patchSets:
   - name: configname
     patches:
@@ -53,13 +51,22 @@ spec:
               value: crossplane
     patches:
     - type: PatchSet
-      patchSetName: configname
+      patchSetName: configname    
     - fromFieldPath: spec.parameters.enableSecurityScanOnPush
       toFieldPath: spec.forProvider.imageScanningConfiguration.scanOnPush
     - fromFieldPath: spec.parameters.mutability
       toFieldPath: spec.forProvider.imageTagMutability
     - fromFieldPath: spec.parameters.region
       toFieldPath: spec.forProvider.region
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.repository
+      policy:
+        fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]" # enables using external name in claims      
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
 
@@ -85,5 +92,14 @@ spec:
       patchSetName: configname
     - fromFieldPath: spec.parameters.region
       toFieldPath: spec.forProvider.region
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.repositorypolicy
+      policy:
+        fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy

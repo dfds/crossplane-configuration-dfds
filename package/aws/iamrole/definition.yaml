@@ -4,7 +4,7 @@ metadata:
   name: xawsiamroles.identity.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awsiamroles.identity.crossplane.dfds.cloud
+    name: xawsiamroles.identity.crossplane.dfds.cloud
   group: identity.crossplane.dfds.cloud
   names:
     kind: XAWSIAMRole
@@ -20,12 +20,30 @@ spec:
       openAPIV3Schema:
         type: object
         properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  iamrole:
+                    description: Name of the provisioned IAM role
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true         
           spec:
             type: object
             properties:
               parameters:
                 type: object
                 properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"               
                   assumeRolePolicyDocument:
                     description: AssumeRolePolicyDocument is the the trust relationship
                       policy document that grants an entity permission to assume the

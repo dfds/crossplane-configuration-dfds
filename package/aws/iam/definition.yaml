@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xiamrolepolicyattachments.identity.crossplane.dfds.cloud
+  name: xawsiamrolepolicyattachments.identity.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: iamrolepolicyattachments.identity.crossplane.dfds.cloud
+    name: xawsiamrolepolicyattachments.identity.crossplane.dfds.cloud
   group: identity.crossplane.dfds.cloud
   names:
-    kind: XIAMRolePolicyAttachment
-    plural: xiamrolepolicyattachments
+    kind: XAWSIAMRolePolicyAttachment
+    plural: xawsiamrolepolicyattachments
   claimNames:
-    kind: IAMRolePolicyAttachment
-    plural: iamrolepolicyattachments
+    kind: AWSIAMRolePolicyAttachment
+    plural: awsiamrolepolicyattachments
   versions:
   - name: v1alpha1
     served: true
@@ -26,6 +26,10 @@ spec:
               parameters:
                 type: object
                 properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"                
                   policyArn:
                     type: string
                   policyArnRef:

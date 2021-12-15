@@ -1,9 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsbuckets.storage.crossplane.dfds.cloud
-  labels:
-    provider: aws
+  name: xawsbuckets.storage.crossplane.dfds.cloud  
 spec:
   compositeTypeRef:
     apiVersion: storage.crossplane.dfds.cloud/v1alpha1
@@ -59,5 +57,9 @@ spec:
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
-      fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.bucket"      
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.bucket
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]" # enables using external name in claims      
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy

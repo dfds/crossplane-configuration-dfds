@@ -115,13 +115,20 @@ We should then add properties of the resources under the third `properties:` we 
 these from the source code of the resource in aws-provider (using the desired release tag). For example, https://raw.githubusercontent.com/crossplane/provider-aws/master/package/crds/s3.aws.crossplane.io_buckets.yaml and copy the forProvider.properties. The full list of resource source code can be found here: https://github.com/crossplane/provider-aws/tree/master/package/crds (make sure to select the correct tag for our current version specified in
 `package/crossplane.yaml` from the github dropdown)
 
-And make sure we end with making the required parameters from the raw resource required in our XRD:
+And make sure we end with making the required parameters from the raw resource required in our XRD, as in this example:
 
 ```
                 required:
                 - locationConstraint
 ```
+In addition to the resource specific properties, we add deletionPolicy property to enable consumer to determine what will happen with the provisioned resource in case of deletion of the managed resource in kubernetes:
 
+```
+deletionPolicy: 
+  description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+  type: string
+  default: "Delete" 
+```
 ### Create a composition.yaml
 
 The file should be composed with the following section to define the composition. We will continue to use bucket as our example:
@@ -176,9 +183,29 @@ We must then define our resource for depoyment. Firstly, our bucket resource and
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
       toFieldPath: "status.createdResources.bucket"
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy      
 ```
 Note that the patches apply our configname patchset from above. In addition, we patch the parameters defined in our definition.yaml through to this resource type by applying it to spec.forProvider. We also produce a status output that will show the raw resource name when you describe the XRD.
-
+One more important thing to notice about metada annotation mapping is that we are enabling reading external name from claims using metada.annotation property like in the following example claim:
+```
+apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+kind: AWSBucket
+metadata:
+  name: awsbucketdfds
+  namespace: my-namespace
+  annotations:
+    crossplane.io/external-name: my-existing-bucket-name-on-aws
+spec:
+  parameters:
+    locationConstraint: eu-west-1
+    acl: public-read
+```
+This enables users to import resources into Crossplane to start managing them using kubernetes.
+While this can be the way for attaching existing resources, the following deletionPolicy patch with the value Orphan passed in claim will "detach" a resource from kubernetes in case of the claim have been deleted.
+ 
 Finally, we need to define our rbac resource. We need to pass the appropriate values from our bucket resource into the `resourceTypes` and `apiGroups` attributes. Our resourceType is `buckets`, which is a plural version of the `kind` and the API group for it is `s3.aws.crossplane.io` which we can get from `apiVersion` of the bucket resource.
 
 ```

@@ -1,13 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: iamrolepolicyattachments.identity.crossplane.dfds.cloud
-  labels:
-    provider: aws
+  name: xawsiamrolepolicyattachments.identity.crossplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: identity.crossplane.dfds.cloud/v1alpha1
-    kind: XIAMRolePolicyAttachment
+    kind: XAWSIAMRolePolicyAttachment
 
   patchSets:
   - name: configname
@@ -37,7 +35,8 @@ spec:
     - fromFieldPath: metadata.name
       toFieldPath: spec.resourceName
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.resourceNamespace    
+      toFieldPath: spec.resourceNamespace
+          
   - name: iamRolePolicyAttachment
     base:
       apiVersion: identity.aws.crossplane.io/v1beta1
@@ -49,3 +48,7 @@ spec:
       toFieldPath: metadata.name          
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy      

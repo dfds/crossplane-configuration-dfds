@@ -4,7 +4,7 @@ metadata:
   name: xawsbuckets.storage.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awsbuckets.storage.crossplane.dfds.cloud
+    name: xawsbuckets.storage.crossplane.dfds.cloud 
   group: storage.crossplane.dfds.cloud
   names:
     kind: XAWSBucket
@@ -40,6 +40,10 @@ spec:
               parameters:
                 type: object
                 properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"                                        
                   accelerateConfiguration:
                     description: AccelerateConfiguration configures the transfer acceleration
                       state for an Amazon S3 bucket. For more information, see Amazon

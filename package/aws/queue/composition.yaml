@@ -2,8 +2,6 @@ apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
   name: xawsqueues.messaging.crossplane.dfds.cloud
-  labels:
-    provider: aws
 spec:
   compositeTypeRef:
     apiVersion: messaging.crossplane.dfds.cloud/v1alpha1
@@ -53,3 +51,17 @@ spec:
       toFieldPath: metadata.name
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.sqs
+      policy:
+        fromFieldPath: Optional      
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy         

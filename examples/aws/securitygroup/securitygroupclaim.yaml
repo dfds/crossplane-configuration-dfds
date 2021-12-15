@@ -1,7 +1,7 @@
 apiVersion: network.crossplane.dfds.cloud/v1alpha1
 kind: AWSSecurityGroup
 metadata:
-  name: securitygrouptestdfdswrapper
+  name: securitygrouptestdfds
   namespace: my-namespace
 spec:
   parameters:
@@ -11,6 +11,3 @@ spec:
     tags:
       - key: Name
         value: jolly-roger
-  compositionSelector:
-    matchLabels:
-      provider: aws
