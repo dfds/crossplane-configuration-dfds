@@ -59,4 +59,9 @@ spec:
       toFieldPath: spec.deletionPolicy
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.iamrolepolicyattachement"           
+      toFieldPath: "status.createdResources.iamrolepolicyattachement"
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional
