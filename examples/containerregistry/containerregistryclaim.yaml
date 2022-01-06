@@ -1,8 +1,8 @@
 apiVersion: crossplane.dfds.cloud/v1alpha1
-kind: AWSECR
+kind: ContainerRegistry
 metadata:
   namespace: my-namespace
-  name: awscontainerregistrydfds
+  name: containerregistrydfds
 spec:
   parameters:
     enableSecurityScanOnPush: false

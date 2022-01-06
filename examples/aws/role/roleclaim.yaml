@@ -1,5 +1,5 @@
 apiVersion: identity.crossplane.dfds.cloud/v1alpha1
-kind: AWSIAMRole
+kind: AWSRole
 metadata:
   name: identitydfds
   namespace: my-namespace
