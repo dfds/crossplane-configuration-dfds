@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsiamroles.identity.crossplane.dfds.cloud
+  name: xawsroles.identity.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsiamroles.identity.crossplane.dfds.cloud
+    name: xawsroles.identity.crossplane.dfds.cloud
   group: identity.crossplane.dfds.cloud
   names:
-    kind: XAWSIAMRole
-    plural: xawsiamroles
+    kind: XAWSRole
+    plural: xawsroles
   claimNames:
-    kind: AWSIAMRole
-    plural: awsiamroles
+    kind: AWSRole
+    plural: awsroles
   versions:
   - name: v1alpha1
     served: true
@@ -27,7 +27,7 @@ spec:
                 description: list of resources created for this claim
                 type: object
                 properties:
-                  iamrole:
+                  role:
                     description: Name of the provisioned IAM role
                     type: string
                   rbac:
