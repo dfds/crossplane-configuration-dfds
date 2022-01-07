@@ -28,7 +28,7 @@ spec:
         resourceTypes:
         - rolepolicyattachments
         apiGroups:
-        - identity.aws.crossplane.io
+        - iam.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:
@@ -44,7 +44,7 @@ spec:
                   
   - name: RolePolicyAttachment
     base:
-      apiVersion: identity.aws.crossplane.io/v1beta1
+      apiVersion: iam.aws.crossplane.io/v1beta1
       kind: RolePolicyAttachment
     patches:
     - type: PatchSet

@@ -20,7 +20,7 @@ spec:
   resources:
   - name: role
     base:
-      apiVersion: identity.aws.crossplane.io/v1beta1
+      apiVersion: iam.aws.crossplane.io/v1beta1
       kind: Role
       spec:
         forProvider:
@@ -51,7 +51,7 @@ spec:
         resourceTypes:
         - roles
         apiGroups:
-        - identity.aws.crossplane.io
+        - iam.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:
