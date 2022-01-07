@@ -123,7 +123,14 @@ Next in the file, we should declare a version for our resource and lay out the s
                   rbac:
                     description: list of the provisioned RBAC resources
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true        
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                     
           spec:
             type: object
             parameters:
@@ -152,7 +159,7 @@ deletionPolicy:
 ```
 *Note:* The additionalPrinterColumns section allows adding custom columns with additional information available for the user on `kubectl get` requests 
 
-In the status field under `schema.openAPIV3Schema.spec` we add custom fields to view additional information about the created resources when user do `kubectl describe` on the claim resource.
+In the status field under `schema.openAPIV3Schema.spec` we add custom fields to view additional information about the created resources when user do `kubectl describe` on the claim resource. The custom field `instanceConditions` keeps reconcile information that is copied from the managed resource. It's also used as a data source for the additionalPrinterColumns fields.
 
 ### Create a composition.yaml
 
