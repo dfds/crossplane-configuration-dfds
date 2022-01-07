@@ -1,0 +1,76 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawsbuckets.storage.crossplane.myorg
+spec:
+  group: storage.crossplane.myorg
+  names:
+    kind: XAWSBucket
+    plural: xawsbuckets
+  claimNames:
+    kind: AWSBucket
+    plural: awsbuckets
+  versions: 
+  - name: v1alpha1
+    served: true
+    referenceable: false
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:                  
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  acl:
+                    description: The canned ACL to apply to the bucket. Note that
+                      either canned ACL or specific access permissions are required.
+                      If neither (or both) are provided, the creation of the bucket
+                      will fail.
+                    enum:
+                    - private
+                    - public-read
+                    - public-read-write
+                    - authenticated-read
+                    type: string
+                  locationConstraint:
+                    description: LocationConstraint specifies the Region where the
+                      bucket will be created. It is a required field.
+                    type: string
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"                     
+                required:
+                - locationConstraint
+            required:
+            - parameters
+  - name: v1alpha2
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:     
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  region:
+                    description: Geographic location of this Database server.
+                    type: string
+                    enum: ["ireland", "germany"]
+                    default: "ireland"                
+                  acl:
+                    type: string
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete" 
+                  locationConstraint:
+                    type: string
+                    description: deprecated

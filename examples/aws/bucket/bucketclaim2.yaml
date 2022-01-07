@@ -1,0 +1,9 @@
+apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+kind: AWSBucket
+metadata:
+  name: awsbucketdfds2
+  namespace: my-namespace
+spec:
+  parameters:
+    locationConstraint: eu-west-1
+    acl: public-read

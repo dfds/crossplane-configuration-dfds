@@ -1,0 +1,13 @@
+apiVersion: storage.crossplane.myorg/v1alpha2
+kind: AWSBucket
+metadata:
+  name: s3samdiv2
+  namespace: my-namespace
+spec:
+  parameters:
+    region: ireland
+    acl: public-read
+    deletionPolicy: Delete    
+  compositionSelector:
+    matchLabels:
+      version: v2
