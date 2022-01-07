@@ -1,5 +1,5 @@
 apiVersion: identity.crossplane.dfds.cloud/v1alpha1
-kind: AWSIAMRolePolicyAttachment
+kind: AWSRolePolicyAttachment
 metadata:
   name: s3-readonly-dfds
   namespace: my-namespace  

@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsecrs.crossplane.dfds.cloud
+  name: xcontainerregistries.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsecrs.crossplane.dfds.cloud
+    name: xcontainerregistries.crossplane.dfds.cloud
   group: crossplane.dfds.cloud
   names:
-    kind: XAWSECR
-    plural: xawsecrs
+    kind: XContainerRegistry
+    plural: xcontainerregistries
   claimNames:
-    kind: AWSECR
-    plural: awsecrs
+    kind: ContainerRegistry
+    plural: containerregistries
   versions:
   - name: v1alpha1
     served: true
@@ -43,7 +43,14 @@ spec:
                   rbac:
                     description: list of the provisioned RBAC resources
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true          
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                    
           spec:
             type: object
             properties:
@@ -68,10 +75,6 @@ spec:
                     type: string
                     enum: ["eu-west-1", "eu-central-1"]
                     default: "eu-west-1"
-                  deletionPolicy:
-                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
-                    type: string
-                    default: "Delete"
                 required:
                 - region
                 - mutability

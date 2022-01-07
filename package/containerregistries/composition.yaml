@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsecrs.crossplane.dfds.cloud
+  name: xcontainerregistries.crossplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
-    kind: XAWSECR
+    kind: XContainerRegistry
   patchSets:
   - name: configname
     patches:

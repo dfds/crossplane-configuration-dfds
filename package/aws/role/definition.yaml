@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsiamroles.identity.crossplane.dfds.cloud
+  name: xawsroles.identity.crossplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsiamroles.identity.crossplane.dfds.cloud
+    name: xawsroles.identity.crossplane.dfds.cloud
   group: identity.crossplane.dfds.cloud
   names:
-    kind: XAWSIAMRole
-    plural: xawsiamroles
+    kind: XAWSRole
+    plural: xawsroles
   claimNames:
-    kind: AWSIAMRole
-    plural: awsiamroles
+    kind: AWSRole
+    plural: awsroles
   versions:
   - name: v1alpha1
     served: true
@@ -34,13 +34,20 @@ spec:
                 description: list of resources created for this claim
                 type: object
                 properties:
-                  iamrole:
+                  role:
                     description: Name of the provisioned IAM role
                     type: string
                   rbac:
                     description: list of the provisioned RBAC resources
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true         
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                    
           spec:
             type: object
             properties:
