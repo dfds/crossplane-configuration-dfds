@@ -16,6 +16,13 @@ spec:
   - name: v1alpha1
     served: true
     referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
     schema:
       openAPIV3Schema:
         type: object
@@ -33,7 +40,14 @@ spec:
                   rbac:
                     description: list of the provisioned RBAC resources
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true                   
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                                            
           spec:
             description: An RolePolicyAttachmentSpec defines the desired state of
               an RolePolicyAttachment.          

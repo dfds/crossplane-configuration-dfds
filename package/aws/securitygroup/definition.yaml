@@ -16,6 +16,13 @@ spec:
   - name: v1alpha1
     served: true
     referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
     schema:
       openAPIV3Schema:
         type: object

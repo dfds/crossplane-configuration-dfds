@@ -139,7 +139,7 @@ spec:
     additionalPrinterColumns:
     - name: Synced
       type: string
-      jsonPath: ".status.dbInstanceConditions[0].status"
-    - name: Last Sync Date
+      jsonPath: .status.dbInstanceConditions[?(@.type=='Synced')].status
+    - name: Last Change
       type: string
-      jsonPath: ".status.dbInstanceConditions[0].lastTransitionTime"
+      jsonPath: .status.dbInstanceConditions[?(@.type=='Synced')].lastTransitionTime
