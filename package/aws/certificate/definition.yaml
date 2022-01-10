@@ -28,17 +28,27 @@ spec:
       openAPIV3Schema:
         type: object
         properties:
-          createdResources:
+          status:
+            type: object
+            properties:
+              createdResources:
                 description: list of resources created for this claim
                 type: object
                 properties:
-                  bucket:
-                    description: Name of the provisioned bucket
+                  certificate:
+                    description: Name of the provisioned certificate
                     type: string
                   rbac:
                     description: list of the provisioned RBAC resources
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true               
           spec:
             type: object
             properties:
@@ -143,10 +153,6 @@ spec:
                     - DNS
                     - EMAIL
                     type: string
-                  deletionPolicy: 
-                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
-                    type: string
-                    default: "Delete" 
                 required:
                 - domainName
                 - region
