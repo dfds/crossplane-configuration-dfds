@@ -99,19 +99,47 @@ Next in the file, we should declare a version for our resource and lay out the s
   - name: v1alpha1
     served: true
     referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime    
     schema:
       openAPIV3Schema:
         type: object
         properties:
-          spec:
+          status:
             type: object
             properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  bucket:
+                    description: Name of the provisioned bucket
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                     
+          spec:
+            type: object
+            parameters:
               parameters:
                 type: object
                 properties:
 ```
 
-We should then add properties of the resources under the third `properties:` we defined above. We can copy and paste
+We should then add properties of the resources under `schema.openAPIV3Schema.spec.parameters.parameters.properties:` we defined above. We can copy and paste
 these from the source code of the resource in aws-provider (using the desired release tag). For example, https://raw.githubusercontent.com/crossplane/provider-aws/master/package/crds/s3.aws.crossplane.io_buckets.yaml and copy the forProvider.properties. The full list of resource source code can be found here: https://github.com/crossplane/provider-aws/tree/master/package/crds (make sure to select the correct tag for our current version specified in
 `package/crossplane.yaml` from the github dropdown)
 
@@ -129,6 +157,10 @@ deletionPolicy:
   type: string
   default: "Delete" 
 ```
+*Note:* The additionalPrinterColumns section allows adding custom columns with additional information available for the user on `kubectl get` requests 
+
+In the status field under `schema.openAPIV3Schema.spec` we add custom fields to view additional information about the created resources when user do `kubectl describe` on the claim resource. The custom field `instanceConditions` keeps reconcile information that is copied from the managed resource. It's also used as a data source for the additionalPrinterColumns fields.
+
 ### Create a composition.yaml
 
 The file should be composed with the following section to define the composition. We will continue to use bucket as our example:
@@ -186,10 +218,15 @@ We must then define our resource for depoyment. Firstly, our bucket resource and
     - type: FromCompositeFieldPath
       fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
     - fromFieldPath: spec.parameters.deletionPolicy
-      toFieldPath: spec.deletionPolicy      
+      toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional         
 ```
 Note that the patches apply our configname patchset from above. In addition, we patch the parameters defined in our definition.yaml through to this resource type by applying it to spec.forProvider. We also produce a status output that will show the raw resource name when you describe the XRD.
-One more important thing to notice about metada annotation mapping is that we are enabling reading external name from claims using metada.annotation property like in the following example claim:
+One more important thing to notice about metada annotation mapping is that we are enabling reading external name from claims using metadata.annotation property like in the following example claim:
 ```
 apiVersion: storage.crossplane.dfds.cloud/v1alpha1
 kind: AWSBucket
@@ -204,7 +241,9 @@ spec:
     acl: public-read
 ```
 This enables users to import resources into Crossplane to start managing them using kubernetes.
-While this can be the way for attaching existing resources, the following deletionPolicy patch with the value Orphan passed in claim will "detach" a resource from kubernetes in case of the claim have been deleted.
+While this can be the way for attaching existing resources, the following deletionPolicy patch with the value Orphan that can be passed in the claim will "detach" a resource from kubernetes in case of the claim have been deleted. So this will basically keep resources on AWS if there is a need for it.
+
+The last patch field mapping will copy status information from the managed resource and them available in the composite resource and the claim under a new field called instance conditions. It will also allow additionalPrinterCol
  
 Finally, we need to define our rbac resource. We need to pass the appropriate values from our bucket resource into the `resourceTypes` and `apiGroups` attributes. Our resourceType is `buckets`, which is a plural version of the `kind` and the API group for it is `s3.aws.crossplane.io` which we can get from `apiVersion` of the bucket resource.
 

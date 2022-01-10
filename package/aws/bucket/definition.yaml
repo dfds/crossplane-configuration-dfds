@@ -16,6 +16,13 @@ spec:
   - name: v1alpha1
     served: true
     referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
     schema:
       openAPIV3Schema:
         type: object
@@ -33,7 +40,7 @@ spec:
                   rbac:
                     description: list of the provisioned RBAC resources
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true                    
+                    x-kubernetes-preserve-unknown-fields: true
           spec:
             type: object
             properties:
@@ -891,16 +898,15 @@ spec:
                                 S3 handled replication of delete markers differently.
                                 For more information, see Backward Compatibility (https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html#replication-backward-compat-considerations)."
                               properties:
-                                Status:
+                                status:
                                   description: Indicates whether to replicate delete
-                                    markers. In the current implementation, Amazon
-                                    S3 doesn't replicate the delete markers. The status
-                                    must be "Disabled".
+                                    markers. Valid values are "Enabled" or "Disabled"
                                   enum:
+                                  - Enabled
                                   - Disabled
                                   type: string
                               required:
-                              - Status
+                              - status
                               type: object
                             destination:
                               description: "A container for information about the

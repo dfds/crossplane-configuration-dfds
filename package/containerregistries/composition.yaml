@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsecrs.crossplane.dfds.cloud
+  name: xcontainerregistries.crossplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: crossplane.dfds.cloud/v1alpha1
-    kind: XAWSECR
+    kind: XContainerRegistry
   patchSets:
   - name: configname
     patches:
@@ -69,6 +69,11 @@ spec:
       fromFieldPath: "metadata.annotations[crossplane.io/external-name]" # enables using external name in claims      
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional      
 
   - name: ecr-policy
     base:
