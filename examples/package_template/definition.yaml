@@ -1,7 +1,7 @@
   versions:
   - name: v1alpha1
-    served: true
-    referenceable: true
+    served: true 
+    referenceable: true # whether this version can be referenced by a Composition
     schema:
       openAPIV3Schema:
         type: object
