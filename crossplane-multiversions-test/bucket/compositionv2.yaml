@@ -43,8 +43,8 @@ spec:
         map:
           ireland: eu-west-1
           germany: eu-central-1
-    - fromFieldPath: "spec.parameters.locationConstraint" # deprecated field
-      toFieldPath: "spec.forProvider.locationConstraint"         
+    # - fromFieldPath: "spec.parameters.locationConstraint" # deprecated field
+    #   toFieldPath: "spec.forProvider.locationConstraint"         
     - fromFieldPath: "spec.parameters.acl"
       toFieldPath: "spec.forProvider.acl"
     - fromFieldPath: spec.parameters.deletionPolicy
