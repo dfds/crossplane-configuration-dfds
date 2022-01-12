@@ -73,4 +73,6 @@ spec:
                     default: "Delete" 
                   locationConstraint:
                     type: string
-                    description: deprecated
+                    description: LocationConstraint specifies the Region where the
+                      bucket will be created. It is a required field.
+                    # depcreated: true  
