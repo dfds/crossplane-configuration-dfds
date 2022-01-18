@@ -278,3 +278,35 @@ Note that our patches pass resource name and namespace values through from our c
 To test our composition, we should create an example(s) in the `examples\aws\[resource]` folder and provide the values we'd use to create the original resource.
 We should then try to deploy these and confirm that it behaves as expected.
 
+## Dealing with breakning changes and migration
+Crossplane XRD supports defining multiple versions of the schema but one of them can be referenced by compositions in the package. This means that you cannot have resources created using different versions of the schema at the same time. This means one version of the schema can have its refrencable set at a time. However, this complicates the upgrade process, as it will require all claim objects being orphaned and be removed from Kubernetes before activating the new schema version. Then external resources on AWS can be imported using claim objects targeting the new schema version using external name annotation. This will in turn require huge coordination work all team that share the same packages, do this procedure at the same time.
+
+
+To support a seamless upgrade and migration process the following procedure has been proposed:
+1) Make a clone of the the package to be upgraded
+2) Rename the cloned package so it has the following format; <package name>v<version number>. version number corrsponds to the new version of the XRD schema. Example: bucketv1aplpha  
+3) Make desired changes in the definition and the composition files.
+
+  Rename following properties in definition file:
+
+  - metadata.name
+  - spec.names[0].kind
+  - spec.names[0].plural
+  - spec.claimNames[0].kind
+  - spec.claimNames[0].plural
+   
+  Rename following properties in composition file:
+  - metadata.name
+  - spec.compositeTypeRef.kind
+  
+  Naming convention make use of this format: <name>v<version>.
+  Examples:
+  - metadata.name: xawsbucketsv1alpha1.storage.crossplane.myorg <br>
+    => metadata.name: xawsbucketsv1alpha2.storage.crossplane.myorg 
+  - spec.names[0].kind: XAWSBucketv1alpha1 <br>
+    => spec.names[0].kind: XAWSBucketv1alpha2 
+  - spec.claimNames[0].plural: awsbucketsv1alpha1 <br>
+    => spec.claimNames[0].plural: awsbucketsv1alpha2
+
+
+
