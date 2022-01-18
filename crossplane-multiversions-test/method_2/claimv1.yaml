@@ -1,0 +1,10 @@
+apiVersion: storage.crossplane.myorg/v1alpha1
+kind: AWSBucketv1
+metadata:
+  name: fish-crossplane
+  namespace: my-namespace
+spec:
+  parameters:
+    locationConstraint: eu-west-1
+    acl: private
+    deletionPolicy: Delete

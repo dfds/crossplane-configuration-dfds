@@ -1,13 +1,12 @@
 apiVersion: storage.crossplane.myorg/v1alpha2
-kind: AWSBucket
+kind: AWSBucketv2
 metadata:
-  name: s3samdiv2
+  name: fish-crossplane-v2
   namespace: my-namespace
+  annotations:
+    crossplane.io/external-name: fish-crossplane-rrgsj
 spec:
   parameters:
     region: ireland
     acl: public-read
-    deletionPolicy: Delete    
-  compositionSelector:
-    matchLabels:
-      version: v2
+    deletionPolicy: Delete
