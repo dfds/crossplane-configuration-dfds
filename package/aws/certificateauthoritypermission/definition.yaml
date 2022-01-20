@@ -1,0 +1,110 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawscertificateauthoritypermissions.certs.crossplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawscertificateauthoritypermissions.certs.crossplane.dfds.cloud
+  group: certs.crossplane.dfds.cloud
+  names:
+    kind: XAWSCertificateAuthorityPermission
+    plural: xawscertificateauthoritypermissions
+  claimNames:
+    kind: AWSCertificateAuthorityPermission
+    plural: awscertificateauthoritypermissions
+
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  certificate:
+                    description: Name of the provisioned certificate
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true               
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                  actions:
+                    description: The actions that the specified AWS service principal
+                      can use.
+                    items:
+                      type: string
+                    type: array
+                  certificateAuthorityARN:
+                    description: The Amazon Resource Name (ARN) of the private certificate
+                      authority (CA)that will be used to issue the certificate.
+                    type: string
+                  certificateAuthorityARNRef:
+                    description: CertificateAuthorityARNRef references an CertificateAuthority
+                      to retrieve its Arn
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  certificateAuthorityARNSelector:
+                    description: CertificateAuthorityARNSelector selects a reference
+                      to an CertificateAuthority to retrieve its Arn
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                  principal:
+                    default: acm.amazonaws.com
+                    description: The AWS service or identity that receives the permission.
+                      At this time, the only valid principal is acm.amazonaws.com.
+                    type: string
+                  region:
+                    description: Region is the region of CertificateAuthorityPermission.
+                    type: string
+                  sourceAccount:
+                    description: Calling Account ID
+                    type: string
+                required:
+                - principal
+                - region
