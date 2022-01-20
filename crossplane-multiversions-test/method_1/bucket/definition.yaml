@@ -15,7 +15,7 @@ spec:
   versions: 
   - name: v1alpha1
     served: true
-    referenceable: false
+    referenceable: true
     schema:
       openAPIV3Schema:
         type: object
@@ -51,7 +51,7 @@ spec:
             - parameters
   - name: v1alpha2
     served: true
-    referenceable: true
+    referenceable: false
     schema:
       openAPIV3Schema:
         type: object
