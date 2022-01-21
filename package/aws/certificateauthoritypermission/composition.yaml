@@ -54,7 +54,7 @@ spec:
         resourceTypes:
         - certificateauthoritypermissions
         apiGroups:
-        - certificateauthoritypermissions.acmpca.aws.crossplane.io
+        - acmpca.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:
