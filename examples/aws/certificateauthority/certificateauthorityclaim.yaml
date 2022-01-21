@@ -1,0 +1,24 @@
+apiVersion: certs.crossplane.dfds.cloud/v1alpha1
+kind: AWSCertificateAuthority
+metadata:
+  name: awscertificateauthoritydfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: us-east-1
+    permanentDeletionTimeInDays: 7
+    type: ROOT
+    status: ACTIVE
+    certificateAuthorityConfiguration:
+      keyAlgorithm: RSA_2048
+      signingAlgorithm: SHA256WITHRSA
+      subject:
+        commonName: ca.dfds.cloud
+        country: GB
+        locality: dfdsexample
+        organization: dfdsexample
+        organizationalUnit: dfdsexample
+        state: dfdsexample
+    tags:
+    - key: Name
+      value: dfdsexample
