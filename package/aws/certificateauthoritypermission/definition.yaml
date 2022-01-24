@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawscertificateauthoritypermissions.certs.crossplane.dfds.cloud
+  name: xawscertificateauthoritypermissions.certs.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawscertificateauthoritypermissions.certs.crossplane.dfds.cloud
-  group: certs.crossplane.dfds.cloud
+    name: xawscertificateauthoritypermissions.certs.xplane.dfds.cloud
+  group: certs.xplane.dfds.cloud
   names:
     kind: XAWSCertificateAuthorityPermission
     plural: xawscertificateauthoritypermissions

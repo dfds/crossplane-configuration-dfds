@@ -1,4 +1,4 @@
-apiVersion: certs.crossplane.dfds.cloud/v1alpha1
+apiVersion: certs.xplane.dfds.cloud/v1alpha1
 kind: AWSCertificateAuthority
 metadata:
   name: awscertificateauthoritydfds

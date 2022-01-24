@@ -1,10 +1,10 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsroles.identity.crossplane.dfds.cloud
+  name: xawsroles.identity.xplane.dfds.cloud
 spec:
   compositeTypeRef:
-    apiVersion: identity.crossplane.dfds.cloud/v1alpha1
+    apiVersion: identity.xplane.dfds.cloud/v1alpha1
     kind: XAWSRole
   patchSets:
   - name: configname
@@ -45,7 +45,7 @@ spec:
                     
   - name: rbac
     base:
-      apiVersion: crossplane.dfds.cloud/v1alpha1
+      apiVersion: xplane.dfds.cloud/v1alpha1
       kind: XRBAC
       spec:
         resourceTypes:

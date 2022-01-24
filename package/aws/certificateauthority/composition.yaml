@@ -1,12 +1,12 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawscertificateauthorities.certs.crossplane.dfds.cloud
+  name: xawscertificateauthorities.certs.xplane.dfds.cloud
   labels:
     provider: aws
 spec:
   compositeTypeRef:
-    apiVersion: certs.crossplane.dfds.cloud/v1alpha1
+    apiVersion: certs.xplane.dfds.cloud/v1alpha1
     kind: XAWSCertificateAuthority
 
   patchSets:
@@ -48,7 +48,7 @@ spec:
 
   - name: rbac
     base:
-      apiVersion: crossplane.dfds.cloud/v1alpha1
+      apiVersion: xplane.dfds.cloud/v1alpha1
       kind: XRBAC
       spec:
         resourceTypes:

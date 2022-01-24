@@ -1,4 +1,4 @@
-apiVersion: crossplane.dfds.cloud/v1alpha1
+apiVersion: xplane.dfds.cloud/v1alpha1
 kind: ContainerRegistry
 metadata:
   namespace: my-namespace

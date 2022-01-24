@@ -1,10 +1,10 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawssecuritygroups.network.crossplane.dfds.cloud
+  name: xawssecuritygroups.network.xplane.dfds.cloud
 spec:
   compositeTypeRef:
-    apiVersion: network.crossplane.dfds.cloud/v1alpha1
+    apiVersion: network.xplane.dfds.cloud/v1alpha1
     kind: XAWSSecurityGroup
 
   patchSets:
@@ -22,7 +22,7 @@ spec:
   resources:
   - name: rbac
     base:
-      apiVersion: crossplane.dfds.cloud/v1alpha1
+      apiVersion: xplane.dfds.cloud/v1alpha1
       kind: XRBAC
       spec:
         resourceTypes:
