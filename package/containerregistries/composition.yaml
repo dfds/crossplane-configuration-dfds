@@ -42,7 +42,7 @@ spec:
 
   - name: ecr
     base:
-      apiVersion: ecr.aws.crossplane.io/v1alpha1
+      apiVersion: ecr.aws.crossplane.io/v1beta1
       kind: Repository
       spec:
         forProvider:
@@ -77,7 +77,7 @@ spec:
 
   - name: ecr-policy
     base:
-      apiVersion: ecr.aws.crossplane.io/v1alpha1
+      apiVersion: ecr.aws.crossplane.io/v1beta1
       kind: RepositoryPolicy
       spec:
         forProvider:
