@@ -1,4 +1,4 @@
-apiVersion: network.crossplane.dfds.cloud/v1alpha1
+apiVersion: network.xplane.dfds.cloud/v1alpha1
 kind: AWSSecurityGroup
 metadata:
   name: securitygrouptestdfds

@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: compositesqldatabaseinstances.crossplane.dfds.cloud
+  name: compositesqldatabaseinstances.xplane.dfds.cloud
 spec:
   connectionSecretKeys:
   - username
@@ -9,8 +9,8 @@ spec:
   - hostname
   - port
   defaultCompositionRef:
-    name: compositesqldatabaseinstances.crossplane.dfds.cloud
-  group: crossplane.dfds.cloud
+    name: compositesqldatabaseinstances.xplane.dfds.cloud
+  group: xplane.dfds.cloud
   names:
     kind: CompositeSqlDatabaseInstance
     plural: compositesqldatabaseinstances

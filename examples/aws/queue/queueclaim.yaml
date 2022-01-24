@@ -1,4 +1,4 @@
-apiVersion: messaging.crossplane.dfds.cloud/v1alpha1
+apiVersion: messaging.xplane.dfds.cloud/v1alpha1
 kind: AWSQueue
 metadata:
   name: sqsdfds
