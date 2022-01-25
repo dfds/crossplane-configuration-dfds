@@ -55,7 +55,7 @@ We use the following naming conventions in our RBAC Wrapper compositions.
 
 #### Namespace
 
-Our namespace must be [group].crossplane.dfds.cloud. [group] should be a generic descriptive category such as:
+Our namespace must be [group].xplane.dfds.cloud. [group] should be a generic descriptive category such as:
 
 - storage
 - networking
@@ -79,11 +79,11 @@ our example:
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsbuckets.storage.crossplane.dfds.cloud
+  name: xawsbuckets.storage.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awsbuckets.storage.crossplane.dfds.cloud
-  group: storage.crossplane.dfds.cloud
+    name: awsbuckets.storage.xplane.dfds.cloud
+  group: storage.xplane.dfds.cloud
   names:
     kind: XAWSBucket
     plural: xawsbuckets
@@ -169,12 +169,12 @@ The file should be composed with the following section to define the composition
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsbuckets.storage.crossplane.dfds.cloud
+  name: xawsbuckets.storage.xplane.dfds.cloud
   labels:
     provider: aws
 spec:
   compositeTypeRef:
-    apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+    apiVersion: storage.xplane.dfds.cloud/v1alpha1
     kind: XAWSBucket
 ```
 
@@ -228,7 +228,7 @@ We must then define our resource for depoyment. Firstly, our bucket resource and
 Note that the patches apply our configname patchset from above. In addition, we patch the parameters defined in our definition.yaml through to this resource type by applying it to spec.forProvider. We also produce a status output that will show the raw resource name when you describe the XRD.
 One more important thing to notice about metada annotation mapping is that we are enabling reading external name from claims using metadata.annotation property like in the following example claim:
 ```
-apiVersion: storage.crossplane.dfds.cloud/v1alpha1
+apiVersion: storage.xplane.dfds.cloud/v1alpha1
 kind: AWSBucket
 metadata:
   name: awsbucketdfds
@@ -250,7 +250,7 @@ Finally, we need to define our rbac resource. We need to pass the appropriate va
 ```
   - name: rbac
     base:
-      apiVersion: crossplane.dfds.cloud/v1alpha1
+      apiVersion: xplane.dfds.cloud/v1alpha1
       kind: XRBAC
       spec:
         resourceTypes:

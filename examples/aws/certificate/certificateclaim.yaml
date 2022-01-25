@@ -1,4 +1,4 @@
-apiVersion: certificates.crossplane.dfds.cloud/v1alpha1
+apiVersion: certs.xplane.dfds.cloud/v1alpha1
 kind: AWSCertificate
 metadata:
   name: awscertificatedfds

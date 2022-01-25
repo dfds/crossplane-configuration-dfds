@@ -1,13 +1,13 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawscertificates.certs.xplane.dfds.cloud
+  name: xawscertificateauthorities.certs.xplane.dfds.cloud
   labels:
     provider: aws
 spec:
   compositeTypeRef:
     apiVersion: certs.xplane.dfds.cloud/v1alpha1
-    kind: XAWSCertificate
+    kind: XAWSCertificateAuthority
 
   patchSets:
   - name: configname
@@ -21,10 +21,10 @@ spec:
       policy:
         fromFieldPath: Required
   resources:
-  - name: certificate
+  - name: certificateauthority
     base:
-      apiVersion: acm.aws.crossplane.io/v1beta1
-      kind: Certificate
+      apiVersion: acmpca.aws.crossplane.io/v1beta1
+      kind: CertificateAuthority
       spec:
         forProvider:
           region: eu-west-1
@@ -35,7 +35,7 @@ spec:
       toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.certificate"
+      toFieldPath: "status.createdResources.certificateauthority"
     - type: FromCompositeFieldPath
       fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
     - fromFieldPath: spec.parameters.deletionPolicy
@@ -52,9 +52,9 @@ spec:
       kind: XRBAC
       spec:
         resourceTypes:
-        - certificates
+        - certificateauthorities
         apiGroups:
-        - certificates.acm.aws.crossplane.io
+        - acmpca.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:

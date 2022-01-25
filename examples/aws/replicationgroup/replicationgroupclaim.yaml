@@ -1,4 +1,4 @@
-apiVersion: cache.crossplane.dfds.cloud/v1alpha1
+apiVersion: cache.xplane.dfds.cloud/v1alpha1
 kind: AWSReplicationGroup
 metadata:
   name: replicationgroupdfds

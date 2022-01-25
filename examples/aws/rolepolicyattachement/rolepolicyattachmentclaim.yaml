@@ -1,4 +1,4 @@
-apiVersion: identity.crossplane.dfds.cloud/v1alpha1
+apiVersion: identity.xplane.dfds.cloud/v1alpha1
 kind: AWSRolePolicyAttachment
 metadata:
   name: s3-readonly-dfds

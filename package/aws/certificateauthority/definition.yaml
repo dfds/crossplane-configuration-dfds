@@ -1,0 +1,211 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawscertificateauthorities.certs.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawscertificateauthorities.certs.xplane.dfds.cloud
+  group: certs.xplane.dfds.cloud
+  names:
+    kind: XAWSCertificateAuthority
+    plural: xawscertificateauthorities
+  claimNames:
+    kind: AWSCertificateAuthority
+    plural: awscertificateauthorities
+
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  certificate:
+                    description: Name of the provisioned certificate
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true               
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                  certificateAuthorityConfiguration:
+                    description: CertificateAuthorityConfiguration to associate with
+                      the certificateAuthority.
+                    properties:
+                      keyAlgorithm:
+                        description: Type of the public key algorithm
+                        enum:
+                        - RSA_2048
+                        - EC_secp384r1
+                        - EC_prime256v1
+                        - RSA_4096
+                        type: string
+                      signingAlgorithm:
+                        description: Algorithm that private CA uses to sign certificate
+                          requests
+                        enum:
+                        - SHA512WITHECDSA
+                        - SHA256WITHECDSA
+                        - SHA384WITHECDSA
+                        - SHA512WITHRSA
+                        - SHA256WITHRSA
+                        - SHA384WITHRSA
+                        type: string
+                      subject:
+                        description: Subject is information of Certificate Authority
+                        properties:
+                          commonName:
+                            description: FQDN associated with the certificate subject
+                            type: string
+                          country:
+                            description: Two-digit code that specifies the country
+                            type: string
+                          distinguishedNameQualifier:
+                            description: Disambiguating information for the certificate
+                              subject.
+                            type: string
+                          generationQualifier:
+                            description: Typically a qualifier appended to the name
+                              of an individual
+                            type: string
+                          givenName:
+                            description: First name
+                            type: string
+                          initials:
+                            description: Concatenation of first letter of the GivenName,
+                              Middle name and SurName.
+                            type: string
+                          locality:
+                            description: The locality such as a city or town
+                            type: string
+                          organization:
+                            description: Organization legal name
+                            type: string
+                          organizationalUnit:
+                            description: Organization's subdivision or unit
+                            type: string
+                          pseudonym:
+                            description: Shortened version of a longer GivenName
+                            type: string
+                          serialNumber:
+                            description: The certificate serial number.
+                            type: string
+                          state:
+                            description: State in which the subject of the certificate
+                              is located
+                            type: string
+                          surname:
+                            description: Surname
+                            type: string
+                          title:
+                            description: Title
+                            type: string
+                        required:
+                        - commonName
+                        - country
+                        - locality
+                        - organization
+                        - organizationalUnit
+                        - state
+                        type: object
+                    required:
+                    - keyAlgorithm
+                    - signingAlgorithm
+                    - subject
+                    type: object
+                  permanentDeletionTimeInDays:
+                    description: The number of days to make a CA restorable after
+                      it has been deleted
+                    format: int32
+                    type: integer
+                  region:
+                    description: Region is the region you'd like your CertificateAuthority
+                      to be created in.
+                    type: string
+                  revocationConfiguration:
+                    description: RevocationConfiguration to associate with the certificateAuthority.
+                    properties:
+                      customCname:
+                        description: Alias for the CRL distribution point
+                        type: string
+                      enabled:
+                        description: Boolean value that specifies certificate revocation
+                        type: boolean
+                      expirationInDays:
+                        description: Number of days until a certificate expires
+                        format: int32
+                        type: integer
+                      s3BucketName:
+                        description: Name of the S3 bucket that contains the CRL
+                        type: string
+                    required:
+                    - enabled
+                    type: object
+                  status:
+                    description: Status of the certificate authority. This value cannot
+                      be configured at creation, but can be updated to set a CA to
+                      ACTIVE or DISABLED.
+                    enum:
+                    - ACTIVE
+                    - DISABLED
+                    type: string
+                  tags:
+                    description: One or more resource tags to associate with the certificateAuthority.
+                    items:
+                      description: Tag represents user-provided metadata that can
+                        be associated
+                      properties:
+                        key:
+                          description: The key name that can be used to look up or
+                            retrieve the associated value.
+                          type: string
+                        value:
+                          description: The value associated with this tag.
+                          type: string
+                      required:
+                      - key
+                      - value
+                      type: object
+                    type: array
+                  type:
+                    description: Type of the certificate authority
+                    enum:
+                    - ROOT
+                    - SUBORDINATE
+                    type: string
+                required:
+                - certificateAuthorityConfiguration
+                - region
+                - tags
+                - type

@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xrbacs.crossplane.dfds.cloud
+  name: xrbacs.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xrbacs.crossplane.dfds.cloud
-  group: crossplane.dfds.cloud
+    name: xrbacs.xplane.dfds.cloud
+  group: xplane.dfds.cloud
   names:
     kind: XRBAC
     plural: xrbacs
