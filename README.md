@@ -94,10 +94,13 @@ The folder structure of this repository is as follows:
 - examples
     - Contains examples of ProviderConfig files and composite resources in the relevant subfolders
 - package
-    - Contains the composite resource definition manifest files in the relevant subfolders with the package 
-    configuration at the top level
+    - Contains the composite resource definition manifest files in the relevant versioned subfolders (I.e package\containerregistries\v1) 
+      with the package configuration at the top level
+- package\aws
+    - Contains RBAC composites of AWS resources to work in multi-tenancy cluster. See the README in this folder
 
-New resources should go into a sub-folder inside packages and an example of the resource should go into a sub-folder of the same name under examples.
+
+New resources should go into a versioned sub-folder inside packages and an example of the resource should go into a sub-folder of the same name under examples.
 
 ## Building
 
