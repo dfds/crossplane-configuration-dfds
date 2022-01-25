@@ -1,5 +1,5 @@
 apiVersion: cache.xplane.dfds.cloud/v1alpha1
-kind: AWSReplicationGroup
+kind: AWSReplicationGroupV1
 metadata:
   name: replicationgroupdfds
   namespace: my-namespace

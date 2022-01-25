@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsqueues.messaging.xplane.dfds.cloud
+  name: xawsqueuev1s.messaging.xplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-    kind: XAWSQueue
+    kind: XAWSQueueV1
 
   patchSets:
   - name: configname

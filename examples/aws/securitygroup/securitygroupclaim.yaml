@@ -1,5 +1,5 @@
 apiVersion: network.xplane.dfds.cloud/v1alpha1
-kind: AWSSecurityGroup
+kind: AWSSecurityGroupV1
 metadata:
   name: securitygrouptestdfds
   namespace: my-namespace

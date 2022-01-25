@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsreplicationgroups.cache.xplane.dfds.cloud
+  name: xawsreplicationgroupv1s.cache.xplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: cache.xplane.dfds.cloud/v1alpha1
-    kind: XAWSReplicationGroup
+    kind: XAWSReplicationGroupV1
   patchSets:
   - name: configname
     patches:

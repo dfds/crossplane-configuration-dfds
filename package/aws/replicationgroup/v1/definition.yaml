@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsreplicationgroups.cache.xplane.dfds.cloud
+  name: xawsreplicationgroupv1s.cache.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsreplicationgroups.cache.xplane.dfds.cloud
+    name: xawsreplicationgroupv1s.cache.xplane.dfds.cloud
   group: cache.xplane.dfds.cloud
   names:
-    kind: XAWSReplicationGroup
-    plural: xawsreplicationgroups
+    kind: XAWSReplicationGroupV1
+    plural: xawsreplicationgroupv1s
   claimNames:
-    kind: AWSReplicationGroup
-    plural: awsreplicationgroups
+    kind: AWSReplicationGroupV1
+    plural: awsreplicationgroupv1s
   versions: 
   - name: v1alpha1
     served: true

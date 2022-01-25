@@ -1,5 +1,5 @@
 apiVersion: certs.xplane.dfds.cloud/v1alpha1
-kind: AWSCertificateAuthority
+kind: AWSCertificateAuthorityV1
 metadata:
   name: awscertificateauthoritydfds
   namespace: my-namespace

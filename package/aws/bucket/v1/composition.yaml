@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsbuckets.storage.xplane.dfds.cloud  
+  name: xawsbucketv1s.storage.xplane.dfds.cloud  
 spec:
   compositeTypeRef:
     apiVersion: storage.xplane.dfds.cloud/v1alpha1
-    kind: XAWSBucket
+    kind: XAWSBucketV1
 
   patchSets:
   - name: configname

@@ -1,5 +1,5 @@
 apiVersion: identity.xplane.dfds.cloud/v1alpha1
-kind: AWSRolePolicyAttachment
+kind: AWSRolePolicyAttachmentV1
 metadata:
   name: s3-readonly-dfds
   namespace: my-namespace  

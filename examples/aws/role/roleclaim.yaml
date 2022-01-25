@@ -1,5 +1,5 @@
 apiVersion: identity.xplane.dfds.cloud/v1alpha1
-kind: AWSRole
+kind: AWSRoleV1
 metadata:
   name: identitydfds
   namespace: my-namespace

@@ -1,5 +1,5 @@
 apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-kind: AWSQueue
+kind: AWSQueueV1
 metadata:
   name: sqsdfds
   namespace: my-namespace

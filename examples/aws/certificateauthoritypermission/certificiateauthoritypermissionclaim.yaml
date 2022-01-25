@@ -1,5 +1,5 @@
 apiVersion: certs.xplane.dfds.cloud/v1alpha1
-kind: AWSCertificateAuthorityPermission
+kind: AWSCertificateAuthorityPermissionV1
 metadata:
   name: dfdsexample
   namespace: my-namespace

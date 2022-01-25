@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsbuckets.storage.xplane.dfds.cloud
+  name: xawsbucketv1s.storage.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsbuckets.storage.xplane.dfds.cloud 
+    name: xawsbucketv1s.storage.xplane.dfds.cloud 
   group: storage.xplane.dfds.cloud
   names:
-    kind: XAWSBucket
-    plural: xawsbuckets
+    kind: XAWSBucketV1
+    plural: xawsbucketv1s
   claimNames:
-    kind: AWSBucket
-    plural: awsbuckets
+    kind: AWSBucketV1
+    plural: awsbucketv1s
   versions: 
   - name: v1alpha1
     served: true

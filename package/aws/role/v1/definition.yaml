@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsroles.identity.xplane.dfds.cloud
+  name: xawsrolev1s.identity.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsroles.identity.xplane.dfds.cloud
+    name: xawsrolev1s.identity.xplane.dfds.cloud
   group: identity.xplane.dfds.cloud
   names:
-    kind: XAWSRole
-    plural: xawsroles
+    kind: XAWSRoleV1
+    plural: xawsrolev1s
   claimNames:
-    kind: AWSRole
-    plural: awsroles
+    kind: AWSRoleV1
+    plural: awsrolev1s
   versions:
   - name: v1alpha1
     served: true

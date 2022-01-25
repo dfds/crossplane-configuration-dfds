@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawscertificates.certs.xplane.dfds.cloud
+  name: xawscertificateauthoritypermissionv1s.certs.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawscertificates.certs.xplane.dfds.cloud
+    name: xawscertificateauthoritypermissionv1s.certs.xplane.dfds.cloud
   group: certs.xplane.dfds.cloud
   names:
-    kind: XAWSCertificate
-    plural: xawscertificates
+    kind: XAWSCertificateAuthorityPermissionV1
+    plural: xawscertificateauthoritypermissionv1s
   claimNames:
-    kind: AWSCertificate
-    plural: awscertificates
+    kind: AWSCertificateAuthorityPermissionV1
+    plural: awscertificateauthoritypermissionv1s
 
   versions:
   - name: v1alpha1
@@ -59,13 +59,19 @@ spec:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
                     default: "Delete"
+                  actions:
+                    description: The actions that the specified AWS service principal
+                      can use.
+                    items:
+                      type: string
+                    type: array
                   certificateAuthorityARN:
                     description: The Amazon Resource Name (ARN) of the private certificate
                       authority (CA)that will be used to issue the certificate.
                     type: string
                   certificateAuthorityARNRef:
-                    description: CertificateAuthorityARNRef references an AWS ACMPCA
-                      CertificateAuthority to retrieve its Arn
+                    description: CertificateAuthorityARNRef references an CertificateAuthority
+                      to retrieve its Arn
                     properties:
                       name:
                         description: Name of the referenced object.
@@ -75,7 +81,7 @@ spec:
                     type: object
                   certificateAuthorityARNSelector:
                     description: CertificateAuthorityARNSelector selects a reference
-                      to an AWS ACMPCA CertificateAuthority to retrieve its Arn
+                      to an CertificateAuthority to retrieve its Arn
                     properties:
                       matchControllerRef:
                         description: MatchControllerRef ensures an object with the
@@ -88,72 +94,17 @@ spec:
                           is selected.
                         type: object
                     type: object
-                  certificateTransparencyLoggingPreference:
-                    description: Parameter add the certificate to a certificate transparency
-                      log.
-                    enum:
-                    - ENABLED
-                    - DISABLED
+                  principal:
+                    default: acm.amazonaws.com
+                    description: The AWS service or identity that receives the permission.
+                      At this time, the only valid principal is acm.amazonaws.com.
                     type: string
-                  domainName:
-                    description: Fully qualified domain name (FQDN),that to secure
-                      with an ACM certificate.
-                    type: string
-                  domainValidationOptions:
-                    description: The domain name that you want ACM to use to send
-                      you emails so that you can validate domain ownership.
-                    items:
-                      description: DomainValidationOption validate domain ownership.
-                      properties:
-                        domainName:
-                          description: Additinal Fully qualified domain name (FQDN),that
-                            to secure with an ACM certificate.
-                          type: string
-                        validationDomain:
-                          description: Method to validate certificate
-                          type: string
-                      required:
-                      - domainName
-                      - validationDomain
-                      type: object
-                    type: array
                   region:
-                    description: Region is the region you'd like your Certificate
-                      to be created in.
+                    description: Region is the region of CertificateAuthorityPermission.
                     type: string
-                  renewCertificate:
-                    description: Flag to renew the certificate
-                    type: boolean
-                  subjectAlternativeNames:
-                    description: Subject Alternative Name extension of the ACM certificate.
-                    items:
-                      type: string
-                    type: array
-                  tags:
-                    description: One or more resource tags to associate with the certificate.
-                    items:
-                      description: Tag represents user-provided metadata that can
-                        be associated
-                      properties:
-                        key:
-                          description: The key name that can be used to look up or
-                            retrieve the associated value.
-                          type: string
-                        value:
-                          description: The value associated with this tag.
-                          type: string
-                      required:
-                      - key
-                      - value
-                      type: object
-                    type: array
-                  validationMethod:
-                    description: Method to validate certificate.
-                    enum:
-                    - DNS
-                    - EMAIL
+                  sourceAccount:
+                    description: Calling Account ID
                     type: string
                 required:
-                - domainName
+                - principal
                 - region
-                - tags

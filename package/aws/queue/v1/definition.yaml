@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsqueues.messaging.xplane.dfds.cloud
+  name: xawsqueuev1s.messaging.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsqueues.messaging.xplane.dfds.cloud
+    name: xawsqueuev1s.messaging.xplane.dfds.cloud
   group: messaging.xplane.dfds.cloud
   names:
-    kind: XAWSQueue
-    plural: xawsqueues
+    kind: XAWSQueueV1
+    plural: xawsqueuev1s
   claimNames:
-    kind: AWSQueue
-    plural: awsqueues
+    kind: AWSQueueV1
+    plural: awsqueuev1s
   versions:
   - name: v1alpha1
     served: true

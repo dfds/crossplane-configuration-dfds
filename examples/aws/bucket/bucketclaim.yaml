@@ -1,5 +1,5 @@
 apiVersion: storage.xplane.dfds.cloud/v1alpha1
-kind: AWSBucket
+kind: AWSBucketV1
 metadata:
   name: awsbucketdfds
   namespace: my-namespace
