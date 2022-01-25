@@ -1,0 +1,83 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xcontainerregistryv1s.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xcontainerregistryv1s.xplane.dfds.cloud
+  group: xplane.dfds.cloud
+  names:
+    kind: XContainerRegistryV1
+    plural: xcontainerregistryv1s
+  claimNames:
+    kind: ContainerRegistryV1
+    plural: containerregistryv1s
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime    
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  repository:
+                    description: Name of the provisioned repository
+                    type: string
+                  repositorypolicy:
+                    description: Name of the provisioned repositorypolicy
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                    
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"                
+                  enableSecurityScanOnPush:
+                    description: Enable image security scan on push.
+                    type: boolean
+                    default: false
+                  mutability:
+                    description: Allow for mutable tags, i.e. tags can be overwritten.
+                    type: string
+                    enum: ["MUTABLE", "IMMUTABLE"]
+                    default: "IMMUTABLE"
+                  region:
+                    description: Geographic location of resources.
+                    type: string
+                    enum: ["eu-west-1", "eu-central-1"]
+                    default: "eu-west-1"
+                required:
+                - region
+                - mutability
+                - enableSecurityScanOnPush
+            required:
+            - parameters

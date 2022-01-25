@@ -1,9 +1,0 @@
-apiVersion: identity.xplane.dfds.cloud/v1alpha1
-kind: AWSRolePolicyAttachment
-metadata:
-  name: s3-readonly-dfds
-  namespace: my-namespace  
-spec:
-  parameters:
-    policyArn: arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
-    roleName: crossplane-s3-readall

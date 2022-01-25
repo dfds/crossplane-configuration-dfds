@@ -1,0 +1,11 @@
+apiVersion: certs.xplane.dfds.cloud/v1alpha1
+kind: AWSCertificateAuthorityPermissionV1
+metadata:
+  name: dfdsexample
+  namespace: my-namespace
+spec:
+  parameters:
+    region: us-east-1
+    certificateAuthorityARNRef:
+      name: dfdsexample
+    principal: acm.amazonaws.com

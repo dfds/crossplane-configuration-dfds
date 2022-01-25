@@ -1,0 +1,510 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawssecuritygroupv1s.network.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawssecuritygroupv1s.network.xplane.dfds.cloud
+  group: network.xplane.dfds.cloud
+  names:
+    kind: XAWSSecurityGroupV1
+    plural: xawssecuritygroupv1s
+  claimNames:
+    kind: AWSSecurityGroupV1
+    plural: awssecuritygroupv1s
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  securitygroup:
+                    description: Name of the provisioned securitygroup
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                        
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"                   
+                  description:
+                    description: A description of the security group.
+                    type: string
+                  egress:
+                    description: '[EC2-VPC] One or more outbound rules associated
+                      with the security group.'
+                    items:
+                      description: IPPermission Describes a set of permissions for
+                        a security group rule.
+                      properties:
+                        fromPort:
+                          description: The start of port range for the TCP and UDP
+                            protocols, or an ICMP/ICMPv6 type number. A value of -1
+                            indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6
+                            types, you must specify all codes.
+                          format: int32
+                          type: integer
+                        ipProtocol:
+                          description: "The IP protocol name (tcp, udp, icmp, icmpv6)
+                            or number (see Protocol Numbers (http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)).
+                            \n [VPC only] Use -1 to specify all protocols. When authorizing
+                            security group rules, specifying -1 or a protocol number
+                            other than tcp, udp, icmp, or icmpv6 allows traffic on
+                            all ports, regardless of any port range you specify. For
+                            tcp, udp, and icmp, you must specify a port range. For
+                            icmpv6, the port range is optional; if you omit the port
+                            range, traffic for all types and codes is allowed."
+                          type: string
+                        ipRanges:
+                          description: The IPv4 ranges.
+                          items:
+                            description: IPRange describes an IPv4 range.
+                            properties:
+                              cidrIp:
+                                description: The IPv4 CIDR range. You can either specify
+                                  a CIDR range or a source security group, not both.
+                                  To specify a single IPv4 address, use the /32 prefix
+                                  length.
+                                type: string
+                              description:
+                                description: "A description for the security group
+                                  rule that references this IPv4 address range. \n
+                                  Constraints: Up to 255 characters in length. Allowed
+                                  characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*"
+                                type: string
+                            required:
+                            - cidrIp
+                            type: object
+                          type: array
+                        ipv6Ranges:
+                          description: "The IPv6 ranges. \n [VPC only]"
+                          items:
+                            description: IPv6Range describes an IPv6 range.
+                            properties:
+                              cidrIPv6:
+                                description: The IPv6 CIDR range. You can either specify
+                                  a CIDR range or a source security group, not both.
+                                  To specify a single IPv6 address, use the /128 prefix
+                                  length.
+                                type: string
+                              description:
+                                description: "A description for the security group
+                                  rule that references this IPv6 address range. \n
+                                  Constraints: Up to 255 characters in length. Allowed
+                                  characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*"
+                                type: string
+                            required:
+                            - cidrIPv6
+                            type: object
+                          type: array
+                        prefixListIds:
+                          description: "PrefixListIDs for an AWS service. With outbound
+                            rules, this is the AWS service to access through a VPC
+                            endpoint from instances associated with the security group.
+                            \n [VPC only]"
+                          items:
+                            description: PrefixListID describes a prefix list ID.
+                            properties:
+                              description:
+                                description: "A description for the security group
+                                  rule that references this prefix list ID. \n Constraints:
+                                  Up to 255 characters in length. Allowed characters
+                                  are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*"
+                                type: string
+                              prefixListId:
+                                description: The ID of the prefix.
+                                type: string
+                            required:
+                            - prefixListId
+                            type: object
+                          type: array
+                        toPort:
+                          description: The end of port range for the TCP and UDP protocols,
+                            or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6
+                            codes. If you specify all ICMP/ICMPv6 types, you must
+                            specify all codes.
+                          format: int32
+                          type: integer
+                        userIdGroupPairs:
+                          description: UserIDGroupPairs are the source security group
+                            and AWS account ID pairs. It contains one or more accounts
+                            and security groups to allow flows from security groups
+                            of other accounts.
+                          items:
+                            description: UserIDGroupPair describes a security group
+                              and AWS account ID pair.
+                            properties:
+                              description:
+                                description: "A description for the security group
+                                  rule that references this user ID group pair. \n
+                                  Constraints: Up to 255 characters in length. Allowed
+                                  characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*"
+                                type: string
+                              groupId:
+                                description: The ID of the security group.
+                                type: string
+                              groupIdRef:
+                                description: GroupIDRef reference a security group
+                                  to retrieve its GroupID
+                                properties:
+                                  name:
+                                    description: Name of the referenced object.
+                                    type: string
+                                required:
+                                - name
+                                type: object
+                              groupIdSelector:
+                                description: GroupIDSelector selects reference to
+                                  a security group to retrieve its GroupID
+                                properties:
+                                  matchControllerRef:
+                                    description: MatchControllerRef ensures an object
+                                      with the same controller reference as the selecting
+                                      object is selected.
+                                    type: boolean
+                                  matchLabels:
+                                    additionalProperties:
+                                      type: string
+                                    description: MatchLabels ensures an object with
+                                      matching labels is selected.
+                                    type: object
+                                type: object
+                              groupName:
+                                description: "The name of the security group. In a
+                                  request, use this parameter for a security group
+                                  in EC2-Classic or a default VPC only. For a security
+                                  group in a nondefault VPC, use the security group
+                                  ID. \n For a referenced security group in another
+                                  VPC, this value is not returned if the referenced
+                                  security group is deleted."
+                                type: string
+                              userId:
+                                description: "The ID of an AWS account. \n For a referenced
+                                  security group in another VPC, the account ID of
+                                  the referenced security group is returned in the
+                                  response. If the referenced security group is deleted,
+                                  this value is not returned. \n [EC2-Classic] Required
+                                  when adding or removing rules that reference a security
+                                  group in another AWS account."
+                                type: string
+                              vpcId:
+                                description: The ID of the VPC for the referenced
+                                  security group, if applicable.
+                                type: string
+                              vpcIdRef:
+                                description: VPCIDRef reference a VPC to retrieve
+                                  its vpcId
+                                properties:
+                                  name:
+                                    description: Name of the referenced object.
+                                    type: string
+                                required:
+                                - name
+                                type: object
+                              vpcIdSelector:
+                                description: VPCIDSelector selects reference to a
+                                  VPC to retrieve its vpcId
+                                properties:
+                                  matchControllerRef:
+                                    description: MatchControllerRef ensures an object
+                                      with the same controller reference as the selecting
+                                      object is selected.
+                                    type: boolean
+                                  matchLabels:
+                                    additionalProperties:
+                                      type: string
+                                    description: MatchLabels ensures an object with
+                                      matching labels is selected.
+                                    type: object
+                                type: object
+                              vpcPeeringConnectionId:
+                                description: The ID of the VPC peering connection,
+                                  if applicable.
+                                type: string
+                            type: object
+                          type: array
+                      required:
+                      - ipProtocol
+                      type: object
+                    type: array
+                  groupName:
+                    description: The name of the security group.
+                    type: string
+                  ingress:
+                    description: One or more inbound rules associated with the security
+                      group.
+                    items:
+                      description: IPPermission Describes a set of permissions for
+                        a security group rule.
+                      properties:
+                        fromPort:
+                          description: The start of port range for the TCP and UDP
+                            protocols, or an ICMP/ICMPv6 type number. A value of -1
+                            indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6
+                            types, you must specify all codes.
+                          format: int32
+                          type: integer
+                        ipProtocol:
+                          description: "The IP protocol name (tcp, udp, icmp, icmpv6)
+                            or number (see Protocol Numbers (http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)).
+                            \n [VPC only] Use -1 to specify all protocols. When authorizing
+                            security group rules, specifying -1 or a protocol number
+                            other than tcp, udp, icmp, or icmpv6 allows traffic on
+                            all ports, regardless of any port range you specify. For
+                            tcp, udp, and icmp, you must specify a port range. For
+                            icmpv6, the port range is optional; if you omit the port
+                            range, traffic for all types and codes is allowed."
+                          type: string
+                        ipRanges:
+                          description: The IPv4 ranges.
+                          items:
+                            description: IPRange describes an IPv4 range.
+                            properties:
+                              cidrIp:
+                                description: The IPv4 CIDR range. You can either specify
+                                  a CIDR range or a source security group, not both.
+                                  To specify a single IPv4 address, use the /32 prefix
+                                  length.
+                                type: string
+                              description:
+                                description: "A description for the security group
+                                  rule that references this IPv4 address range. \n
+                                  Constraints: Up to 255 characters in length. Allowed
+                                  characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*"
+                                type: string
+                            required:
+                            - cidrIp
+                            type: object
+                          type: array
+                        ipv6Ranges:
+                          description: "The IPv6 ranges. \n [VPC only]"
+                          items:
+                            description: IPv6Range describes an IPv6 range.
+                            properties:
+                              cidrIPv6:
+                                description: The IPv6 CIDR range. You can either specify
+                                  a CIDR range or a source security group, not both.
+                                  To specify a single IPv6 address, use the /128 prefix
+                                  length.
+                                type: string
+                              description:
+                                description: "A description for the security group
+                                  rule that references this IPv6 address range. \n
+                                  Constraints: Up to 255 characters in length. Allowed
+                                  characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*"
+                                type: string
+                            required:
+                            - cidrIPv6
+                            type: object
+                          type: array
+                        prefixListIds:
+                          description: "PrefixListIDs for an AWS service. With outbound
+                            rules, this is the AWS service to access through a VPC
+                            endpoint from instances associated with the security group.
+                            \n [VPC only]"
+                          items:
+                            description: PrefixListID describes a prefix list ID.
+                            properties:
+                              description:
+                                description: "A description for the security group
+                                  rule that references this prefix list ID. \n Constraints:
+                                  Up to 255 characters in length. Allowed characters
+                                  are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*"
+                                type: string
+                              prefixListId:
+                                description: The ID of the prefix.
+                                type: string
+                            required:
+                            - prefixListId
+                            type: object
+                          type: array
+                        toPort:
+                          description: The end of port range for the TCP and UDP protocols,
+                            or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6
+                            codes. If you specify all ICMP/ICMPv6 types, you must
+                            specify all codes.
+                          format: int32
+                          type: integer
+                        userIdGroupPairs:
+                          description: UserIDGroupPairs are the source security group
+                            and AWS account ID pairs. It contains one or more accounts
+                            and security groups to allow flows from security groups
+                            of other accounts.
+                          items:
+                            description: UserIDGroupPair describes a security group
+                              and AWS account ID pair.
+                            properties:
+                              description:
+                                description: "A description for the security group
+                                  rule that references this user ID group pair. \n
+                                  Constraints: Up to 255 characters in length. Allowed
+                                  characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*"
+                                type: string
+                              groupId:
+                                description: The ID of the security group.
+                                type: string
+                              groupIdRef:
+                                description: GroupIDRef reference a security group
+                                  to retrieve its GroupID
+                                properties:
+                                  name:
+                                    description: Name of the referenced object.
+                                    type: string
+                                required:
+                                - name
+                                type: object
+                              groupIdSelector:
+                                description: GroupIDSelector selects reference to
+                                  a security group to retrieve its GroupID
+                                properties:
+                                  matchControllerRef:
+                                    description: MatchControllerRef ensures an object
+                                      with the same controller reference as the selecting
+                                      object is selected.
+                                    type: boolean
+                                  matchLabels:
+                                    additionalProperties:
+                                      type: string
+                                    description: MatchLabels ensures an object with
+                                      matching labels is selected.
+                                    type: object
+                                type: object
+                              groupName:
+                                description: "The name of the security group. In a
+                                  request, use this parameter for a security group
+                                  in EC2-Classic or a default VPC only. For a security
+                                  group in a nondefault VPC, use the security group
+                                  ID. \n For a referenced security group in another
+                                  VPC, this value is not returned if the referenced
+                                  security group is deleted."
+                                type: string
+                              userId:
+                                description: "The ID of an AWS account. \n For a referenced
+                                  security group in another VPC, the account ID of
+                                  the referenced security group is returned in the
+                                  response. If the referenced security group is deleted,
+                                  this value is not returned. \n [EC2-Classic] Required
+                                  when adding or removing rules that reference a security
+                                  group in another AWS account."
+                                type: string
+                              vpcId:
+                                description: The ID of the VPC for the referenced
+                                  security group, if applicable.
+                                type: string
+                              vpcIdRef:
+                                description: VPCIDRef reference a VPC to retrieve
+                                  its vpcId
+                                properties:
+                                  name:
+                                    description: Name of the referenced object.
+                                    type: string
+                                required:
+                                - name
+                                type: object
+                              vpcIdSelector:
+                                description: VPCIDSelector selects reference to a
+                                  VPC to retrieve its vpcId
+                                properties:
+                                  matchControllerRef:
+                                    description: MatchControllerRef ensures an object
+                                      with the same controller reference as the selecting
+                                      object is selected.
+                                    type: boolean
+                                  matchLabels:
+                                    additionalProperties:
+                                      type: string
+                                    description: MatchLabels ensures an object with
+                                      matching labels is selected.
+                                    type: object
+                                type: object
+                              vpcPeeringConnectionId:
+                                description: The ID of the VPC peering connection,
+                                  if applicable.
+                                type: string
+                            type: object
+                          type: array
+                      required:
+                      - ipProtocol
+                      type: object
+                    type: array
+                  region:
+                    description: Region is the region you'd like your SecurityGroup
+                      to be created in.
+                    type: string
+                  tags:
+                    description: Tags represents to current ec2 tags.
+                    items:
+                      description: Tag defines a tag
+                      properties:
+                        key:
+                          description: Key is the name of the tag.
+                          type: string
+                        value:
+                          description: Value is the value of the tag.
+                          type: string
+                      required:
+                      - key
+                      - value
+                      type: object
+                    type: array
+                  vpcId:
+                    description: VPCID is the ID of the VPC.
+                    type: string
+                  vpcIdRef:
+                    description: VPCIDRef references a VPC to and retrieves its vpcId
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  vpcIdSelector:
+                    description: VPCIDSelector selects a reference to a VPC to and
+                      retrieves its vpcId
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                required:
+                - description
+                - groupName

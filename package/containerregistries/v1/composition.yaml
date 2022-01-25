@@ -1,0 +1,110 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xcontainerregistryv1s.xplane.dfds.cloud
+spec:
+  compositeTypeRef:
+    apiVersion: xplane.dfds.cloud/v1alpha1
+    kind: XContainerRegistryV1
+  patchSets:
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+            fmt: "%s-aws"
+      policy:
+        fromFieldPath: Required
+  resources:
+  - name: rbac
+    base:
+      apiVersion: xplane.dfds.cloud/v1alpha1
+      kind: XRBACV1
+      spec:
+        resourceTypes:
+        - repositories
+        apiGroups:
+        - ecr.aws.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional
+
+  - name: ecr
+    base:
+      apiVersion: ecr.aws.crossplane.io/v1beta1
+      kind: Repository
+      spec:
+        forProvider:
+          tags:
+            - key: managed-by
+              value: crossplane
+    patches:
+    - type: PatchSet
+      patchSetName: configname    
+    - fromFieldPath: spec.parameters.enableSecurityScanOnPush
+      toFieldPath: spec.forProvider.imageScanningConfiguration.scanOnPush
+    - fromFieldPath: spec.parameters.mutability
+      toFieldPath: spec.forProvider.imageTagMutability
+    - fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.region
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.repository
+      policy:
+        fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]" # enables using external name in claims      
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional      
+
+  - name: ecr-policy
+    base:
+      apiVersion: ecr.aws.crossplane.io/v1beta1
+      kind: RepositoryPolicy
+      spec:
+        forProvider:
+          repositoryNameSelector:
+            matchControllerRef: true
+          policy:
+            statements:
+              - sid: "Allow pull from Kubernetes/Oxygen account"
+                effect: Allow
+                principal:
+                  awsPrincipals:
+                    - iamRoleArn: arn:aws:iam::738063116313:root
+                action: ["ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage", "ecr:BatchCheckLayerAvailability"]
+            version: 2008-10-17
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.region
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.repositorypolicy
+      policy:
+        fromFieldPath: Optional
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy

@@ -1,0 +1,10 @@
+apiVersion: xplane.dfds.cloud/v1alpha1
+kind: ContainerRegistryV1
+metadata:
+  namespace: my-namespace
+  name: containerregistrydfds
+spec:
+  parameters:
+    enableSecurityScanOnPush: false
+    mutability: "IMMUTABLE"
+    region: "eu-west-1"

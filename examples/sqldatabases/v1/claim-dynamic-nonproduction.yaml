@@ -1,0 +1,11 @@
+apiVersion: xplane.dfds.cloud/v1alpha1
+kind: SqlDatabaseInstanceV1
+metadata:
+  namespace: my-namespace
+  name: dynamic-claim-sql-nonprod-example
+spec:
+  parameters:
+    isProduction: false
+  compositionSelector:
+    matchLabels:
+      provider: aws

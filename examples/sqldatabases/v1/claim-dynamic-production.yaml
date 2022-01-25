@@ -1,0 +1,13 @@
+apiVersion: xplane.dfds.cloud/v1alpha1
+kind: SqlDatabaseInstanceV1
+metadata:
+  namespace: my-namespace
+  name: dynamic-claim-sql-prod-example
+spec:
+  parameters:
+    isProduction: true
+    finalBackupName: dynamic-claim-sql-prod-example-final-snapshot
+    deletionPolicy: Orphan
+  compositionSelector:
+    matchLabels:
+      provider: aws

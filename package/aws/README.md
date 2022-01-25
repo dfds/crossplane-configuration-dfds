@@ -46,8 +46,14 @@ The process of creating an RBAC Wrapper for an AWS resource is as follows:
 
 ### Folder structure
 
-The resource folder must sit in the package//aws folder. The folder name must match the AWS resource name.
-For example: `package/aws/bucket` for the `bucket` resource from provider-aws.
+The resource folder must sit in the package//aws folder. The folder name must match the AWS resource name and a sub-folder must exist 
+inside this per version in `v#` format.
+For example: `package/aws/bucket/v1` for `v1` of the `bucket` resource from provider-aws.
+
+### Versioning
+
+To workaround issues with upgrades, our versioning strategy is to reflect the version in the resource name. This allows different versions of the same 
+type of resource to exist together as they are essentially different resources. For example, `XAWSBucketV1`, `XAWSBucketV2`. This is explained under the XRD naming conventions below.
 
 ### Naming conventions
 
@@ -64,7 +70,7 @@ Our namespace must be [group].xplane.dfds.cloud. [group] should be a generic des
 
 #### XRD
 
-Our Composite Resource Definitions should follow the naming of X[vendor-name][resource-name-defined-by-crossplane]. X stands for Composite. For example, if the resource is an AWS Bucket then the name of XAWSBucket. If the resource is an Azure Blob Storage Container then the name would be XAzureContainer. Apply the plural resource name where appropriate.
+Our Composite Resource Definitions should follow the naming of X[vendor-name][resource-name-defined-by-crossplane]V[iteration]. X stands for Composite. For example, if the resource is an AWS Bucket and it is our first iteration then give it the name of XAWSBucketV1. If the resource is an Azure Blob Storage Container and is our second iteration then the name would be XAzureContainerV2. Apply the plural resource name where appropriate.
 
 #### Claim
 
@@ -79,17 +85,17 @@ our example:
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsbuckets.storage.xplane.dfds.cloud
+  name: xawsbucketv1s.storage.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: awsbuckets.storage.xplane.dfds.cloud
+    name: awsbucketv1s.storage.xplane.dfds.cloud
   group: storage.xplane.dfds.cloud
   names:
-    kind: XAWSBucket
-    plural: xawsbuckets
+    kind: XAWSBucketV1
+    plural: xawsbucketv1s
   claimNames:
-    kind: AWSBucket
-    plural: awsbuckets
+    kind: AWSBucketV1
+    plural: awsbucketv1s
 ```
 
 Next in the file, we should declare a version for our resource and lay out the schema:
@@ -169,13 +175,13 @@ The file should be composed with the following section to define the composition
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsbuckets.storage.xplane.dfds.cloud
+  name: xawsbucketv1s.storage.xplane.dfds.cloud
   labels:
     provider: aws
 spec:
   compositeTypeRef:
     apiVersion: storage.xplane.dfds.cloud/v1alpha1
-    kind: XAWSBucket
+    kind: XAWSBucketV1
 ```
 
 Next in the file, we should define our patchsets. One for the providerConfig which will automatically set the providerConfig reference to our convention of
@@ -229,7 +235,7 @@ Note that the patches apply our configname patchset from above. In addition, we 
 One more important thing to notice about metada annotation mapping is that we are enabling reading external name from claims using metadata.annotation property like in the following example claim:
 ```
 apiVersion: storage.xplane.dfds.cloud/v1alpha1
-kind: AWSBucket
+kind: AWSBucketV1
 metadata:
   name: awsbucketdfds
   namespace: my-namespace
@@ -251,7 +257,7 @@ Finally, we need to define our rbac resource. We need to pass the appropriate va
   - name: rbac
     base:
       apiVersion: xplane.dfds.cloud/v1alpha1
-      kind: XRBAC
+      kind: XRBACV1
       spec:
         resourceTypes:
         - buckets
@@ -275,6 +281,6 @@ Note that our patches pass resource name and namespace values through from our c
 
 ### Create an example
 
-To test our composition, we should create an example(s) in the `examples\aws\[resource]` folder and provide the values we'd use to create the original resource.
+To test our composition, we should create an example(s) in the `examples\aws\[resource]\v[#]` folder and provide the values we'd use to create the original resource.
 We should then try to deploy these and confirm that it behaves as expected.
 
