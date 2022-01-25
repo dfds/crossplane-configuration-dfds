@@ -1,13 +1,13 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xrbacs.xplane.dfds.cloud
+  name: xrbacv1s.xplane.dfds.cloud
   labels:
     provider: k8s
 spec:
   compositeTypeRef:
     apiVersion: xplane.dfds.cloud/v1alpha1
-    kind: XRBAC
+    kind: XRBACV1
   patchSets:
   - name: object-metadata
     patches:

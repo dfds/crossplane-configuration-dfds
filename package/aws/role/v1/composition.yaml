@@ -46,7 +46,7 @@ spec:
   - name: rbac
     base:
       apiVersion: xplane.dfds.cloud/v1alpha1
-      kind: XRBAC
+      kind: XRBACV1
       spec:
         resourceTypes:
         - roles

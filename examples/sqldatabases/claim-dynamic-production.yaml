@@ -1,5 +1,5 @@
 apiVersion: xplane.dfds.cloud/v1alpha1
-kind: SqlDatabaseInstance
+kind: SqlDatabaseInstanceV1
 metadata:
   namespace: my-namespace
   name: dynamic-claim-sql-prod-example

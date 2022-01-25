@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xcontainerregistries.xplane.dfds.cloud
+  name: xcontainerregistryv1s.xplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: xplane.dfds.cloud/v1alpha1
-    kind: XContainerRegistry
+    kind: XContainerRegistryV1
   patchSets:
   - name: configname
     patches:
@@ -21,7 +21,7 @@ spec:
   - name: rbac
     base:
       apiVersion: xplane.dfds.cloud/v1alpha1
-      kind: XRBAC
+      kind: XRBACV1
       spec:
         resourceTypes:
         - repositories

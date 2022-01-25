@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xcontainerregistries.xplane.dfds.cloud
+  name: xcontainerregistryv1s.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xcontainerregistries.xplane.dfds.cloud
+    name: xcontainerregistryv1s.xplane.dfds.cloud
   group: xplane.dfds.cloud
   names:
-    kind: XContainerRegistry
-    plural: xcontainerregistries
+    kind: XContainerRegistryV1
+    plural: xcontainerregistryv1s
   claimNames:
-    kind: ContainerRegistry
-    plural: containerregistries
+    kind: ContainerRegistryV1
+    plural: containerregistryv1s
   versions:
   - name: v1alpha1
     served: true
