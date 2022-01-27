@@ -1,0 +1,344 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawsfunctionv1s.messaging.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawsfunctionv1s.messaging.xplane.dfds.cloud
+  group: messaging.xplane.dfds.cloud
+  names:
+    kind: XAWSFunctionV1
+    plural: xawsfunctionv1s
+  claimNames:
+    kind: AWSFunctionV1
+    plural: awsfunctionv1s
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime    
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: list of resources created for this claim
+                type: object
+                properties:
+                  function:
+                    description: Name of the provisioned lambda function
+                    type: string
+                  rbac:
+                    description: list of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+              instanceConditions:
+                description: >
+                  Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                    
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy:
+                    default: Delete
+                    description: DeletionPolicy specifies what will happen to the underlying
+                      external when this managed resource is deleted - either "Delete"
+                      or "Orphan" the external resource.
+                    enum:
+                    - Orphan
+                    - Delete                
+                  code:
+                    description: The code for the function.
+                    properties:
+                      imageURI:
+                        type: string
+                      s3Bucket:
+                        type: string
+                      s3BucketRef:
+                        description: S3BucketRef is a reference to an S3 Bucket.
+                        properties:
+                          name:
+                            description: Name of the referenced object.
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      s3BucketSelector:
+                        description: S3BucketSelector selects references to an S3
+                          Bucket.
+                        properties:
+                          matchControllerRef:
+                            description: MatchControllerRef ensures an object with
+                              the same controller reference as the selecting object
+                              is selected.
+                            type: boolean
+                          matchLabels:
+                            additionalProperties:
+                              type: string
+                            description: MatchLabels ensures an object with matching
+                              labels is selected.
+                            type: object
+                        type: object
+                      s3Key:
+                        type: string
+                      s3ObjectVersion:
+                        type: string
+                    type: object
+                  codeSigningConfigARN:
+                    description: To enable code signing for this function, specify
+                      the ARN of a code-signing configuration. A code-signing configuration
+                      includes a set of signing profiles, which define the trusted
+                      publishers for this function.
+                    type: string
+                  deadLetterConfig:
+                    description: A dead letter queue configuration that specifies
+                      the queue or topic where Lambda sends asynchronous events when
+                      they fail processing. For more information, see Dead Letter
+                      Queues (https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#dlq).
+                    properties:
+                      targetARN:
+                        type: string
+                    type: object
+                  description:
+                    description: A description of the function.
+                    type: string
+                  environment:
+                    description: Environment variables that are accessible from function
+                      code during execution.
+                    properties:
+                      variables:
+                        additionalProperties:
+                          type: string
+                        type: object
+                    type: object
+                  fileSystemConfigs:
+                    description: Connection settings for an Amazon EFS file system.
+                    items:
+                      properties:
+                        arn:
+                          type: string
+                        localMountPath:
+                          type: string
+                      type: object
+                    type: array
+                  handler:
+                    description: The name of the method within your code that Lambda
+                      calls to execute your function. The format includes the file
+                      name. It can also include namespaces and other qualifiers, depending
+                      on the runtime. For more information, see Programming Model
+                      (https://docs.aws.amazon.com/lambda/latest/dg/programming-model-v2.html).
+                    type: string
+                  imageConfig:
+                    description: Container image configuration values (https://docs.aws.amazon.com/lambda/latest/dg/images-parms.html)
+                      that override the values in the container image Dockerfile.
+                    properties:
+                      command:
+                        items:
+                          type: string
+                        type: array
+                      entryPoint:
+                        items:
+                          type: string
+                        type: array
+                      workingDirectory:
+                        type: string
+                    type: object
+                  kmsKeyARN:
+                    description: The ARN of the AWS Key Management Service (AWS KMS)
+                      key that's used to encrypt your function's environment variables.
+                      If it's not provided, AWS Lambda uses a default service key.
+                    type: string
+                  kmsKeyARNRef:
+                    description: KMSKeyARNRef is a reference to a kms key used to
+                      set the KMSKeyARN.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  kmsKeyARNSelector:
+                    description: KMSKeyARNSelector selects references to kms key arn
+                      used to set the KMSKeyARN.
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                  layers:
+                    description: A list of function layers (https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html)
+                      to add to the function's execution environment. Specify each
+                      layer by its ARN, including the version.
+                    items:
+                      type: string
+                    type: array
+                  memorySize:
+                    description: The amount of memory available to the function at
+                      runtime. Increasing the function's memory also increases its
+                      CPU allocation. The default value is 128 MB. The value can be
+                      any multiple of 1 MB.
+                    format: int64
+                    type: integer
+                  packageType:
+                    description: The type of deployment package. Set to Image for
+                      container image and set Zip for ZIP archive.
+                    type: string
+                  publish:
+                    description: Set to true to publish the first version of the function
+                      during creation.
+                    type: boolean
+                  region:
+                    description: Region is which region the Function will be created.
+                    type: string
+                  role:
+                    description: The Amazon Resource Name (ARN) of the function's
+                      execution role. One of role, roleRef or roleSelector is required.
+                    type: string
+                  roleRef:
+                    description: RoleRef is a reference to an iam role
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  roleSelector:
+                    description: RoleSelector selects references to iam role arn used
+                      to set the lambda Role.
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                  runtime:
+                    description: The identifier of the function's runtime (https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html).
+                    type: string
+                  tags:
+                    additionalProperties:
+                      type: string
+                    description: A list of tags (https://docs.aws.amazon.com/lambda/latest/dg/tagging.html)
+                      to apply to the function.
+                    type: object
+                  timeout:
+                    description: The amount of time that Lambda allows a function
+                      to run before stopping it. The default is 3 seconds. The maximum
+                      allowed value is 900 seconds.
+                    format: int64
+                    type: integer
+                  tracingConfig:
+                    description: Set Mode to Active to sample and trace a subset of
+                      incoming requests with AWS X-Ray.
+                    properties:
+                      mode:
+                        type: string
+                    type: object
+                  vpcConfig:
+                    description: For network connectivity to AWS resources in a VPC,
+                      specify a list of security groups and subnets in the VPC. When
+                      you connect a function to a VPC, it can only access resources
+                      and the internet through that VPC. For more information, see
+                      VPC Settings (https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html).
+                    properties:
+                      securityGroupIDRefs:
+                        description: SecurityGroupIDRefs is a list of references to
+                          SecurityGroups used to set the SecurityGroupIDs.
+                        items:
+                          description: A Reference to a named object.
+                          properties:
+                            name:
+                              description: Name of the referenced object.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                      securityGroupIDSelector:
+                        description: SecurityGroupIDsSelector selects references to
+                          SecurityGroupID used to set the SecurityGroupIDs.
+                        properties:
+                          matchControllerRef:
+                            description: MatchControllerRef ensures an object with
+                              the same controller reference as the selecting object
+                              is selected.
+                            type: boolean
+                          matchLabels:
+                            additionalProperties:
+                              type: string
+                            description: MatchLabels ensures an object with matching
+                              labels is selected.
+                            type: object
+                        type: object
+                      securityGroupIDs:
+                        items:
+                          type: string
+                        type: array
+                      subnetIDRefs:
+                        description: SubnetIDRefs is a list of references to Subnets
+                          used to set the SubnetIDs.
+                        items:
+                          description: A Reference to a named object.
+                          properties:
+                            name:
+                              description: Name of the referenced object.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                      subnetIDSelector:
+                        description: SubnetIDsSelector selects references to Subnets
+                          used to set the SubnetIDs.
+                        properties:
+                          matchControllerRef:
+                            description: MatchControllerRef ensures an object with
+                              the same controller reference as the selecting object
+                              is selected.
+                            type: boolean
+                          matchLabels:
+                            additionalProperties:
+                              type: string
+                            description: MatchLabels ensures an object with matching
+                              labels is selected.
+                            type: object
+                        type: object
+                      subnetIDs:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                required:
+                - code
+                - region
+            required:
+            - parameters                
