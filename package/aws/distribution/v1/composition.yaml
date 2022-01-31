@@ -1,0 +1,70 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xawsdistributionv1s.cdn.xplane.dfds.cloud 
+spec:
+  compositeTypeRef:
+    apiVersion: cdn.xplane.dfds.cloud/v1alpha1
+    kind: XAWSDistributionV1
+
+  patchSets:
+  - name: configname
+    patches:
+    - fromFieldPath: spec.claimRef.namespace    
+      toFieldPath: spec.providerConfigRef.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-aws"
+      policy:
+        fromFieldPath: Required
+
+  resources:
+  - name: rbac
+    base:
+      apiVersion: xplane.dfds.cloud/v1alpha1
+      kind: XRBACV1
+      spec:
+        resourceTypes: 
+        - distribution
+        apiGroups: 
+        - cloudfront.aws.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider       
+    patches: 
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional    
+
+  - name: distribution
+    base:
+      apiVersion: cloudfront.aws.crossplane.io/v1alpha1
+      kind: Distribution
+      spec:
+        forProvider:
+          locationConstraint: eu-west-1
+    patches:
+    - type: PatchSet
+      patchSetName: configname
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name          
+    - fromFieldPath: spec.parameters
+      toFieldPath: spec.forProvider
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: status.createdResources.distribution
+    - type: FromCompositeFieldPath
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional        
