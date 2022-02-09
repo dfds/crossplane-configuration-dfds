@@ -109,7 +109,7 @@ kind: Provider
 metadata:
   name: provider-aws
 spec:
-  package: crossplane/provider-aws:alpha
+  package: crossplane/provider-aws:v0.22.0
   controllerConfigRef:
     name: aws-config
 EOF
@@ -124,12 +124,15 @@ kubectl get serviceaccounts -n $SERVICE_ACCOUNT_NAMESPACE
 SERVICE_ACCOUNT_NAME=provider-aws-[id from aws service account name here]
 ```
 
-Using EKSCTL
+Option 1: Using EKSCTL
 ```
 #eksctl create iamserviceaccount --cluster "${CLUSTER_NAME}" --region "${AWS_REGION}" --name="$SERVICE_ACCOUNT_NAME" --namespace="$SERVICE_ACCOUNT_NAMESPACE" --role-name="$IAM_ROLE_NAME" --role-only --attach-policy-arn="arn:aws:iam::aws:policy/AdministratorAccess" --approve --override-existing-serviceaccounts
 ```
 
-Using AWS CLI
+> Note: Using EKSCTL will use StringEquals in the Trust Relationship and use the exact name of the aws-provider service account. This would mean it needs 
+editing with each upgrade of the AWS provider so it is preferrable to use the AWS CLI method below instead
+
+Option 2: Using AWS CLI
 ```
 read -r -d '' TRUST_RELATIONSHIP <<EOF
 {
@@ -144,7 +147,7 @@ read -r -d '' TRUST_RELATIONSHIP <<EOF
       "Condition": {
 	"StringLike": {
           "${OIDC_PROVIDER}:aud": "sts.amazonaws.com",
-          "${OIDC_PROVIDER}:sub": "system:serviceaccount:upbound-system:provider-aws-*"
+          "${OIDC_PROVIDER}:sub": "system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:provider-aws-*"
         }
       }
     }
