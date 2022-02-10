@@ -1,0 +1,91 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xtopicsv1s.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xtopicsv1s.xplane.dfds.cloud
+  group: xplane.dfds.cloud
+  names:
+    kind: XTopic1
+    plural: xTopicsv1s
+  claimNames:
+    kind: TopicV1
+    plural: topicv1s
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      additionalPrinterColumns:
+        - name: Synced
+          type: string
+          jsonPath: .status.instanceConditions[?(@.type=='Synced')].status
+        - name: Last Change
+          type: string
+          jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            status:
+              type: object
+              properties:
+                createdResources:
+                  description: list of resources created for this claim
+                  type: object
+                  properties:
+                    topic:
+                      description: Name of the provisioned topic
+                      type: string
+                    rbac:
+                      description: list of the provisioned RBAC resources
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                instanceConditions:
+                  description: >
+                    Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                  type: array
+                  items:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+            spec:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    deletionPolicy:
+                      description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                      type: string
+                      default: "Orphan"
+                    environment:
+                      description: Provision topic in either prod or dev environment.
+                      type: string
+                      enum: ["prod", "dev"]
+                      # default: "dev"
+                    retention:
+                      description: Topic retention in days.
+                      type: int
+                      enum: [7, 31, 365, -1]
+                      default: 7
+                    partitions:
+                      description: Topic partitions.
+                      type: int
+                      enum: [1, 3, 6]
+                      # default: 1
+                    name:
+                      description: Topic name.
+                      type: string
+                    availability:
+                      description: Should topic be public or not.
+                      type: string
+                      enum: ["pub.", ""]
+                      example: "Choose \"pub.\" for public and \"\" for private."
+                      # default: ""
+                  required:
+                    - name
+                    - partitions
+                    - availability
+              required:
+                - parameters

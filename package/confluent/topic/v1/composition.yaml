@@ -1,0 +1,88 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xtopicv1s.xplane.dfds.cloud
+spec:
+  compositeTypeRef:
+    apiVersion: xplane.dfds.cloud/v1alpha1
+    kind: XTopicV1
+  patchSets:
+    - name: configname
+      patches:
+        - fromFieldPath: spec.claimRef.namespace
+          toFieldPath: spec.providerConfigRef.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-aws"
+          policy:
+            fromFieldPath: Required
+  resources:
+    - name: rbac
+      base:
+        apiVersion: xplane.dfds.cloud/v1alpha1
+        kind: XRBACV1
+        spec:
+          resourceTypes:
+            - Topics
+          apiGroups:
+            - kafka.confluent.crossplane.io
+          providerConfigRef:
+            name: kubernetes-provider
+      patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.resourceName
+        - fromFieldPath: spec.claimRef.namespace
+          toFieldPath: spec.resourceNamespace
+        - type: ToCompositeFieldPath
+          fromFieldPath: status.createdResources
+          toFieldPath: status.createdResources.rbac
+          policy:
+            fromFieldPath: Optional
+
+    - name: topic
+      base:
+        apiVersion: kafka.confluent.crossplane/v1aplha1
+        kind: Topic
+      patches:
+        - type: PatchSet
+          patchSetName: configname
+        - fromFieldPath: spec.parameters.environment
+          toFieldPath: spec.forProvider.environment
+          transforms:
+            - type: map
+              map:
+                prod: xxxxx
+                dev: yyyyy
+        - fromFieldPath: spec.parameters.environment
+          toFieldPath: spec.forProvider.cluster
+          transforms:
+            - type: map
+              map:
+                prod: xxxxx
+                dev: yyyyy
+        - fromFieldPath: spec.parameters.retention
+          tofieldPath: spec.forProvider.topic.config.retention
+          transforms:
+            - type: map
+              map:
+                -1: -1
+                7: 604800000
+                31: 2678400000
+                365: 31536000000
+        - fromFieldPath: spec.parameters.name
+          tofieldPath: spec.forProvider.topic.name
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.parameters.public
+              - fromFieldPath: spec.claimRef.namespace
+              - fromFieldPath: spec.parameters.name
+            strategy: string
+            string:
+              fmt: "%s%s.%s"
+        - fromFieldPath: spec.parameters.partitions
+          tofieldPath: spec.forProvider.topic.partitions
+        - fromFieldPath: spec.parameters.deletionPolicy
+          toFieldPath: spec.deletionPolicy
