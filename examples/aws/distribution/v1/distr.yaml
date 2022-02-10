@@ -1,0 +1,217 @@
+apiVersion: v1
+items:
+- apiVersion: cloudfront.aws.crossplane.io/v1alpha1
+  kind: Distribution
+  metadata:
+    annotations:
+      crossplane.io/composition-resource-name: distribution
+      crossplane.io/external-create-pending: "2022-01-28T11:34:50Z"
+      crossplane.io/external-create-succeeded: "2022-01-28T11:34:52Z"
+      crossplane.io/external-name: EWYO4VHRCL2LA
+    creationTimestamp: "2022-01-28T11:34:49Z"
+    finalizers:
+    - finalizer.managedresource.crossplane.io
+    generateName: awsdistributiondfds-brqxw-
+    generation: 236
+    labels:
+      crossplane.io/claim-name: awsdistributiondfds
+      crossplane.io/claim-namespace: my-namespace
+      crossplane.io/composite: awsdistributiondfds-brqxw
+    name: awsdistributiondfds-brqxw
+    ownerReferences:
+    - apiVersion: cdn.xplane.dfds.cloud/v1alpha1
+      controller: true
+      kind: XAWSDistributionV1
+      name: awsdistributiondfds-brqxw
+      uid: 21d6b459-6c85-43da-a2d7-3471eed0477e
+    resourceVersion: "9309492"
+    uid: 5364726a-bc20-4786-98e1-993b81161406
+  spec:
+    deletionPolicy: Delete
+    forProvider:
+      distributionConfig:
+        aliases:
+          quantity: 0
+        cacheBehaviors:
+          quantity: 0
+        comment: Example CloudFront Distribution
+        customErrorResponses:
+          quantity: 0
+        defaultCacheBehavior:
+          allowedMethods:
+            cachedMethods:
+              items:
+              - HEAD
+              - GET
+              quantity: 2
+            items:
+            - HEAD
+            - GET
+            quantity: 2
+          compress: false
+          defaultTTL: 86400
+          fieldLevelEncryptionID: ""
+          forwardedValues:
+            cookies:
+              forward: none
+            headers:
+              quantity: 0
+            queryString: false
+            queryStringCacheKeys:
+              quantity: 0
+          lambdaFunctionAssociations:
+            quantity: 0
+          maxTTL: 31536000
+          minTTL: 0
+          smoothStreaming: false
+          targetOriginID: s3Origin
+          trustedKeyGroups:
+            enabled: false
+            quantity: 0
+          trustedSigners:
+            enabled: false
+            quantity: 0
+          viewerProtocolPolicy: allow-all
+        defaultRootObject: ""
+        enabled: false
+        httpVersion: http2
+        isIPV6Enabled: true
+        logging:
+          bucket: ""
+          enabled: false
+          includeCookies: false
+          prefix: ""
+        originGroups:
+          quantity: 0
+        origins:
+          items:
+          - connectionAttempts: 3
+            connectionTimeout: 10
+            customHeaders:
+              quantity: 0
+            domainName: crossplane-example-bucket.s3.amazonaws.com
+            id: s3Origin
+            originPath: ""
+            originShield:
+              enabled: false
+            s3OriginConfig:
+              originAccessIdentity: ""
+        priceClass: PriceClass_All
+        restrictions:
+          geoRestriction:
+            quantity: 0
+            restrictionType: none
+        viewerCertificate:
+          certificateSource: cloudfront
+          cloudFrontDefaultCertificate: true
+          minimumProtocolVersion: TLSv1
+        webACLID: ""
+      region: us-east-1
+    providerConfigRef:
+      name: my-namespace-aws
+  status:
+    atProvider:
+      distribution:
+        activeTrustedKeyGroups:
+          enabled: false
+          quantity: 0
+        activeTrustedSigners:
+          enabled: false
+          quantity: 0
+        arn: arn:aws:cloudfront::069711225475:distribution/EWYO4VHRCL2LA
+        distributionConfig:
+          aliases:
+            quantity: 0
+          cacheBehaviors:
+            quantity: 0
+          comment: Example CloudFront Distribution
+          customErrorResponses:
+            quantity: 0
+          defaultCacheBehavior:
+            allowedMethods:
+              cachedMethods:
+                items:
+                - HEAD
+                - GET
+                quantity: 2
+              items:
+              - HEAD
+              - GET
+              quantity: 2
+            compress: false
+            defaultTTL: 86400
+            fieldLevelEncryptionID: ""
+            forwardedValues:
+              cookies:
+                forward: none
+              headers:
+                quantity: 0
+              queryString: false
+              queryStringCacheKeys:
+                quantity: 0
+            lambdaFunctionAssociations:
+              quantity: 0
+            maxTTL: 31536000
+            minTTL: 0
+            smoothStreaming: false
+            targetOriginID: s3Origin
+            trustedKeyGroups:
+              enabled: false
+              quantity: 0
+            trustedSigners:
+              enabled: false
+              quantity: 0
+            viewerProtocolPolicy: allow-all
+          defaultRootObject: ""
+          enabled: false
+          httpVersion: http2
+          isIPV6Enabled: true
+          logging:
+            bucket: ""
+            enabled: false
+            includeCookies: false
+            prefix: ""
+          originGroups:
+            quantity: 0
+          origins:
+            items:
+            - connectionAttempts: 3
+              connectionTimeout: 10
+              customHeaders:
+                quantity: 0
+              domainName: crossplane-example-bucket.s3.amazonaws.com
+              id: s3Origin
+              originPath: ""
+              originShield:
+                enabled: false
+              s3OriginConfig:
+                originAccessIdentity: ""
+          priceClass: PriceClass_All
+          restrictions:
+            geoRestriction:
+              quantity: 0
+              restrictionType: none
+          viewerCertificate:
+            certificateSource: cloudfront
+            cloudFrontDefaultCertificate: true
+            minimumProtocolVersion: TLSv1
+          webACLID: ""
+        domainName: d70eos8raolcy.cloudfront.net
+        id: EWYO4VHRCL2LA
+        inProgressInvalidationBatches: 0
+        lastModifiedTime: "2022-01-28T11:50:53Z"
+        status: Deployed
+      eTag: E10AAC6BMIXVVP
+    conditions:
+    - lastTransitionTime: "2022-01-28T11:51:18Z"
+      reason: Unavailable
+      status: "False"
+      type: Ready
+    - lastTransitionTime: "2022-01-28T11:34:52Z"
+      reason: ReconcileSuccess
+      status: "True"
+      type: Synced
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
