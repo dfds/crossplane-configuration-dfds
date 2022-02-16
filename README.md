@@ -290,3 +290,25 @@ There is a script at `build/build.sh` that you can provide parameter values for 
 ## Releases
 
 Release images are created by pipeline whenever a new release is created in Github
+
+## Debugging
+Extracting info about the resources and debugging information from the claim
+```
+> kubectl get claim -n my-namespace
+
+awsbucketv1.storage.xplane.dfds.cloud/awsbucketdfds
+
+> kubectl describe awsbucketv1.storage.xplane.dfds.cloud/awsbucketdfds -n my-namespace
+```
+
+Extract the name of the bucket from Status.CreatedResources section. Then get additional information from Status.AtProvider section like ARN
+```
+> kubectl describe bucket awsbucketdfds-fcvd6
+```
+
+For addtional debugging, extract composite resource that is refrenced by the claim
+in the Spec.ResourceRef.Kind and Spec.ResourceRef.Name
+so you can describe the composite resource that is created by the claim which controls to the managed resources
+```
+> kubectl describe XAWSBucketV1 awsbucketdfds-fcvd6
+```
