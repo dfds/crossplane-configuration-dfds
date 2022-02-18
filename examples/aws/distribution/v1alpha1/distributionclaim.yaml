@@ -1,5 +1,5 @@
 apiVersion: cdn.xplane.dfds.cloud/v1alpha1
-kind: AWSDistributionV1
+kind: AWSDistributionV1alpha1
 metadata:
   name: awsdistributiondfds
   namespace: my-namespace

@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsdistributionv1s.cdn.xplane.dfds.cloud
+  name: xawsdistributionv1alpha1s.cdn.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsdistributionv1s.cdn.xplane.dfds.cloud 
+    name: xawsdistributionv1alpha1s.cdn.xplane.dfds.cloud 
   group: cdn.xplane.dfds.cloud
   names:
-    kind: XAWSDistributionV1
-    plural: xawsdistributionv1s
+    kind: XAWSDistributionV1alpha1
+    plural: xawsdistributionv1alpha1s
   claimNames:
-    kind: AWSDistributionV1
-    plural: awsdistributionv1s
+    kind: AWSDistributionV1alpha1
+    plural: awsdistributionv1alpha1s
   versions: 
   - name: v1alpha1
     served: true
