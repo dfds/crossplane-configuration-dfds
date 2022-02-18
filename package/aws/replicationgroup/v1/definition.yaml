@@ -31,16 +31,19 @@ spec:
             type: object
             properties:
               createdResources:
-                description: list of resources created for this claim
+                description: List of resources created for this claim
                 type: object
+                default: {}
                 properties:
                   replicationgroup:
                     description: Name of the provisioned replicationgroup
                     type: string
+                    default: ""
                   rbac:
-                    description: list of the provisioned RBAC resources
+                    description: List of the provisioned RBAC resources
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
+                    default: {}
               instanceConditions:
                 description: >
                   Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
