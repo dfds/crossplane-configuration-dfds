@@ -31,19 +31,23 @@ spec:
             type: object
             properties:
               createdResources:
-                description: list of resources created for this claim
+                description: List of resources created for this claim
                 type: object
+                default: {}
                 properties:
                   repository:
                     description: Name of the provisioned repository
                     type: string
+                    default: ""
                   repositorypolicy:
                     description: Name of the provisioned repositorypolicy
                     type: string
+                    default: ""
                   rbac:
-                    description: list of the provisioned RBAC resources
+                    description: List of the provisioned RBAC resources
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
+                    default: {}
               instanceConditions:
                 description: >
                   Information about the managed resource condition, e.g. reconcile errors due to bad parameters
