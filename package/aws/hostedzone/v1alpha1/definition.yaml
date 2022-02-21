@@ -1,0 +1,142 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawshostedzonev1alpha1s.dns.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawshostedzonev1alpha1s.dns.xplane.dfds.cloud
+  group: dns.xplane.dfds.cloud
+  names:
+    kind: XAWSHostedZoneV1alpha1
+    plural: xawshostedzonev1alpha1s
+  claimNames:
+    kind: AWSHostedZoneV1alpha1
+    plural: awshostedzonev1alpha1s
+
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: List of resources created for this claim
+                type: object
+                default: {}
+                properties:
+                  hostedzone:
+                    description: Name of the provisioned hostedzone
+                    type: string
+                    default: ""
+                  rbac:
+                    description: List of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                    default: {}
+              instanceConditions:
+                description: >
+                  Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                  config:
+                    description: Config includes the Comment and PrivateZone elements.
+                      If you omitted the Config and Comment elements from the request,
+                      the Config and Comment elements don't appear in the response.
+                    properties:
+                      comment:
+                        description: Comment that you want to include about the hosted
+                          zone.
+                        type: string
+                      privateZone:
+                        description: PrivateZone indicates whether this is a private
+                          hosted zone.
+                        type: boolean
+                    type: object
+                  delegationSetId:
+                    description: DelegationSetId let you associate a reusable delegation
+                      set with this hosted zone. It has to be the ID that Amazon Route
+                      53 assigned to the reusable delegation set when you created
+                      it. For more information about reusable delegation sets, see
+                      CreateReusableDelegationSet (https://docs.aws.amazon.com/Route53/latest/APIReference/API_CreateReusableDelegationSet.html).
+                    type: string
+                  name:
+                    description: "The name of the domain. Specify a fully qualified
+                      domain name, for example, www.example.com. The trailing dot
+                      is optional; Amazon Route 53 assumes that the domain name is
+                      fully qualified. This means that Route 53 treats www.example.com
+                      (without a trailing dot) and www.example.com. (with a trailing
+                      dot) as identical. \n If you're creating a public hosted zone,
+                      this is the name you have registered with your DNS registrar.
+                      If your domain name is registered with a registrar other than
+                      Route 53, change the name servers for your domain to the set
+                      of NameServers that CreateHostedHostedZone returns in DelegationSet."
+                    type: string
+                  vpc:
+                    description: "(Private hosted zones only) A complex type that
+                      contains information about the Amazon VPC that you're associating
+                      with this hosted zone. \n You can specify only one Amazon VPC
+                      when you create a private hosted zone. To associate additional
+                      Amazon VPCs with the hosted zone, use AssociateVPCWithHostedZone
+                      (https://docs.aws.amazon.com/Route53/latest/APIReference/API_AssociateVPCWithHostedZone.html)
+                      after you create a hosted zone."
+                    properties:
+                      vpcId:
+                        description: (Private hosted zones only) The ID of an Amazon
+                          VPC.
+                        type: string
+                      vpcIdRef:
+                        description: (Private hosted Hostedzones only) VPCIDRef references
+                          a VPC to retrieves its VPC Id.
+                        properties:
+                          name:
+                            description: Name of the referenced object.
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      vpcIdSelector:
+                        description: VPCIDSelector selects a reference to a VPC.
+                        properties:
+                          matchControllerRef:
+                            description: MatchControllerRef ensures an object with
+                              the same controller reference as the selecting object
+                              is selected.
+                            type: boolean
+                          matchLabels:
+                            additionalProperties:
+                              type: string
+                            description: MatchLabels ensures an object with matching
+                              labels is selected.
+                            type: object
+                        type: object
+                      vpcRegion:
+                        description: (Private hosted zones only) The region that an
+                          Amazon VPC was created in.
+                        type: string
+                    type: object
+                required:
+                - name           
