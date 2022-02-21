@@ -1,0 +1,12 @@
+apiVersion: dns.xplane.dfds.cloud/v1alpha1
+kind: AWSResourceRecordSetV1alpha1
+metadata:
+  name: awsresoucerecordsetdfds.example.dfds.cloud
+  namespace: my-namespace
+spec:
+  parameters:
+    type: CNAME
+    ttl: 300
+    resourceRecords:
+    - value: "www.samditest.dfds.cloud"
+    zoneId: Z0169977IOQORY5IMKFF

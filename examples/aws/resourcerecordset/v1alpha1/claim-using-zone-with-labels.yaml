@@ -1,0 +1,17 @@
+---
+apiVersion: route53.aws.crossplane.io/v1alpha1
+kind: ResourceRecordSet
+metadata:
+  name: awsresoucerecordsetdfds.example.dfds.cloud
+spec:
+  providerConfigRef:
+    name: my-namespace-aws
+  forProvider:
+    type: CNAME
+    ttl: 300
+    resourceRecords:
+    - value: "www.samditest.dfds.cloud"
+    zoneIdSelector:
+      matchLabels: # examples of labels that can be used. Note: This depends on how the hostedzone object was created!
+        crossplane.io/claim-name: awshostedzonedfds2
+        crossplane.io/claim-namespace: my-namespace

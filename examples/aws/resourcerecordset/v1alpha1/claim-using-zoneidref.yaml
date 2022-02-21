@@ -1,0 +1,15 @@
+---
+apiVersion: route53.aws.crossplane.io/v1alpha1
+kind: ResourceRecordSet
+metadata:
+  name: awsresoucerecordsetdfds2.example.dfds.cloud
+spec:
+  providerConfigRef:
+    name: my-namespace-aws
+  forProvider:
+    type: CNAME
+    ttl: 300
+    resourceRecords:
+    - value: "www.samditest.dfds.cloud"
+    zoneIdRef: # k8s object name
+      name: awshostedzonedfds-r8klp-d6k46 # test with zoneIdRef and with zoneIdSelector
