@@ -1,12 +1,10 @@
----
-apiVersion: route53.aws.crossplane.io/v1alpha1
-kind: ResourceRecordSet
+apiVersion: dns.xplane.dfds.cloud/v1alpha1
+kind: AWSResourceRecordSetV1alpha1
 metadata:
   name: awsresoucerecordsetdfds2.example.dfds.cloud
+  namespace: my-namespace
 spec:
-  providerConfigRef:
-    name: my-namespace-aws
-  forProvider:
+  parameters:
     type: CNAME
     ttl: 300
     resourceRecords:
