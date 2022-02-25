@@ -8,6 +8,6 @@ spec:
     type: CNAME
     ttl: 300
     resourceRecords:
-    - value: "www.samditest.dfds.cloud"
+    - value: "www.test.dfds.cloud"
     zoneIdRef: # k8s object name
       name: awshostedzonedfds-r8klp-d6k46

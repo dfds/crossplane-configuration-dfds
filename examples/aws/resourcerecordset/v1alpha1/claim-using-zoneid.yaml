@@ -8,5 +8,5 @@ spec:
     type: CNAME
     ttl: 300
     resourceRecords:
-    - value: "www.samditest.dfds.cloud"
+    - value: "www.test.dfds.cloud"
     zoneId: Z0169977IOQORY5IMKFF

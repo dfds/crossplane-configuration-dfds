@@ -8,8 +8,8 @@ spec:
     type: CNAME
     ttl: 300
     resourceRecords:
-    - value: "www.samditest.dfds.cloud"
+    - value: "www.some.example.com"
     zoneIdSelector:
-      matchLabels: # examples of labels that can be used. Note: This depends on how the hostedzone object was created!
-        crossplane.io/claim-name: awshostedzonedfds2
+      matchLabels: # Here are examples of labels that can be used. Note: This depends on how the hostedzone object was created!
+        crossplane.io/claim-name: awshostedzonedfds
         crossplane.io/claim-namespace: my-namespace
