@@ -1,0 +1,8 @@
+apiVersion: dns.xplane.dfds.cloud/v1alpha1
+kind: AWSHostedZoneV1alpha1
+metadata:
+  name: awshostedzonedfds
+  namespace: my-namespace
+spec:
+  parameters:
+    name: example.dfds.cloud

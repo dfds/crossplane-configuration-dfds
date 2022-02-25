@@ -1,0 +1,15 @@
+apiVersion: dns.xplane.dfds.cloud/v1alpha1
+kind: AWSResourceRecordSetV1alpha1
+metadata:
+  name: awsresoucerecordsetdfds.example.dfds.cloud
+  namespace: my-namespace
+spec:
+  parameters:
+    type: CNAME
+    ttl: 300
+    resourceRecords:
+    - value: "www.some.example.com"
+    zoneIdSelector:
+      matchLabels: # Here are examples of labels that can be used. Note: This depends on how the hostedzone object was created!
+        crossplane.io/claim-name: awshostedzonedfds
+        crossplane.io/claim-namespace: my-namespace
