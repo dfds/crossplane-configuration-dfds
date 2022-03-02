@@ -1,0 +1,12 @@
+apiVersion: networking.xplane.dfds.cloud/v1alpha1
+kind: AWSVpcV1
+metadata:
+  name: vpcdfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: eu-central-1
+    cidrBlock: 10.0.0.0/16
+    enableDnsSupport: true
+    enableDnsHostNames: true
+    instanceTenancy: default
