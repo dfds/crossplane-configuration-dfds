@@ -1,0 +1,9 @@
+apiVersion: compute.xplane.dfds.cloud/v1alpha1
+kind: AWSInstanceV1alpha1
+metadata:
+  name: awsinstancedfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: us-east-1
+    imageId: ami-0dc2d3e4c0f9ebd18
