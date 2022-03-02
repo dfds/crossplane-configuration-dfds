@@ -1,0 +1,129 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawssnssubscriptionv1alpha1s.messaging.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawssnssubscriptionv1alpha1s.messaging.xplane.dfds.cloud
+  group: messaging.xplane.dfds.cloud
+  names:
+    kind: XAWSSNSSubscriptionV1alpha1
+    plural: xawssnssubscriptionv1alpha1s
+  claimNames:
+    kind: AWSSNSSubscriptionV1alpha1
+    plural: awssnssubscriptionv1alpha1s
+
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: List of resources created for this claim
+                type: object
+                default: {}
+                properties:
+                  snssubscription:
+                    description: Name of the provisioned snssubscription
+                    type: string
+                    default: ""
+                  rbac:
+                    description: List of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                    default: {}
+              instanceConditions:
+                description: >
+                  Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
+                type: array 
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                  deliveryPolicy:
+                    description: ' DeliveryPolicy defines how Amazon SNS retries failed  deliveries
+                      to HTTP/S endpoints.'
+                    type: string
+                  endpoint:
+                    description: The subscription's endpoint
+                    type: string
+                  filterPolicy:
+                    description: ' The simple JSON object that lets your subscriber
+                      receive  only a subset of messages, rather than receiving every
+                      message published  to the topic.'
+                    type: string
+                  protocol:
+                    description: The subscription's protocol.
+                    type: string
+                  rawMessageDelivery:
+                    description: ' When set to true, enables raw message delivery  to
+                      Amazon SQS or HTTP/S endpoints. This eliminates the need for
+                      the endpoints  to process JSON formatting, which is otherwise
+                      created for Amazon SNS  metadata.'
+                    type: string
+                  redrivePolicy:
+                    description: ' When specified, sends undeliverable messages to
+                      the  specified Amazon SQS dead-letter queue. Messages that can''t
+                      be delivered  due to client errors (for example, when the subscribed
+                      endpoint is unreachable)  or server errors (for example, when
+                      the service that powers the subscribed  endpoint becomes unavailable)
+                      are held in the dead-letter queue for further  analysis or reprocessing.'
+                    type: string
+                  region:
+                    description: Region is the region you'd like your SNSSubscription
+                      to be in.
+                    type: string
+                  topicArn:
+                    description: TopicArn is the Arn of the SNS Topic
+                    type: string
+                  topicArnRef:
+                    description: TopicArnRef references a SNS Topic and retrieves
+                      its TopicArn
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  topicArnSelector:
+                    description: TopicArnSelector selects a reference to a SNS Topic
+                      and retrieves its TopicArn
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                required:
+                - endpoint
+                - protocol
+                - region

@@ -1,0 +1,15 @@
+apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+kind: AWSSNSSubscriptionV1alpha1
+metadata:
+  name: awssnssubscriptiondfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: us-east-1
+    protocol: email
+    # You can see mail sent to this address at the below URL, which is open to.
+    # The public. You'll need to confirm the subscription in order for the
+    # notification to become ready.
+    # https://www.mailinator.com/v4/public/inboxes.jsp?to=crossplane-test
+    endpoint: crossplane-test@mailinator.com
+    topicArn: arn:aws:sns:eu-central-1:069711225475:CloudwatchEventsToMail-samdi # not working!
