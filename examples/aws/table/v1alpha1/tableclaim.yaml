@@ -1,0 +1,21 @@
+apiVersion: database.xplane.dfds.cloud/v1alpha1
+kind: AWSTableV1alpha1
+metadata:
+  name: tabledfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: eu-central-1
+    attributeDefinitions:
+      - attributeName: attribute1
+        attributeType: S
+    keySchema:
+      - attributeName: attribute1
+        keyType: HASH
+    billingMode: PROVISIONED
+    provisionedThroughput:
+      readCapacityUnits: 1
+      writeCapacityUnits: 1
+    streamSpecification:
+      streamEnabled: true
+      streamViewType: NEW_AND_OLD_IMAGES

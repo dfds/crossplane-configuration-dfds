@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsvpcv1s.networking.xplane.dfds.cloud
+  name: xawstablev1alpha1s.database.xplane.dfds.cloud
 spec:
   compositeTypeRef:
-    apiVersion: networking.xplane.dfds.cloud/v1alpha1
-    kind: XAWSVpcV1
+    apiVersion: database.xplane.dfds.cloud/v1alpha1
+    kind: XAWSTableV1alpha1
   patchSets:
   - name: configname
     patches:
@@ -18,10 +18,10 @@ spec:
       policy:
         fromFieldPath: Required
   resources:
-  - name: vpc
+  - name: table
     base:
-      apiVersion: ec2.aws.crossplane.io/v1beta1
-      kind: VPC
+      apiVersion: dynamodb.aws.crossplane.io/v1alpha1
+      kind: Table
       spec:
         forProvider:
           locationConstraint: eu-west-1
@@ -32,7 +32,7 @@ spec:
       toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.vpc"
+      toFieldPath: "status.createdResources.table"
     - type: FromCompositeFieldPath
       fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
     - fromFieldPath: spec.parameters.deletionPolicy
@@ -49,9 +49,9 @@ spec:
       kind: XRBACV1
       spec:
         resourceTypes:
-        - vpcs
+        - tables
         apiGroups:
-        - ec2.aws.crossplane.io
+        - dynamodb.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:
