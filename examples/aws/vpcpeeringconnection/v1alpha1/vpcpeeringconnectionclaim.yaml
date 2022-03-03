@@ -8,4 +8,4 @@ spec:
     region: eu-central-1
     vpcID: vpc-087bbacc636bf34ec
     peerVPCID: vpc-0ff77e70389a7a006
-    acceptRequest: false
+    acceptRequest: yes
