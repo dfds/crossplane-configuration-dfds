@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawssnstopicv1alpha1s.messaging.xplane.dfds.cloud
+  name: xawssubscriptionv1s.messaging.xplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-    kind: XAWSSNSTopicV1alpha1
+    kind: XAWSSubscriptionV1
   patchSets:
   - name: configname
     patches:
@@ -18,10 +18,10 @@ spec:
       policy:
         fromFieldPath: Required
   resources:
-  - name: snstopic
+  - name: subscription
     base:
-      apiVersion: notification.aws.crossplane.io/v1beta1
-      kind: SNSTopic
+      apiVersion: sns.aws.crossplane.io/v1beta1
+      kind: Subscription
       spec:
         forProvider:
           locationConstraint: eu-west-1
@@ -32,7 +32,7 @@ spec:
       toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.snstopic"
+      toFieldPath: "status.createdResources.subscription"
     - type: FromCompositeFieldPath
       fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
     - fromFieldPath: spec.parameters.deletionPolicy
@@ -49,9 +49,9 @@ spec:
       kind: XRBACV1
       spec:
         resourceTypes:
-        - snstopics
+        - subscriptions
         apiGroups:
-        - notification.aws.crossplane.io
+        - sns.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:

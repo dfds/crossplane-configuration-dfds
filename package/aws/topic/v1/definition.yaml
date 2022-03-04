@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawssnstopicv1alpha1s.messaging.xplane.dfds.cloud
+  name: xawstopicv1s.messaging.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawssnstopicv1alpha1s.messaging.xplane.dfds.cloud
+    name: xawstopicv1s.messaging.xplane.dfds.cloud
   group: messaging.xplane.dfds.cloud
   names:
-    kind: XAWSSNSTopicV1alpha1
-    plural: xawssnstopicv1alpha1s
+    kind: XAWSTopicV1
+    plural: xawstopicv1s
   claimNames:
-    kind: AWSSNSTopicV1alpha1
-    plural: awssnstopicv1alpha1s
+    kind: AWSTopicV1
+    plural: awstopicv1s
   versions:
   - name: v1alpha1
     served: true
@@ -35,8 +35,8 @@ spec:
                 type: object
                 default: {}
                 properties:
-                  snstopic:
-                    description: Name of the provisioned snstopic
+                  topic:
+                    description: Name of the provisioned topic
                     type: string
                     default: ""
                   rbac:
@@ -60,7 +60,7 @@ spec:
                   deletionPolicy: 
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
-                    default: "Delete"
+                    default: "Delete"               
                   deliveryPolicy:
                     description: DeliveryRetryPolicy - the JSON serialization of the
                       effective delivery policy, taking system defaults into account
@@ -84,8 +84,8 @@ spec:
                       the topic.
                     type: string
                   region:
-                    description: Region is the region you'd like your SNSTopic to
-                      be created in.
+                    description: Region is the region you'd like your Topic to be
+                      created in.
                     type: string
                   tags:
                     description: Tags represetnt a list of user-provided metadata
@@ -122,4 +122,4 @@ spec:
                     type: array
                 required:
                 - name
-                - region                    
+                - region

@@ -1,18 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawssnssubscriptionv1alpha1s.messaging.xplane.dfds.cloud
+  name: xawssubscriptionv1s.messaging.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawssnssubscriptionv1alpha1s.messaging.xplane.dfds.cloud
+    name: xawssubscriptionv1s.messaging.xplane.dfds.cloud
   group: messaging.xplane.dfds.cloud
   names:
-    kind: XAWSSNSSubscriptionV1alpha1
-    plural: xawssnssubscriptionv1alpha1s
+    kind: XAWSSubscriptionV1
+    plural: xawssubscriptionv1s
   claimNames:
-    kind: AWSSNSSubscriptionV1alpha1
-    plural: awssnssubscriptionv1alpha1s
-
+    kind: AWSSubscriptionV1
+    plural: awssubscriptionv1s
   versions:
   - name: v1alpha1
     served: true
@@ -23,7 +22,7 @@ spec:
       jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
     - name: Last Change
       type: string
-      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime     
     schema:
       openAPIV3Schema:
         type: object
@@ -36,8 +35,8 @@ spec:
                 type: object
                 default: {}
                 properties:
-                  snssubscription:
-                    description: Name of the provisioned snssubscription
+                  subscription:
+                    description: Name of the provisioned subscription
                     type: string
                     default: ""
                   rbac:
@@ -47,11 +46,11 @@ spec:
                     default: {}
               instanceConditions:
                 description: >
-                  Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
-                type: array 
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
                 items:
                   type: object
-                  x-kubernetes-preserve-unknown-fields: true
+                  x-kubernetes-preserve-unknown-fields: true                    
           spec:
             type: object
             properties:
@@ -61,7 +60,7 @@ spec:
                   deletionPolicy: 
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
-                    default: "Delete"
+                    default: "Delete"               
                   deliveryPolicy:
                     description: ' DeliveryPolicy defines how Amazon SNS retries failed  deliveries
                       to HTTP/S endpoints.'
@@ -92,7 +91,7 @@ spec:
                       are held in the dead-letter queue for further  analysis or reprocessing.'
                     type: string
                   region:
-                    description: Region is the region you'd like your SNSSubscription
+                    description: Region is the region you'd like your Subscription
                       to be in.
                     type: string
                   topicArn:
