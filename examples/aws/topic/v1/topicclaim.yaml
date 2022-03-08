@@ -1,0 +1,13 @@
+apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+kind: AWSTopicV1
+metadata:
+  name: awstopicdfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: eu-central-1
+    name: sample-topic
+    tags:
+    - key: key
+      value: value
+    displayName: display-topic-name

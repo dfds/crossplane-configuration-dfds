@@ -1,0 +1,171 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawsvpcpeeringconnectionv1alpha1s.networking.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawsvpcpeeringconnectionv1alpha1s.networking.xplane.dfds.cloud
+  group: networking.xplane.dfds.cloud
+  names:
+    kind: XAWSVPCPeeringConnectionV1alpha1
+    plural: xawsvpcpeeringconnectionv1alpha1s
+  claimNames:
+    kind: AWSVPCPeeringConnectionV1alpha1
+    plural: awsvpcpeeringconnectionv1alpha1s
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime     
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: List of resources created for this claim
+                type: object
+                default: {}
+                properties:
+                  vpcpeeringconnection:
+                    description: Name of the provisioned vpcpeeringconnection
+                    type: string
+                    default: ""
+                  rbac:
+                    description: List of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                    default: {}
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                    
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                  acceptRequest:
+                    description: Automatically accepts the peering connection. If
+                      this is not set, the peering connection will be created, but
+                      will be in pending-acceptance state. This will only lead to
+                      an active connection if both VPCs are in the same tenant.
+                    type: boolean
+                  peerOwnerID:
+                    description: "The AWS account ID of the owner of the accepter
+                      VPC. \n Default: Your AWS account ID"
+                    type: string
+                  peerRegion:
+                    description: "The Region code for the accepter VPC, if the accepter
+                      VPC is located in a Region other than the Region in which you
+                      make the request. \n Default: The Region in which you make the
+                      request."
+                    type: string
+                  peerVPCID:
+                    description: The ID of the VPC with which you are creating the
+                      VPC peering connection. You must specify this parameter in the
+                      request.
+                    type: string
+                  peerVPCIDRef:
+                    description: PeerVPCIDRef is a reference to an API used to set
+                      the PeerVPCID.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  peerVPCIDSelector:
+                    description: PeerVPCIDSelector selects references to API used
+                      to set the PeerVPCID.
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                  region:
+                    description: Region is which region the VPCPeeringConnection will
+                      be created.
+                    type: string
+                  tagSpecifications:
+                    description: The tags to assign to the peering connection.
+                    items:
+                      properties:
+                        resourceType:
+                          type: string
+                        tags:
+                          items:
+                            properties:
+                              key:
+                                type: string
+                              value:
+                                type: string
+                            type: object
+                          type: array
+                      type: object
+                    type: array
+                  tags:
+                    description: Metadata tagging key value pairs
+                    items:
+                      properties:
+                        key:
+                          type: string
+                        value:
+                          type: string
+                      type: object
+                    type: array
+                  vpcID:
+                    description: The ID of the requester VPC. You must specify this
+                      parameter in the request.
+                    type: string
+                  vpcIDRef:
+                    description: VPCIDRef is a reference to an API used to set the
+                      VPCID.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  vpcIDSelector:
+                    description: VPCIDSelector selects references to API used to set
+                      the VPCID.
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                required:
+                - region
