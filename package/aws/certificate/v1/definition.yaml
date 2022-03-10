@@ -160,3 +160,4 @@ spec:
                 - domainName
                 - region
                 - tags
+                - validationMethod
