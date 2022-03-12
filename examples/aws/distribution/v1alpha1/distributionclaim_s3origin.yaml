@@ -7,8 +7,8 @@ spec:
   parameters:
     region: us-east-1
     distributionConfig:
-      enabled: false
-      comment: Example CloudFront Distribution
+      enabled: false # set to false before deleting the claim
+      comment: Example CloudFront Distribution S3 origin
       origins:
         items:
           - domainName: crossplane-example-bucket.s3.amazonaws.com
