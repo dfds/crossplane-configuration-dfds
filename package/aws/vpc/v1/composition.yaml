@@ -1,10 +1,10 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xawsvpcv1s.networking.xplane.dfds.cloud
+  name: xawsvpcv1s.network.xplane.dfds.cloud
 spec:
   compositeTypeRef:
-    apiVersion: networking.xplane.dfds.cloud/v1alpha1
+    apiVersion: network.xplane.dfds.cloud/v1alpha1
     kind: XAWSVpcV1
   patchSets:
   - name: configname

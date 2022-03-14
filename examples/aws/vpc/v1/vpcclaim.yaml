@@ -1,4 +1,4 @@
-apiVersion: networking.xplane.dfds.cloud/v1alpha1
+apiVersion: network.xplane.dfds.cloud/v1alpha1
 kind: AWSVpcV1
 metadata:
   name: vpcdfds
