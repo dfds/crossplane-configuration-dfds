@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xawsvpcv1s.networking.xplane.dfds.cloud
+  name: xawsvpcv1s.network.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsvpcv1s.networking.xplane.dfds.cloud
-  group: networking.xplane.dfds.cloud
+    name: xawsvpcv1s.network.xplane.dfds.cloud
+  group: network.xplane.dfds.cloud
   names:
     kind: XAWSVpcV1
     plural: xawsvpcv1s
