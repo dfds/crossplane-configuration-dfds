@@ -67,7 +67,7 @@ spec:
       - type: map
         map:
           "public": "pub."
-          "private": "private."         
+          "private": ""         
     - fromFieldPath: spec.parameters.retention
       toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.config.retention
       transforms:
