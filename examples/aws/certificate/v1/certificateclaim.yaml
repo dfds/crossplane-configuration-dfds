@@ -7,6 +7,7 @@ spec:
   parameters:
     region: us-east-1
     domainName: example.dfds.cloud
+    validationMethod: DNS
     tags: 
     - key: Name
       value: dfdsexample

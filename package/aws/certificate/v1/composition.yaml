@@ -54,7 +54,7 @@ spec:
         resourceTypes:
         - certificates
         apiGroups:
-        - certificates.acm.aws.crossplane.io
+        - acm.aws.crossplane.io
         providerConfigRef:
           name: kubernetes-provider
     patches:

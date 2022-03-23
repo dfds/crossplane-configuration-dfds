@@ -1,0 +1,14 @@
+apiVersion: compute.xplane.dfds.cloud/v1alpha1
+kind: AWSFunctionV1
+metadata:
+  name: functiondfds
+  namespace: my-namespace
+spec:
+  parameters:
+    packageType: Image
+    code:
+      imageURI: xxxxxxx.dkr.ecr.eu-central-1.amazonaws.com/test-image:latest
+    role: arn:aws:iam::xxxxxx:role/lambda_basic_execution
+    region: eu-central-1
+    tags:
+      myKey: myValue

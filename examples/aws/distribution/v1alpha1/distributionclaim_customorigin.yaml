@@ -1,0 +1,69 @@
+apiVersion: cdn.xplane.dfds.cloud/v1alpha1
+kind: AWSDistributionV1alpha1
+metadata:
+  name: awsdistributioncustomdfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: us-east-1
+    distributionConfig:
+      enabled: false # set to false before deleting the claim
+      comment: Example CloudFront Distribution Custom
+      priceClass: PriceClass_100
+      origins:
+        items:
+          - domainName: app.my.cloud
+            id: customOrigin
+            customOriginConfig:
+              httpPort: 80
+              originProtocolPolicy: "https-only"
+              originReadTimeout: 10
+              originKeepaliveTimeout: 5
+              httpSPort: 443
+              originSSLProtocols:
+                items:
+                  - TLSv1.2
+      cacheBehaviors:
+        items:
+        - pathPattern: /*/services-email-validation-api/*
+          targetOriginID: customOrigin
+          compress: false
+          viewerProtocolPolicy: https-only
+          minTTL: 0
+          maxTTL: 0
+          defaultTTL: 0
+          forwardedValues:
+            queryString: true           
+            cookies:
+              forward: all
+            headers:
+              items:
+              - Accept
+              - Accept-Charset
+              - Accept-Encoding
+              - Accept-Language
+              - Authorization
+              - Accept-Datetime
+              - Referer
+              - Origin
+      defaultCacheBehavior:
+        targetOriginID: customOrigin
+        compress: false
+        viewerProtocolPolicy: https-only
+        minTTL: 0
+        maxTTL: 0
+        defaultTTL: 0
+        forwardedValues:
+          queryString: true
+          cookies:
+            forward: all
+          headers:
+            items:
+            - Accept
+            - Accept-Charset
+            - Accept-Encoding
+            - Accept-Language
+            - Authorization
+            - Accept-Datetime
+            - Referer
+            - Origin

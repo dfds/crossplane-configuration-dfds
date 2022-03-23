@@ -1,0 +1,14 @@
+apiVersion: dns.xplane.dfds.cloud/v1alpha1
+kind: AWSResourceRecordSetV1alpha1
+metadata:
+  name: myrecord # Avoid using CNAMEs as name
+  namespace: my-namespace
+  annotations: # Is required for the timebeing as the current version cannot handle any name formats
+    crossplane.io/external-name: _90ed43ef9b79809bb4da53362decd923.example.dfds.cloud.
+spec:
+  parameters:
+    type: CNAME
+    ttl: 300
+    resourceRecords:
+    - value: _1c867f8263678a019afada797d4c1178.gbwdrhjxvn.acm-validations.aws.
+    zoneId: ZQZBM0QWVX3

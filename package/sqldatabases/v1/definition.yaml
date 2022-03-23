@@ -111,24 +111,30 @@ spec:
             type: object
             properties:
               createdResources:
-                description: list of resources created for this claim
+                description: List of resources created for this claim
                 type: object
+                default: {}
                 properties:
                   vpc:
                     description: Name of the provisioned vpc
                     type: string
+                    default: ""
                   securitygroup:
                     description: Name of the provisioned securitygroup
                     type: string
+                    default: ""
                   rdsinstance:
                     description: Name of the provisioned rdsinstance
                     type: string
+                    default: ""
                   clusterrole: 
                     description: Name of the provisioned clusterrole
                     type: string
+                    default: ""
                   clusterrolebinding:
                     description: Name of the provisioned clusterrolebinding
                     type: string
+                    default: ""
               dbInstanceConditions:
                 description: >
                   Freeform field containing information about the RDS instance condition, e.g. reconcile errors due to bad parameters

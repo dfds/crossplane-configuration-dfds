@@ -120,14 +120,14 @@ Next in the file, we should declare a version for our resource and lay out the s
             type: object
             properties:
               createdResources:
-                description: list of resources created for this claim
+                description: List of resources created for this claim
                 type: object
                 properties:
                   bucket:
                     description: Name of the provisioned bucket
                     type: string
                   rbac:
-                    description: list of the provisioned RBAC resources
+                    description: List of the provisioned RBAC resources
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
               instanceConditions:

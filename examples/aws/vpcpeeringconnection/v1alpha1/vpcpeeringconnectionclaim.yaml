@@ -1,0 +1,11 @@
+apiVersion: network.xplane.dfds.cloud/v1alpha1
+kind: AWSVPCPeeringConnectionV1alpha1
+metadata:
+  name: vpcpeeringconnectiondfds
+  namespace: my-namespace
+spec:
+  parameters:
+    region: eu-central-1
+    vpcID: vpc-087bbacc636bf34ec
+    peerVPCID: vpc-0ff77e70389a7a006
+    acceptRequest: yes

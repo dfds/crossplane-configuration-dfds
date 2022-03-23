@@ -1,0 +1,13 @@
+apiVersion: dns.xplane.dfds.cloud/v1alpha1
+kind: AWSResourceRecordSetV1alpha1
+metadata:
+  name: awsresoucerecordsetdfds2.example.dfds.cloud
+  namespace: my-namespace
+spec:
+  parameters:
+    type: CNAME
+    ttl: 300
+    resourceRecords:
+    - value: "www.test.dfds.cloud"
+    zoneIdRef: # k8s object name
+      name: awshostedzonedfds-r8klp-d6k46

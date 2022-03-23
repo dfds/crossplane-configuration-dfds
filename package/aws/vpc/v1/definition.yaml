@@ -1,0 +1,116 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawsvpcv1s.network.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xawsvpcv1s.network.xplane.dfds.cloud
+  group: network.xplane.dfds.cloud
+  names:
+    kind: XAWSVpcV1
+    plural: xawsvpcv1s
+  claimNames:
+    kind: AWSVpcV1
+    plural: awsvpcv1s
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    additionalPrinterColumns:
+    - name: Synced
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+    - name: Last Change
+      type: string
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime     
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          status:
+            type: object
+            properties:
+              createdResources:
+                description: List of resources created for this claim
+                type: object
+                default: {}
+                properties:
+                  vpc:
+                    description: Name of the provisioned vpc
+                    type: string
+                    default: ""
+                  rbac:
+                    description: List of the provisioned RBAC resources
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                    default: {}
+              instanceConditions:
+                description: >
+                  Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                type: array
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true                    
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  deletionPolicy: 
+                    description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                    type: string
+                    default: "Delete"
+                  amazonProvidedIpv6CidrBlock:
+                    description: Requests an Amazon-provided IPv6 CIDR block with
+                      a /56 prefix length for the VPC. You cannot specify the range
+                      of IP addresses, or the size of the CIDR block.
+                    type: boolean
+                  cidrBlock:
+                    description: CIDRBlock is the IPv4 network range for the VPC,
+                      in CIDR notation. For example, 10.0.0.0/16.
+                    type: string
+                  enableDnsHostNames:
+                    description: Indicates whether the instances launched in the VPC
+                      get DNS hostnames.
+                    type: boolean
+                  enableDnsSupport:
+                    description: A boolean flag to enable/disable DNS support in the
+                      VPC
+                    type: boolean
+                  instanceTenancy:
+                    description: The allowed tenancy of instances launched into the
+                      VPC.
+                    type: string
+                  ipv6CidrBlock:
+                    description: The IPv6 CIDR block from the IPv6 address pool. You
+                      must also specify Ipv6Pool in the request. To let Amazon choose
+                      the IPv6 CIDR block for you, omit this parameter.
+                    type: string
+                  ipv6Pool:
+                    description: The ID of an IPv6 address pool from which to allocate
+                      the IPv6 CIDR block.
+                    type: string
+                  region:
+                    description: Region is the region you'd like your VPC to be created
+                      in.
+                    type: string
+                  tags:
+                    description: Tags are used as identification helpers between AWS
+                      resources.
+                    items:
+                      description: Tag defines a tag
+                      properties:
+                        key:
+                          description: Key is the name of the tag.
+                          type: string
+                        value:
+                          description: Value is the value of the tag.
+                          type: string
+                      required:
+                      - key
+                      - value
+                      type: object
+                    type: array
+                required:
+                - cidrBlock                    

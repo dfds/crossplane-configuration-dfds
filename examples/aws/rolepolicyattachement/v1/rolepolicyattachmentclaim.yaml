@@ -2,7 +2,7 @@ apiVersion: identity.xplane.dfds.cloud/v1alpha1
 kind: AWSRolePolicyAttachmentV1
 metadata:
   name: s3-readonly-dfds
-  namespace: my-namespace  
+  namespace: my-namespace
 spec:
   parameters:
     policyArn: arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
