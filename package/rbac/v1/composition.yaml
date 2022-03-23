@@ -14,7 +14,7 @@ spec:
     - fromFieldPath: spec.resourceName
       toFieldPath: spec.forProvider.manifest.metadata.name    
       policy:
-        fromFieldPath: Required       
+        fromFieldPath: Required
     - fromFieldPath: metadata.labels
       toFieldPath: spec.forProvider.manifest.metadata.labels
       policy:
@@ -41,6 +41,14 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: object-metadata
+    - fromFieldPath: spec.resourceName
+      toFieldPath: metadata.name
+      policy:
+        fromFieldPath: Required
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-clusterrole"              
     - fromFieldPath: spec.apiGroups
       toFieldPath: spec.forProvider.manifest.rules[0].apiGroups
     - fromFieldPath: spec.resourceTypes
@@ -78,7 +86,15 @@ spec:
           name: kubernetes-provider
     patches:
     - type: PatchSet
-      patchSetName: object-metadata    
+      patchSetName: object-metadata
+    - fromFieldPath: spec.resourceName
+      toFieldPath: metadata.name
+      policy:
+        fromFieldPath: Required
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-clusterrolebinding"
     - fromFieldPath: spec.resourceName
       toFieldPath: spec.forProvider.manifest.roleRef.name
     - fromFieldPath: spec.resourceNamespace
