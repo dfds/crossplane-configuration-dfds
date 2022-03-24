@@ -26,7 +26,7 @@ spec:
       kind: XRBACV1
       spec:
         resourceTypes: 
-        - distribution
+        - distributions
         apiGroups: 
         - cloudfront.aws.crossplane.io
         providerConfigRef:
