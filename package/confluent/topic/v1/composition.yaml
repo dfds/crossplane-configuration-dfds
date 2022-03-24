@@ -1,0 +1,126 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xconfluenttopicv1s.messaging.xplane.dfds.cloud
+spec:
+  compositeTypeRef:
+    apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+    kind: XConfluentTopicV1
+  resources:
+  - name: topic
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        references:      
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: clusterid
+          toFieldPath: spec.forProvider.cluster
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: environmentid
+          toFieldPath: spec.forProvider.environment
+        forProvider:
+          manifest:
+            apiVersion: kafka.confluent.crossplane.io/v1alpha1
+            kind: Topic
+            spec:
+              forProvider:
+                topic:
+                  partitions: 3
+              providerConfigRef:
+                name: confluent-provider
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: metadata.name
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[0].patchesFrom.namespace    
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[0].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[1].patchesFrom.namespace            
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[1].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: spec.parameters.availability
+      policy:
+        fromFieldPath: Required
+      toFieldPath: metadata.annotations[crossplane.io/availability]
+    - type: ToCompositeFieldPath
+      fromFieldPath: metadata.annotations[crossplane.io/availability]
+      toFieldPath: "status.availability"
+      policy:
+        fromFieldPath: Required
+      transforms:
+      - type: map
+        map:
+          "public": "pub."
+          "private": ""         
+    - fromFieldPath: spec.parameters.retention
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.config.retention
+      transforms:
+      - type: convert
+        convert:
+          toType: string        
+      - type: map
+        map:
+          "-1": "-1"
+          "7": "604800000"
+          "31": "2678400000"
+          "365": "31536000000"
+      - type: convert
+        convert:
+          toType: int64            
+    - fromFieldPath: spec.parameters.partitions
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.partitions
+    - fromFieldPath: spec.parameters.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - type: CombineFromComposite
+      combine:
+        variables:
+          - fromFieldPath: status.availability
+          - fromFieldPath: spec.claimRef.namespace
+          - fromFieldPath: spec.parameters.name
+        strategy: string
+        string:
+          fmt: "%s%s.%s"
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.name #spec.forProvider.topic.name
+    - type: ToCompositeFieldPath
+      fromFieldPath: spec.forProvider.manifest.spec.forProvider.topic.name
+      toFieldPath: "status.createdResources.topic"
+      policy:
+        fromFieldPath: Optional
+
+  - name: rbac
+    base:
+      apiVersion: xplane.dfds.cloud/v1alpha1
+      kind: XRBACV1
+      spec:
+        resourceTypes:
+        - topics
+        apiGroups:
+        - kafka.confluent.crossplane.io
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.resourceName
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.resourceNamespace
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.createdResources
+      toFieldPath: status.createdResources.rbac
+      policy:
+        fromFieldPath: Optional        

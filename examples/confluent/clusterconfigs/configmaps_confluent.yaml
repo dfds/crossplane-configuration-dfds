@@ -1,0 +1,18 @@
+# Example configmaps that are required for providing needed configurations for the Confluent compositions
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clusterid
+  namespace: default
+data:
+  dev: cluster-dev-example
+  prod: cluster-prod-example
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environmentid
+  namespace: default
+data:
+  dev: env-dev-example
+  prod: env-prod-example

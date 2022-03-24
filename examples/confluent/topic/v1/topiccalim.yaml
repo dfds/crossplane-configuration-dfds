@@ -1,0 +1,13 @@
+apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+kind: ConfluentTopicV1
+metadata:
+  name: confluenttopicdfds
+  namespace: default
+spec:
+  parameters:
+    name: confluent-dfds-crossplane
+    partitions: 3
+    availability: "public"
+    environment: dev
+    retention: 7
+    deletionPolicy: Delete
