@@ -4,7 +4,7 @@ metadata:
   name: xawsdistributionv1alpha1s.cdn.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsdistributionv1alpha1s.cdn.xplane.dfds.cloud 
+    name: xawsdistributionv1alpha1s.cdn.xplane.dfds.cloud
   group: cdn.xplane.dfds.cloud
   names:
     kind: XAWSDistributionV1alpha1
@@ -12,14 +12,14 @@ spec:
   claimNames:
     kind: AWSDistributionV1alpha1
     plural: awsdistributionv1alpha1s
-  versions: 
+  versions:
   - name: v1alpha1
     served: true
     referenceable: true
     additionalPrinterColumns:
     - name: Synced
       type: string
-      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status
     - name: Last Change
       type: string
       jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
@@ -50,17 +50,20 @@ spec:
                 type: array
                 items:
                   type: object
-                  x-kubernetes-preserve-unknown-fields: true                           
+                  x-kubernetes-preserve-unknown-fields: true
           spec:
             type: object
             properties:
               parameters:
                 type: object
                 properties:
-                  deletionPolicy: 
+                  deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
                     default: "Delete"
+                    enum:
+                    - Delete
+                    - Orphan
                   distributionConfig:
                     description: The distribution's configuration information.
                     properties:

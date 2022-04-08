@@ -9,7 +9,7 @@ spec:
   patchSets:
   - name: configname
     patches:
-    - fromFieldPath: spec.claimRef.namespace    
+    - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.providerConfigRef.name
       transforms:
       - type: string
@@ -23,13 +23,13 @@ spec:
       apiVersion: xplane.dfds.cloud/v1alpha1
       kind: XRBACV1
       spec:
-        resourceTypes: 
+        resourceTypes:
         - replicationgroups
-        apiGroups: 
+        apiGroups:
         - cache.aws.crossplane.io
         providerConfigRef:
-          name: kubernetes-provider       
-    patches: 
+          name: kubernetes-provider
+    patches:
     - fromFieldPath: metadata.name
       toFieldPath: spec.resourceName
     - fromFieldPath: spec.claimRef.namespace
@@ -38,7 +38,7 @@ spec:
       fromFieldPath: status.createdResources
       toFieldPath: status.createdResources.rbac
       policy:
-        fromFieldPath: Optional    
+        fromFieldPath: Optional
 
   - name: replicationgroup
     base:
@@ -48,7 +48,7 @@ spec:
     - type: PatchSet
       patchSetName: configname
     - fromFieldPath: metadata.name
-      toFieldPath: metadata.name          
+      toFieldPath: metadata.name
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
@@ -67,4 +67,4 @@ spec:
       fromFieldPath: status.conditions
       toFieldPath: status.instanceConditions
       policy:
-        fromFieldPath: Optional      
+        fromFieldPath: Optional

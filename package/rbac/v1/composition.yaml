@@ -12,7 +12,7 @@ spec:
   - name: object-metadata
     patches:
     - fromFieldPath: spec.resourceName
-      toFieldPath: spec.forProvider.manifest.metadata.name    
+      toFieldPath: spec.forProvider.manifest.metadata.name
       policy:
         fromFieldPath: Required
     - fromFieldPath: metadata.labels
@@ -48,7 +48,7 @@ spec:
       transforms:
       - type: string
         string:
-          fmt: "%s-clusterrole"              
+          fmt: "%s-clusterrole"
     - fromFieldPath: spec.apiGroups
       toFieldPath: spec.forProvider.manifest.rules[0].apiGroups
     - fromFieldPath: spec.resourceTypes
@@ -61,7 +61,7 @@ spec:
       fromFieldPath: spec.forProvider.manifest.rules[0].resourceNames[0]
       toFieldPath: "status.createdResources.clusterrole"
       policy:
-        fromFieldPath: Optional 
+        fromFieldPath: Optional
 
   - name: rolebinding
     base:
@@ -103,4 +103,4 @@ spec:
       fromFieldPath: spec.forProvider.manifest.roleRef.name
       toFieldPath: "status.createdResources.clusterrolebinding"
       policy:
-        fromFieldPath: Optional       
+        fromFieldPath: Optional

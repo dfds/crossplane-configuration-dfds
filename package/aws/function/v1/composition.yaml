@@ -55,7 +55,7 @@ spec:
       fromFieldPath: metadata.name
       toFieldPath: status.createdResources.lambda
       policy:
-        fromFieldPath: Optional      
+        fromFieldPath: Optional
     - type: ToCompositeFieldPath
       fromFieldPath: status.conditions
       toFieldPath: status.instanceConditions
@@ -69,4 +69,4 @@ spec:
       fromFieldPath: status.conditions
       toFieldPath: status.instanceConditions
       policy:
-        fromFieldPath: Optional       
+        fromFieldPath: Optional

@@ -20,7 +20,7 @@ spec:
     additionalPrinterColumns:
     - name: Synced
       type: string
-      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status
     - name: Last Change
       type: string
       jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
@@ -58,10 +58,13 @@ spec:
               parameters:
                 type: object
                 properties:
-                  deletionPolicy: 
+                  deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
                     default: "Delete"
+                    enum:
+                    - Delete
+                    - Orphan
                   config:
                     description: Config includes the Comment and PrivateZone elements.
                       If you omitted the Config and Comment elements from the request,
@@ -139,4 +142,4 @@ spec:
                         type: string
                     type: object
                 required:
-                - name           
+                - name
