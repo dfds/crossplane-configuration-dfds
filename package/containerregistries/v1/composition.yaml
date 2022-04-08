@@ -51,7 +51,7 @@ spec:
               value: crossplane
     patches:
     - type: PatchSet
-      patchSetName: configname    
+      patchSetName: configname
     - fromFieldPath: spec.parameters.enableSecurityScanOnPush
       toFieldPath: spec.forProvider.imageScanningConfiguration.scanOnPush
     - fromFieldPath: spec.parameters.mutability
@@ -66,14 +66,14 @@ spec:
       policy:
         fromFieldPath: Optional
     - type: FromCompositeFieldPath
-      fromFieldPath: "metadata.annotations[crossplane.io/external-name]" # enables using external name in claims      
+      fromFieldPath: "metadata.annotations[crossplane.io/external-name]" # enables using external name in claims
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
     - type: ToCompositeFieldPath
       fromFieldPath: status.conditions
       toFieldPath: status.instanceConditions
       policy:
-        fromFieldPath: Optional      
+        fromFieldPath: Optional
 
   - name: ecr-policy
     base:

@@ -4,7 +4,7 @@ metadata:
   name: xawsbucketv1s.storage.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xawsbucketv1s.storage.xplane.dfds.cloud 
+    name: xawsbucketv1s.storage.xplane.dfds.cloud
   group: storage.xplane.dfds.cloud
   names:
     kind: XAWSBucketV1
@@ -12,14 +12,14 @@ spec:
   claimNames:
     kind: AWSBucketV1
     plural: awsbucketv1s
-  versions: 
+  versions:
   - name: v1alpha1
     served: true
     referenceable: true
     additionalPrinterColumns:
     - name: Synced
       type: string
-      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status
     - name: Last Change
       type: string
       jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
@@ -57,10 +57,13 @@ spec:
               parameters:
                 type: object
                 properties:
-                  deletionPolicy: 
+                  deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
-                    default: "Delete"                                        
+                    default: "Delete"
+                    enum:
+                    - Delete
+                    - Orphan
                   accelerateConfiguration:
                     description: AccelerateConfiguration configures the transfer acceleration
                       state for an Amazon S3 bucket. For more information, see Amazon
@@ -1477,4 +1480,3 @@ spec:
                 - locationConstraint
             required:
             - parameters
-          

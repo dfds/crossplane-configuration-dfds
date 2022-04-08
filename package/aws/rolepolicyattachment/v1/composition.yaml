@@ -10,15 +10,15 @@ spec:
   patchSets:
   - name: configname
     patches:
-    - fromFieldPath: spec.claimRef.namespace    
+    - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.providerConfigRef.name
       transforms:
       - type: string
         string:
           fmt: "%s-aws"
       policy:
-        fromFieldPath: Required    
-  
+        fromFieldPath: Required
+
   resources:
   - name: rbac
     base:
@@ -41,7 +41,7 @@ spec:
       toFieldPath: status.createdResources.rbac
       policy:
         fromFieldPath: Optional
-                  
+
   - name: RolePolicyAttachment
     base:
       apiVersion: iam.aws.crossplane.io/v1beta1
@@ -50,7 +50,7 @@ spec:
     - type: PatchSet
       patchSetName: configname
     - fromFieldPath: metadata.name
-      toFieldPath: metadata.name          
+      toFieldPath: metadata.name
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
     - type: FromCompositeFieldPath
@@ -59,7 +59,7 @@ spec:
       toFieldPath: spec.deletionPolicy
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
-      toFieldPath: "status.createdResources.rolepolicyattachement"           
+      toFieldPath: "status.createdResources.rolepolicyattachement"
       toFieldPath: "status.createdResources.iamrolepolicyattachement"
     - type: ToCompositeFieldPath
       fromFieldPath: status.conditions

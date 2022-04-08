@@ -62,6 +62,9 @@ spec:
                       description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                       type: string
                       default: "Orphan"
+                      enum:
+                      - Delete
+                      - Orphan
                     environment:
                       description: Provision topic in either prod or dev environment.
                       type: string

@@ -19,10 +19,10 @@ spec:
     additionalPrinterColumns:
     - name: Synced
       type: string
-      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status
     - name: Last Change
       type: string
-      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime     
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
     schema:
       openAPIV3Schema:
         type: object
@@ -50,17 +50,20 @@ spec:
                 type: array
                 items:
                   type: object
-                  x-kubernetes-preserve-unknown-fields: true                    
+                  x-kubernetes-preserve-unknown-fields: true
           spec:
             type: object
             properties:
               parameters:
                 type: object
                 properties:
-                  deletionPolicy: 
+                  deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
                     default: "Delete"
+                    enum:
+                    - Delete
+                    - Orphan
                   amazonProvidedIpv6CidrBlock:
                     description: Requests an Amazon-provided IPv6 CIDR block with
                       a /56 prefix length for the VPC. You cannot specify the range
@@ -113,4 +116,4 @@ spec:
                       type: object
                     type: array
                 required:
-                - cidrBlock                    
+                - cidrBlock

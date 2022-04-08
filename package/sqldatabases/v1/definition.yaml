@@ -17,7 +17,7 @@ spec:
   claimNames:
     kind: SqlDatabaseInstanceV1
     plural: sqldatabaseinstancev1s
-  versions: 
+  versions:
   - name: v1alpha1
     served: true
     referenceable: true
@@ -99,10 +99,13 @@ spec:
                   finalBackupName:
                     description: If you have specified this as a production database you need to set a name for the final backup
                     type: string
-                  deletionPolicy: 
+                  deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
                     default: "Delete"
+                    enum:
+                    - Delete
+                    - Orphan
                 required:
                 - isProduction
             required:
@@ -127,7 +130,7 @@ spec:
                     description: Name of the provisioned rdsinstance
                     type: string
                     default: ""
-                  clusterrole: 
+                  clusterrole:
                     description: Name of the provisioned clusterrole
                     type: string
                     default: ""

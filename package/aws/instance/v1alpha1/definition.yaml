@@ -20,7 +20,7 @@ spec:
     additionalPrinterColumns:
     - name: Synced
       type: string
-      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status    
+      jsonPath: .status.instanceConditions[?(@.type=='Synced')].status
     - name: Last Change
       type: string
       jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
@@ -48,7 +48,7 @@ spec:
               instanceConditions:
                 description: >
                   Freeform field containing information about the instance condition, e.g. reconcile errors due to bad parameters
-                type: array 
+                type: array
                 items:
                   type: object
                   x-kubernetes-preserve-unknown-fields: true
@@ -58,10 +58,13 @@ spec:
               parameters:
                 type: object
                 properties:
-                  deletionPolicy: 
+                  deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
                     default: "Delete"
+                    enum:
+                    - Delete
+                    - Orphan
                   ElasticGpuSpecification:
                     description: An elastic GPU to associate with the instance. An
                       Elastic GPU is a GPU resource that you can attach to your Windows
@@ -915,4 +918,4 @@ spec:
                     type: string
                 required:
                 - imageId
-                - region                    
+                - region

@@ -12,7 +12,7 @@ spec:
       apiVersion: kubernetes.crossplane.io/v1alpha1
       kind: Object
       spec:
-        references:      
+        references:
         - patchesFrom:
             apiVersion: v1
             kind: ConfigMap
@@ -39,7 +39,7 @@ spec:
     - fromFieldPath: metadata.name
       toFieldPath: metadata.name
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[0].patchesFrom.namespace    
+      toFieldPath: spec.references[0].patchesFrom.namespace
     - fromFieldPath: spec.parameters.environment
       toFieldPath: spec.references[0].patchesFrom.fieldPath
       transforms:
@@ -47,7 +47,7 @@ spec:
         string:
           fmt: "data.%s"
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[1].patchesFrom.namespace            
+      toFieldPath: spec.references[1].patchesFrom.namespace
     - fromFieldPath: spec.parameters.environment
       toFieldPath: spec.references[1].patchesFrom.fieldPath
       transforms:
@@ -67,13 +67,13 @@ spec:
       - type: map
         map:
           "public": "pub."
-          "private": ""         
+          "private": ""
     - fromFieldPath: spec.parameters.retention
       toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.config.retention
       transforms:
       - type: convert
         convert:
-          toType: string        
+          toType: string
       - type: map
         map:
           "-1": "-1"
@@ -82,7 +82,7 @@ spec:
           "365": "31536000000"
       - type: convert
         convert:
-          toType: int64            
+          toType: int64
     - fromFieldPath: spec.parameters.partitions
       toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.partitions
     - fromFieldPath: spec.parameters.deletionPolicy
@@ -123,4 +123,4 @@ spec:
       fromFieldPath: status.createdResources
       toFieldPath: status.createdResources.rbac
       policy:
-        fromFieldPath: Optional        
+        fromFieldPath: Optional

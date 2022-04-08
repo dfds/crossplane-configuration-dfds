@@ -67,4 +67,4 @@ spec:
       fromFieldPath: status.conditions
       toFieldPath: status.instanceConditions
       policy:
-        fromFieldPath: Optional             
+        fromFieldPath: Optional
