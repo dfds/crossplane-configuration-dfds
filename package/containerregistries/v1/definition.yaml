@@ -55,23 +55,34 @@ spec:
                 items:
                   type: object
                   x-kubernetes-preserve-unknown-fields: true
+              exportedAttributes:
+                description: >
+                  Properties exported from the provider about the managed resource.
+                type: object
+                default: {}
+                properties:
+                  repositoryUri:
+                    description: Container repo URI
+                    type: string
+                    default: ""
           spec:
             type: object
             properties:
               parameters:
                 type: object
                 properties:
+                  name:
+                    description: repo name
+                    type: string
                   deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
                     default: "Delete"
-                    enum:
-                    - Delete
-                    - Orphan
+                    enum: ["Delete", "Orphan"]
                   enableSecurityScanOnPush:
                     description: Enable image security scan on push.
                     type: boolean
-                    default: false
+                    default: true
                   mutability:
                     description: Allow for mutable tags, i.e. tags can be overwritten.
                     type: string
@@ -80,11 +91,7 @@ spec:
                   region:
                     description: Geographic location of resources.
                     type: string
-                    enum: ["eu-west-1", "eu-central-1"]
-                    default: "eu-west-1"
+                    enum: ["ireland", "germany"]
+                    default: "ireland"
                 required:
-                - region
-                - mutability
-                - enableSecurityScanOnPush
-            required:
-            - parameters
+                - name

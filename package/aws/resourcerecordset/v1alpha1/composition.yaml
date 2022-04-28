@@ -31,14 +31,14 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: configname
-    - fromFieldPath: spec.claimRef.name
+    - fromFieldPath: spec.claimRef.name # TODO: use external-name only - see package/containerregistries
       toFieldPath: metadata.name
     - fromFieldPath: spec.parameters
       toFieldPath: spec.forProvider
     - type: ToCompositeFieldPath
       fromFieldPath: "metadata.name"
       toFieldPath: "status.createdResources.resourcerecrodset"
-    - type: FromCompositeFieldPath
+    - type: FromCompositeFieldPath  # TODO: use external-name only - see package/containerregistries
       fromFieldPath: "metadata.annotations[crossplane.io/external-name]"
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy

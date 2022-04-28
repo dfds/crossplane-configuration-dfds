@@ -2,9 +2,7 @@ apiVersion: xplane.dfds.cloud/v1alpha1
 kind: ContainerRegistryV1
 metadata:
   namespace: my-namespace
-  name: containerregistrydfds
+  name: somerepo
 spec:
   parameters:
-    enableSecurityScanOnPush: false
-    mutability: "IMMUTABLE"
-    region: "eu-west-1"
+    name: ded/p-team/terminal-operation-service

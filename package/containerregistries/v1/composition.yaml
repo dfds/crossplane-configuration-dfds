@@ -52,12 +52,21 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: configname
+    - fromFieldPath: spec.parameters.name
+      toFieldPath: metadata.annotations[crossplane.io/external-name]
+      policy:
+        fromFieldPath: Required
     - fromFieldPath: spec.parameters.enableSecurityScanOnPush
       toFieldPath: spec.forProvider.imageScanningConfiguration.scanOnPush
     - fromFieldPath: spec.parameters.mutability
       toFieldPath: spec.forProvider.imageTagMutability
     - fromFieldPath: spec.parameters.region
       toFieldPath: spec.forProvider.region
+      transforms:
+      - type: map
+        map:
+          ireland: eu-west-1
+          germany: eu-central-1
     - fromFieldPath: spec.parameters.deletionPolicy
       toFieldPath: spec.deletionPolicy
     - type: ToCompositeFieldPath
@@ -72,6 +81,11 @@ spec:
     - type: ToCompositeFieldPath
       fromFieldPath: status.conditions
       toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.atProvider.repositoryUri
+      toFieldPath: status.exportedAttributes.repositoryUri
       policy:
         fromFieldPath: Optional
 
