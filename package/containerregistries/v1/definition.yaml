@@ -77,7 +77,7 @@ spec:
                   deletionPolicy:
                     description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
                     type: string
-                    default: "Delete"
+                    default: "Orphan"
                     enum: ["Delete", "Orphan"]
                   enableSecurityScanOnPush:
                     description: Enable image security scan on push.
