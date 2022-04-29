@@ -6,4 +6,4 @@ metadata:
 spec:
   parameters:
     locationConstraint: eu-west-1
-    acl: public-read
+    acl: private
