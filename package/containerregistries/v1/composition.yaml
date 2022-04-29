@@ -52,6 +52,7 @@ spec:
     patches:
     - type: PatchSet
       patchSetName: configname
+    - fromFieldPath: metadata.name
     - fromFieldPath: spec.parameters.name
       toFieldPath: metadata.annotations[crossplane.io/external-name]
       policy:
