@@ -1,0 +1,9 @@
+apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+kind: ConfluentTopicAccessV1
+metadata:
+  name: confluenttopicaccessdfdssamdi
+  namespace: default
+spec:
+  parameters:
+    environment: dev
+    deletionPolicy: Delete
