@@ -65,6 +65,11 @@ spec:
         providerConfigRef:
           name: kubernetes-provider
     patches:
+    - fromFieldPath: metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-api-key"
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.references[0].patchesFrom.namespace
     - fromFieldPath: spec.parameters.environment
@@ -87,73 +92,8 @@ spec:
       policy:
         fromFieldPath: Required
 
-  - name: acl
-    base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
-      metadata:
-        name: api-key-data
-      spec:
-        references:
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: clusterid
-          toFieldPath: spec.forProvider.cluster
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: environmentid
-          toFieldPath: spec.forProvider.environment
-        forProvider:
-          manifest:
-            apiVersion: kafka.confluent.crossplane.io/v1alpha1
-            kind: ACL
-            metadata:
-              name: acl-test-0000
-            spec:
-              forProvider:
-                # environment: YYY
-                # cluster: ZZZ
-                aclRule:
-                  operation: WRITE
-                  patternType: PREFIXED
-                  permission: ALLOW
-                  # principal: "User:sa-0000"
-                  resourceType: CONSUMER_GROUP
-                  resourceName: default # rootId # maybe with a dot
-              providerConfigRef:
-                name: confluent-provider
-        providerConfigRef:
-          name: kubernetes-provider
-    patches:
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[0].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[0].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[1].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[1].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      transforms:
-      - type: string
-        string:
-          fmt: "User:%s"
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
-      policy:
-        fromFieldPath: Required
-    # - fromFieldPath: spec.claimRef.namespace
-    #   toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.resourceName
+
+
 
 # # For root-id.*
 # --- DONE
@@ -174,6 +114,84 @@ spec:
 #       resourceType: CONSUMER_GROUP
 #       resourceName: rootId # maybe with a dot
 
+# TODO:
+# - rename object confluenttopicaccessdfdssamdi-rznq6-7hfmc => confluenttopicaccessdfdssamdi-acl-7hfmc.
+# -
+
+  - name: acl-0
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        references:
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: clusterid
+          toFieldPath: spec.forProvider.cluster
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: environmentid
+          toFieldPath: spec.forProvider.environment
+        forProvider:
+          manifest:
+            apiVersion: kafka.confluent.crossplane.io/v1alpha1
+            kind: ACL
+            metadata:
+              name: acl-test-0000
+            spec:
+              forProvider:
+                aclRule:
+                  operation: WRITE
+                  patternType: PREFIXED
+                  permission: ALLOW
+                  resourceType: GROUP
+              providerConfigRef:
+                name: confluent-provider
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-rule-0"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[0].patchesFrom.namespace
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[0].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[1].patchesFrom.namespace
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[1].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-rule-0"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      transforms:
+      - type: string
+        string:
+          fmt: "User:%s"
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
+      policy:
+        fromFieldPath: Required
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.resourceName
+
+
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "CREATE", "", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -192,6 +210,80 @@ spec:
 #       resourceType: CONSUMER_GROUP
 #       resourceName: rootId # maybe with a dot
 
+
+  - name: acl-1
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        references:
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: clusterid
+          toFieldPath: spec.forProvider.cluster
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: environmentid
+          toFieldPath: spec.forProvider.environment
+        forProvider:
+          manifest:
+            apiVersion: kafka.confluent.crossplane.io/v1alpha1
+            kind: ACL
+            metadata:
+              name: acl-test-00001
+            spec:
+              forProvider:
+                aclRule:
+                  operation: CREATE
+                  patternType: PREFIXED
+                  permission: ALLOW
+                  resourceType: GROUP
+              providerConfigRef:
+                name: confluent-provider
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-rule-1"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[0].patchesFrom.namespace
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[0].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[1].patchesFrom.namespace
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[1].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-rule-1"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      transforms:
+      - type: string
+        string:
+          fmt: "User:%s"
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
+      policy:
+        fromFieldPath: Required
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.resourceName
+
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "READ", "", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -209,6 +301,79 @@ spec:
 #       principal: "User:sa-0000"
 #       resourceType: CONSUMER_GROUP
 #       resourceName: rootId # maybe with a dot
+
+  - name: acl-2
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        references:
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: clusterid
+          toFieldPath: spec.forProvider.cluster
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: environmentid
+          toFieldPath: spec.forProvider.environment
+        forProvider:
+          manifest:
+            apiVersion: kafka.confluent.crossplane.io/v1alpha1
+            kind: ACL
+            metadata:
+              name: acl-test-00002
+            spec:
+              forProvider:
+                aclRule:
+                  operation: READ
+                  patternType: PREFIXED
+                  permission: ALLOW
+                  resourceType: GROUP
+              providerConfigRef:
+                name: confluent-provider
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - fromFieldPath: metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-rule-2"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[0].patchesFrom.namespace
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[0].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[1].patchesFrom.namespace
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.references[1].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-rule-2"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      transforms:
+      - type: string
+        string:
+          fmt: "User:%s"
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
+      policy:
+        fromFieldPath: Required
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.resourceName
 
 # # For connect-rootid.*
 # ---
