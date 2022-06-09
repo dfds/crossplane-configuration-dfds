@@ -102,6 +102,11 @@ spec:
       toFieldPath: "status.createdResources.topic"
       policy:
         fromFieldPath: Optional
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional
 
   - name: rbac
     base:

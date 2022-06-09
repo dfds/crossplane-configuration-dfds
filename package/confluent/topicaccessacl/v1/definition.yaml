@@ -1,0 +1,69 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xconfluenttopicaccessaclv1s.messaging.xplane.dfds.cloud
+spec:
+  defaultCompositionRef:
+    name: xconfluenttopicaccessaclv1s.messaging.xplane.dfds.cloud
+  group: messaging.xplane.dfds.cloud
+  names:
+    kind: XConfluentTopicAccessACLV1
+    plural: xconfluenttopicaccessaclv1s
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      additionalPrinterColumns:
+        - name: Synced
+          type: string
+          jsonPath: .status.instanceConditions[?(@.type=='Synced')].status
+        - name: Last Change
+          type: string
+          jsonPath: .status.instanceConditions[?(@.type=='Synced')].lastTransitionTime
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                deletionPolicy:
+                  description: Specify whether the actual cloud resource should be deleted when this managed resource is deleted in Kubernetes API server. Possible values are Delete (the default) and Orphan
+                  type: string
+                  default: "Orphan"
+                  enum:
+                  - Delete
+                  - Orphan
+                name:
+                  type: string
+                namespace:
+                  type: string
+                environment:
+                  description: Provision topic in either prod or dev environment.
+                  type: string
+                  enum: ["prod", "dev"]
+                aclRule:
+                  type: object
+                  properties:
+                    operation:
+                      type: string
+                    patternType:
+                      type: string
+                    permission:
+                      type: string
+                    resourceType:
+                      type: string
+                    resourceName:
+                      type: string
+                    principal:
+                      type: string
+            status:
+              type: object
+              properties:
+                instanceConditions:
+                  description: >
+                    Information about the managed resource condition, e.g. reconcile errors due to bad parameters
+                  type: array
+                  items:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true

@@ -1,0 +1,87 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xconfluenttopicaccessaclv1s.messaging.xplane.dfds.cloud
+spec:
+  compositeTypeRef:
+    apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+    kind: XConfluentTopicAccessACLV1
+  resources:
+  - name: acl
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        references:
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: clusterid
+          toFieldPath: spec.forProvider.cluster
+        - patchesFrom:
+            apiVersion: v1
+            kind: ConfigMap
+            name: environmentid
+          toFieldPath: spec.forProvider.environment
+        forProvider:
+          manifest:
+            apiVersion: kafka.confluent.crossplane.io/v1alpha1
+            kind: ACL
+            metadata:
+              name: acl-test-0000
+            spec:
+              forProvider:
+                aclRule:
+                  operation: READ
+              providerConfigRef:
+                name: confluent-provider
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: CombineFromComposite
+      combine:
+        variables:
+          - fromFieldPath: metadata.name
+          - fromFieldPath: spec.name
+        strategy: string
+        string:
+          fmt: "%s-%s"
+      toFieldPath: metadata.name
+    - fromFieldPath: spec.namespace
+      toFieldPath: spec.references[0].patchesFrom.namespace
+    - fromFieldPath: spec.environment
+      toFieldPath: spec.references[0].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - fromFieldPath: spec.namespace
+      toFieldPath: spec.references[1].patchesFrom.namespace
+    - fromFieldPath: spec.environment
+      toFieldPath: spec.references[1].patchesFrom.fieldPath
+      transforms:
+      - type: string
+        string:
+          fmt: "data.%s"
+    - type: CombineFromComposite
+      combine:
+        variables:
+          - fromFieldPath: metadata.name
+          - fromFieldPath: spec.name
+        strategy: string
+        string:
+          fmt: "%s-%s"
+      toFieldPath: spec.forProvider.manifest.metadata.name
+    - fromFieldPath: spec.aclRule
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule
+    - fromFieldPath: spec.aclRule.principal
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
+      transforms:
+      - type: string
+        string:
+          fmt: "User:%s"
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
+      policy:
+        fromFieldPath: Optional

@@ -11,14 +11,13 @@ spec:
     base:
       apiVersion: iam.confluent.crossplane.io/v1alpha1
       kind: ServiceAccount
-      metadata:
-        name: TestServiceAccountSamdi # name should be assigned
       spec:
         forProvider:
           description: some description
         providerConfigRef:
           name: confluent-provider
     patches:
+    - fromFieldPath: metadata.name
     - type: ToCompositeFieldPath
       fromFieldPath: status.atProvider.id
       toFieldPath: status.serviceaccountid
@@ -29,16 +28,8 @@ spec:
     base:
       apiVersion: kubernetes.crossplane.io/v1alpha1
       kind: Object
-      metadata:
-        name: api-key-data
       spec:
         references:
-        # - fromObject:
-        #     apiVersion: iam.confluent.crossplane.io/v1alpha1
-        #     kind: ServiceAccount
-        #     name: TestServiceAccountSamdi # TODO: make use of name convention
-        #     fieldPath: status.atProvider.id
-        #   toFieldPath: spec.forProvider.manifest.spec.serviceAccount
         - patchesFrom:
             apiVersion: v1
             kind: ConfigMap
@@ -66,10 +57,6 @@ spec:
           name: kubernetes-provider
     patches:
     - fromFieldPath: metadata.name
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-api-key"
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.references[0].patchesFrom.namespace
     - fromFieldPath: spec.parameters.environment
@@ -93,8 +80,6 @@ spec:
         fromFieldPath: Required
 
 
-
-
 # # For root-id.*
 # --- DONE
 # # AclCreateDelete(serviceAccountIdAsInt, true, "WRITE", "", prefix)
@@ -114,83 +99,29 @@ spec:
 #       resourceType: CONSUMER_GROUP
 #       resourceName: rootId # maybe with a dot
 
-# TODO:
-# - rename object confluenttopicaccessdfdssamdi-rznq6-7hfmc => confluenttopicaccessdfdssamdi-acl-7hfmc.
-# -
-
   - name: acl-0
     base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
       spec:
-        references:
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: clusterid
-          toFieldPath: spec.forProvider.cluster
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: environmentid
-          toFieldPath: spec.forProvider.environment
-        forProvider:
-          manifest:
-            apiVersion: kafka.confluent.crossplane.io/v1alpha1
-            kind: ACL
-            metadata:
-              name: acl-test-0000
-            spec:
-              forProvider:
-                aclRule:
-                  operation: WRITE
-                  patternType: PREFIXED
-                  permission: ALLOW
-                  resourceType: GROUP
-              providerConfigRef:
-                name: confluent-provider
-        providerConfigRef:
-          name: kubernetes-provider
+        name: acl-0
+        aclRule:
+          operation: WRITE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: GROUP
     patches:
-    - fromFieldPath: metadata.name
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-rule-0"
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace # TODO
+      toFieldPath: spec.namespace
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[0].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[0].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[1].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[1].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.metadata.name
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-rule-0"
+      toFieldPath: spec.aclRule.resourceName
     - type: FromCompositeFieldPath
       fromFieldPath: status.serviceaccountid
-      transforms:
-      - type: string
-        string:
-          fmt: "User:%s"
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
-      policy:
-        fromFieldPath: Required
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.resourceName
-
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "CREATE", "", prefix)
@@ -210,81 +141,32 @@ spec:
 #       resourceType: CONSUMER_GROUP
 #       resourceName: rootId # maybe with a dot
 
-
   - name: acl-1
     base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
       spec:
-        references:
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: clusterid
-          toFieldPath: spec.forProvider.cluster
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: environmentid
-          toFieldPath: spec.forProvider.environment
-        forProvider:
-          manifest:
-            apiVersion: kafka.confluent.crossplane.io/v1alpha1
-            kind: ACL
-            metadata:
-              name: acl-test-00001
-            spec:
-              forProvider:
-                aclRule:
-                  operation: CREATE
-                  patternType: PREFIXED
-                  permission: ALLOW
-                  resourceType: GROUP
-              providerConfigRef:
-                name: confluent-provider
-        providerConfigRef:
-          name: kubernetes-provider
+        name: acl-1
+        aclRule:
+          operation: CREATE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: GROUP
     patches:
-    - fromFieldPath: metadata.name
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-rule-1"
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[0].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[0].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
+      toFieldPath: spec.namespace
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[1].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[1].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.metadata.name
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-rule-1"
+      toFieldPath: spec.aclRule.resourceName
     - type: FromCompositeFieldPath
       fromFieldPath: status.serviceaccountid
-      transforms:
-      - type: string
-        string:
-          fmt: "User:%s"
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
-      policy:
-        fromFieldPath: Required
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.resourceName
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 
-# ---
+
+# # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "READ", "", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
 # kind: ACL
@@ -304,76 +186,27 @@ spec:
 
   - name: acl-2
     base:
-      apiVersion: kubernetes.crossplane.io/v1alpha1
-      kind: Object
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
       spec:
-        references:
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: clusterid
-          toFieldPath: spec.forProvider.cluster
-        - patchesFrom:
-            apiVersion: v1
-            kind: ConfigMap
-            name: environmentid
-          toFieldPath: spec.forProvider.environment
-        forProvider:
-          manifest:
-            apiVersion: kafka.confluent.crossplane.io/v1alpha1
-            kind: ACL
-            metadata:
-              name: acl-test-00002
-            spec:
-              forProvider:
-                aclRule:
-                  operation: READ
-                  patternType: PREFIXED
-                  permission: ALLOW
-                  resourceType: GROUP
-              providerConfigRef:
-                name: confluent-provider
-        providerConfigRef:
-          name: kubernetes-provider
+        name: acl-2
+        aclRule:
+          operation: READ
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: GROUP
     patches:
-    - fromFieldPath: metadata.name
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-rule-2"
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[0].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[0].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
+      toFieldPath: spec.namespace
     - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[1].patchesFrom.namespace
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.references[1].patchesFrom.fieldPath
-      transforms:
-      - type: string
-        string:
-          fmt: "data.%s"
-    - fromFieldPath: metadata.name
-      toFieldPath: spec.forProvider.manifest.metadata.name
-      transforms:
-      - type: string
-        string:
-          fmt: "%s-rule-2"
+      toFieldPath: spec.aclRule.resourceName
     - type: FromCompositeFieldPath
       fromFieldPath: status.serviceaccountid
-      transforms:
-      - type: string
-        string:
-          fmt: "User:%s"
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.principal
-      policy:
-        fromFieldPath: Required
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.aclRule.resourceName
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 
 # # For connect-rootid.*
 # ---
@@ -394,6 +227,35 @@ spec:
 #       resourceType: CONSUMER_GROUP
 #       resourceName: connect-rootId # maybe with a dot
 
+
+  - name: acl-3
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-3
+        aclRule:
+          operation: WRITE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: GROUP
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+      transforms:
+      - type: string
+        string:
+          fmt: "connect-%s"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
+
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "CREATE", "", $"connect-{prefix}")
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -411,6 +273,34 @@ spec:
 #       principal: "User:sa-0000"
 #       resourceType: CONSUMER_GROUP
 #       resourceName: connect-rootId # maybe with a dot
+
+  - name: acl-4
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-4
+        aclRule:
+          operation: CREATE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: GROUP
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+      transforms:
+      - type: string
+        string:
+          fmt: "connect-%s"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "READ", "", $"connect-{prefix}")
@@ -430,6 +320,33 @@ spec:
 #       resourceType: CONSUMER_GROUP
 #       resourceName: connect-rootId # maybe with a dot
 
+  - name: acl-5
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-5
+        aclRule:
+          operation: READ
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: GROUP
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+      transforms:
+      - type: string
+        string:
+          fmt: "connect-%s"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "WRITE", $"{PUB_DOT}{prefix}.")
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -448,6 +365,33 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: pub.rootId # maybe with a dot
 
+  - name: acl-6
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-6
+        aclRule:
+          operation: WRITE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+      transforms:
+      - type: string
+        string:
+          fmt: "pub.%s"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "CREATE", $"{PUB_DOT}{prefix}.")
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -466,6 +410,33 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: pub.rootId # maybe with a dot
 
+  - name: acl-7
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-7
+        aclRule:
+          operation: CREATE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+      transforms:
+      - type: string
+        string:
+          fmt: "pub.%s"
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "WRITE", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -484,6 +455,29 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: rootId # maybe with a dot
 
+  - name: acl-8
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-8
+        aclRule:
+          operation: WRITE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "CREATE", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -502,6 +496,29 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: rootId # maybe with a dot
 
+  - name: acl-9
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-9
+        aclRule:
+          operation: CREATE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "READ", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -520,6 +537,29 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: rootId # maybe with a dot
 
+  - name: acl-10
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-10
+        aclRule:
+          operation: READ
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "DESCRIBE", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -538,6 +578,29 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: rootId # maybe with a dot
 
+  - name: acl-11
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-11
+        aclRule:
+          operation: DESCRIBE
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, true, "DESCRIBE-CONFIGS", prefix)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -556,6 +619,29 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: rootId # maybe with a dot
 
+  - name: acl-12
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-12
+        aclRule:
+          operation: DESCRIBE_CONFIGS
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.aclRule.resourceName
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, false, "alter")
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -574,6 +660,28 @@ spec:
 #       resourceType: CLUSTER
 #       resourceName: ""
 
+  - name: acl-13
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-13
+        aclRule:
+          operation: ALTER
+          patternType: LITERAL
+          permission: DENY
+          resourceType: CLUSTER
+          resourceName: kafka-cluster
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, false, "alter-configs")
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -592,6 +700,28 @@ spec:
 #       resourceType: CLUSTER
 #       resourceName: ""
 
+  - name: acl-14
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-14
+        aclRule:
+          operation: ALTER_CONFIGS
+          patternType: LITERAL
+          permission: DENY
+          resourceType: CLUSTER
+          resourceName: kafka-cluster
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, false, "cluster-action")
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -610,6 +740,28 @@ spec:
 #       resourceType: CLUSTER
 #       resourceName: ""
 
+  - name: acl-15
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-15
+        aclRule:
+          operation: CLUSTER_ACTION
+          patternType: LITERAL
+          permission: DENY
+          resourceType: CLUSTER
+          resourceName: kafka-cluster
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, false, "create", "'*'")
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -628,6 +780,28 @@ spec:
 #       resourceType: TOPIC
 #       resourceName: "*"
 
+  - name: acl-16
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-16
+        aclRule:
+          operation: CREATE
+          patternType: PREFIXED
+          permission: DENY
+          resourceType: TOPIC
+          resourceName: "*"
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
 # ---
 # # AclCreateDelete(serviceAccountIdAsInt, false, "READ", PUB_DOT)
 # apiVersion: apiVersion: kafka.confluent.crossplane.io/v1alpha1
@@ -645,3 +819,26 @@ spec:
 #       principal: "User:sa-0000"
 #       resourceType: TOPIC
 #       resourceName: "pub."
+
+  - name: acl-17
+    base:
+      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+      kind: XConfluentTopicAccessACLV1
+      spec:
+        name: acl-17
+        aclRule:
+          operation: READ
+          patternType: PREFIXED
+          permission: ALLOW
+          resourceType: TOPIC
+          resourceName: "pub."
+    patches:
+    - fromFieldPath: spec.claimRef.deletionPolicy
+      toFieldPath: spec.deletionPolicy
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.namespace
+    - type: FromCompositeFieldPath
+      fromFieldPath: status.serviceaccountid
+      toFieldPath: spec.aclRule.principal
+    - fromFieldPath: spec.parameters.environment
+      toFieldPath: spec.environment
