@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: clusterid
-  namespace: default
+  namespace: upbound-system
 data:
   dev: cluster-dev-example
   prod: cluster-prod-example
@@ -12,7 +12,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: environmentid
-  namespace: default
+  namespace: upbound-system
 data:
   dev: env-dev-example
   prod: env-prod-example

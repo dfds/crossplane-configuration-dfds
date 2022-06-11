@@ -17,11 +17,13 @@ spec:
             apiVersion: v1
             kind: ConfigMap
             name: clusterid
+            namespace: upbound-system
           toFieldPath: spec.forProvider.cluster
         - patchesFrom:
             apiVersion: v1
             kind: ConfigMap
             name: environmentid
+            namespace: upbound-system
           toFieldPath: spec.forProvider.environment
         forProvider:
           manifest:
@@ -47,16 +49,12 @@ spec:
         string:
           fmt: "%s-%s"
       toFieldPath: metadata.name
-    - fromFieldPath: spec.namespace
-      toFieldPath: spec.references[0].patchesFrom.namespace
     - fromFieldPath: spec.environment
       toFieldPath: spec.references[0].patchesFrom.fieldPath
       transforms:
       - type: string
         string:
           fmt: "data.%s"
-    - fromFieldPath: spec.namespace
-      toFieldPath: spec.references[1].patchesFrom.namespace
     - fromFieldPath: spec.environment
       toFieldPath: spec.references[1].patchesFrom.fieldPath
       transforms:
