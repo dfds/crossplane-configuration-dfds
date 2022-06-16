@@ -16,13 +16,13 @@ spec:
         - patchesFrom:
             apiVersion: v1
             kind: ConfigMap
-            name: clusterid
+            name: confluent-cluster-id
             namespace: upbound-system
           toFieldPath: spec.forProvider.cluster
         - patchesFrom:
             apiVersion: v1
             kind: ConfigMap
-            name: environmentid
+            name: confluent-environment-id
             namespace: upbound-system
           toFieldPath: spec.forProvider.environment
         forProvider:
