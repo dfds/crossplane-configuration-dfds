@@ -2,7 +2,7 @@ apiVersion: messaging.xplane.dfds.cloud/v1alpha1
 kind: ConfluentTopicV1
 metadata:
   name: confluenttopicdfds
-  namespace: default
+  namespace: my-namespace
 spec:
   parameters:
     name: confluent-dfds-crossplane

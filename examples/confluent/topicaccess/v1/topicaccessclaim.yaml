@@ -2,7 +2,7 @@ apiVersion: messaging.xplane.dfds.cloud/v1alpha1
 kind: ConfluentTopicAccessV1
 metadata:
   name: confluenttopicaccessdfdssamdi
-  namespace: default
+  namespace: my-namespace
 spec:
   parameters:
     environment: dev

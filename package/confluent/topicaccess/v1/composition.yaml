@@ -54,11 +54,15 @@ spec:
                 name: confluent-provider
               writeConnectionSecretToRef:
                 name: confluent-access-apikey
-                namespace: default
+                namespace: upbound-system
         providerConfigRef:
           name: kubernetes-provider
     patches:
     - fromFieldPath: metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-apikey"
     - fromFieldPath: spec.parameters.environment
       toFieldPath: spec.references[0].patchesFrom.fieldPath
       transforms:
@@ -71,6 +75,16 @@ spec:
       - type: string
         string:
           fmt: "data.%s"
+    # - type: CombineFromComposite
+    #   combine:
+    #     variables:
+    #       - fromFieldPath: spec.claimRef.namespace
+    #       - fromFieldPath: spec.parameters.environment
+    #     strategy: string
+    #     string:
+    #       fmt: "%s-confluent-apikey-%s"
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.spec.writeConnectionSecretToRef.name
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.forProvider.manifest.spec.writeConnectionSecretToRef.namespace
     - type: FromCompositeFieldPath
@@ -89,476 +103,520 @@ spec:
             apiVersion: v1
             kind: ConfigMap
             name: confluent-clusters-endpoints
-            fieldPath: endpoint
             namespace: upbound-system
-          toFieldPath: spec.forProvider.data.endpoint
+          toFieldPath: stringData.endpoint
+        - patchesFrom:
+            apiVersion: v1
+            kind: Secret
+            name: confluent-provider
+            namespace: upbound-system
+            fieldPath: data.username
+          toFieldPath: data.username
+        - patchesFrom:
+            apiVersion: v1
+            kind: Secret
+            name: confluent-provider
+            namespace: upbound-system
+            fieldPath: data.password
+          toFieldPath: data.password
         forProvider:
           manifest:
             apiVersion: v1
-            kind: ConfigMap
+            kind: Secret
             metadata:
               name: kafka-cluster-info
-            data:
-              endpoint: endpoint-example
+            type: Opaque
+        providerConfigRef:
+          name: kubernetes-provider
     patches:
     - fromFieldPath: metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "%s-clusterinfo"
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.forProvider.manifest.metadata.namespace
     - fromFieldPath: spec.parameters.environment
       toFieldPath: spec.references[0].patchesFrom.fieldPath
       transforms:
       - type: string
         string:
           fmt: "data.%s"
-    - fromFieldPath: spec.claimRef.environment
+    # - type: CombineFromComposite
+    #   combine:
+    #     variables:
+    #       - fromFieldPath: spec.claimRef.namespace
+    #       - fromFieldPath: spec.parameters.environment
+    #     strategy: string
+    #     string:
+    #       fmt: "%s-confluent-apikey-%s"
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.references[1].patchesFrom.name
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[1].patchesFrom.namespace
+
+    # - type: CombineFromComposite
+    #   combine:
+    #     variables:
+    #       - fromFieldPath: spec.claimRef.namespace
+    #       - fromFieldPath: spec.parameters.environment
+    #     strategy: string
+    #     string:
+    #       fmt: "%s-confluent-apikey-%s"
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.references[2].patchesFrom.name
+    - fromFieldPath: spec.claimRef.namespace
+      toFieldPath: spec.references[2].patchesFrom.namespace
+    - fromFieldPath: spec.parameters.environment
       toFieldPath: spec.forProvider.manifest.metadata.name
       transforms:
       - type: string
         string:
           fmt: "kafka-cluster-info-%s"
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.forProvider.manifest.metadata.namespace
-  - name: acl-0
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-0
-        aclRule:
-          operation: WRITE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: GROUP
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
 
-  - name: acl-1
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-1
-        aclRule:
-          operation: CREATE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: GROUP
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-0
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-0
+  #       aclRule:
+  #         operation: WRITE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: GROUP
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-2
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-2
-        aclRule:
-          operation: READ
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: GROUP
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-1
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-1
+  #       aclRule:
+  #         operation: CREATE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: GROUP
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-3
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-3
-        aclRule:
-          operation: WRITE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: GROUP
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-      transforms:
-      - type: string
-        string:
-          fmt: "connect-%s"
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-2
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-2
+  #       aclRule:
+  #         operation: READ
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: GROUP
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-4
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-4
-        aclRule:
-          operation: CREATE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: GROUP
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-      transforms:
-      - type: string
-        string:
-          fmt: "connect-%s"
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-3
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-3
+  #       aclRule:
+  #         operation: WRITE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: GROUP
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #     transforms:
+  #     - type: string
+  #       string:
+  #         fmt: "connect-%s"
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-5
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-5
-        aclRule:
-          operation: READ
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: GROUP
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-      transforms:
-      - type: string
-        string:
-          fmt: "connect-%s"
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-4
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-4
+  #       aclRule:
+  #         operation: CREATE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: GROUP
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #     transforms:
+  #     - type: string
+  #       string:
+  #         fmt: "connect-%s"
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-6
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-6
-        aclRule:
-          operation: WRITE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-      transforms:
-      - type: string
-        string:
-          fmt: "pub.%s"
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-5
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-5
+  #       aclRule:
+  #         operation: READ
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: GROUP
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #     transforms:
+  #     - type: string
+  #       string:
+  #         fmt: "connect-%s"
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-7
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-7
-        aclRule:
-          operation: CREATE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-      transforms:
-      - type: string
-        string:
-          fmt: "pub.%s"
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-6
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-6
+  #       aclRule:
+  #         operation: WRITE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #     transforms:
+  #     - type: string
+  #       string:
+  #         fmt: "pub.%s"
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-8
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-8
-        aclRule:
-          operation: WRITE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-7
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-7
+  #       aclRule:
+  #         operation: CREATE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #     transforms:
+  #     - type: string
+  #       string:
+  #         fmt: "pub.%s"
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-9
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-9
-        aclRule:
-          operation: CREATE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-8
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-8
+  #       aclRule:
+  #         operation: WRITE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-10
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-10
-        aclRule:
-          operation: READ
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-9
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-9
+  #       aclRule:
+  #         operation: CREATE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-11
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-11
-        aclRule:
-          operation: DESCRIBE
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-10
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-10
+  #       aclRule:
+  #         operation: READ
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-12
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-12
-        aclRule:
-          operation: DESCRIBE_CONFIGS
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.aclRule.resourceName
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-11
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-11
+  #       aclRule:
+  #         operation: DESCRIBE
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-13
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-13
-        aclRule:
-          operation: ALTER
-          patternType: LITERAL
-          permission: DENY
-          resourceType: CLUSTER
-          resourceName: kafka-cluster
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-12
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-12
+  #       aclRule:
+  #         operation: DESCRIBE_CONFIGS
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.aclRule.resourceName
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-14
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-14
-        aclRule:
-          operation: ALTER_CONFIGS
-          patternType: LITERAL
-          permission: DENY
-          resourceType: CLUSTER
-          resourceName: kafka-cluster
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-13
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-13
+  #       aclRule:
+  #         operation: ALTER
+  #         patternType: LITERAL
+  #         permission: DENY
+  #         resourceType: CLUSTER
+  #         resourceName: kafka-cluster
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-15
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-15
-        aclRule:
-          operation: CLUSTER_ACTION
-          patternType: LITERAL
-          permission: DENY
-          resourceType: CLUSTER
-          resourceName: kafka-cluster
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-14
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-14
+  #       aclRule:
+  #         operation: ALTER_CONFIGS
+  #         patternType: LITERAL
+  #         permission: DENY
+  #         resourceType: CLUSTER
+  #         resourceName: kafka-cluster
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-16
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-16
-        aclRule:
-          operation: CREATE
-          patternType: PREFIXED
-          permission: DENY
-          resourceType: TOPIC
-          resourceName: "*"
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-15
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-15
+  #       aclRule:
+  #         operation: CLUSTER_ACTION
+  #         patternType: LITERAL
+  #         permission: DENY
+  #         resourceType: CLUSTER
+  #         resourceName: kafka-cluster
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
 
-  - name: acl-17
-    base:
-      apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
-      spec:
-        name: acl-17
-        aclRule:
-          operation: READ
-          patternType: PREFIXED
-          permission: ALLOW
-          resourceType: TOPIC
-          resourceName: "pub."
-    patches:
-    - fromFieldPath: spec.claimRef.deletionPolicy
-      toFieldPath: spec.deletionPolicy
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.namespace
-    - type: FromCompositeFieldPath
-      fromFieldPath: status.serviceaccountid
-      toFieldPath: spec.aclRule.principal
-    - fromFieldPath: spec.parameters.environment
-      toFieldPath: spec.environment
+  # - name: acl-16
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-16
+  #       aclRule:
+  #         operation: CREATE
+  #         patternType: PREFIXED
+  #         permission: DENY
+  #         resourceType: TOPIC
+  #         resourceName: "*"
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
+
+  # - name: acl-17
+  #   base:
+  #     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
+  #     kind: XConfluentTopicAccessACLV1
+  #     spec:
+  #       name: acl-17
+  #       aclRule:
+  #         operation: READ
+  #         patternType: PREFIXED
+  #         permission: ALLOW
+  #         resourceType: TOPIC
+  #         resourceName: "pub."
+  #   patches:
+  #   - fromFieldPath: spec.claimRef.deletionPolicy
+  #     toFieldPath: spec.deletionPolicy
+  #   - fromFieldPath: spec.claimRef.namespace
+  #     toFieldPath: spec.namespace
+  #   - type: FromCompositeFieldPath
+  #     fromFieldPath: status.serviceaccountid
+  #     toFieldPath: spec.aclRule.principal
+  #   - fromFieldPath: spec.parameters.environment
+  #     toFieldPath: spec.environment
