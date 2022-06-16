@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: clusterid
+  name: confluent-cluster-id
   namespace: upbound-system
 data:
   dev: cluster-dev-example
@@ -11,8 +11,17 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: environmentid
+  name: confluent-environment-id
   namespace: upbound-system
 data:
   dev: env-dev-example
   prod: env-prod-example
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: confluent-clusters-endpoints
+  namespace: upbound-system
+data:
+  dev: cluster-endpoint1
+  prod: cluster-endpoint2
