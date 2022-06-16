@@ -17,11 +17,13 @@ spec:
             apiVersion: v1
             kind: ConfigMap
             name: clusterid
+            namespace: upbound-system
           toFieldPath: spec.forProvider.cluster
         - patchesFrom:
             apiVersion: v1
             kind: ConfigMap
             name: environmentid
+            namespace: upbound-system
           toFieldPath: spec.forProvider.environment
         forProvider:
           manifest:
@@ -38,16 +40,12 @@ spec:
     patches:
     - fromFieldPath: metadata.name
       toFieldPath: metadata.name
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[0].patchesFrom.namespace
     - fromFieldPath: spec.parameters.environment
       toFieldPath: spec.references[0].patchesFrom.fieldPath
       transforms:
       - type: string
         string:
           fmt: "data.%s"
-    - fromFieldPath: spec.claimRef.namespace
-      toFieldPath: spec.references[1].patchesFrom.namespace
     - fromFieldPath: spec.parameters.environment
       toFieldPath: spec.references[1].patchesFrom.fieldPath
       transforms:
@@ -96,10 +94,15 @@ spec:
         strategy: string
         string:
           fmt: "%s%s.%s"
-      toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.name #spec.forProvider.topic.name
+      toFieldPath: spec.forProvider.manifest.spec.forProvider.topic.name
     - type: ToCompositeFieldPath
       fromFieldPath: spec.forProvider.manifest.spec.forProvider.topic.name
       toFieldPath: "status.createdResources.topic"
+      policy:
+        fromFieldPath: Optional
+    - type: ToCompositeFieldPath
+      fromFieldPath: status.conditions
+      toFieldPath: status.instanceConditions
       policy:
         fromFieldPath: Optional
 

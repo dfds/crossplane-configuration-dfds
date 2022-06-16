@@ -1,13 +1,13 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: compositesqldatabaseinstances.xplane.dfds.cloud
+  name: compositesqldatabaseinstancev1s.xplane.dfds.cloud
   labels:
     provider: aws
 spec:
   compositeTypeRef:
     apiVersion: xplane.dfds.cloud/v1alpha1
-    kind: CompositeSqlDatabaseInstance
+    kind: CompositeSqlDatabaseInstanceV1
   patchSets:
   - name: object-metadata
     patches:
