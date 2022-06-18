@@ -66,10 +66,9 @@ spec:
                       - Delete
                       - Orphan
                     environment:
-                      description: Provision topic in either prod or dev environment.
+                      description: Specify the target environment for Provisioning the topic.
                       type: string
                       enum: ["prod", "dev"]
-                      # default: "dev"
                     retention:
                       description: Topic retention in days.
                       type: integer

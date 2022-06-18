@@ -1,17 +1,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xconfluenttopicaccessv1s.messaging.xplane.dfds.cloud
+  name: xconfluentserviceaccountv1s.messaging.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xconfluenttopicaccessv1s.messaging.xplane.dfds.cloud
+    name: xconfluentserviceaccountv1s.messaging.xplane.dfds.cloud
   group: messaging.xplane.dfds.cloud
   names:
-    kind: XConfluentTopicAccessV1
-    plural: xconfluenttopicaccessv1s
+    kind: XConfluentServiceAccountV1
+    plural: xconfluentserviceaccountv1s
   claimNames:
-    kind: ConfluentTopicAccessV1
-    plural: confluenttopicaccessv1s
+    kind: ConfluentServiceAccountV1
+    plural: confluentserviceaccountv1s
   versions:
     - name: v1alpha1
       served: true
@@ -39,6 +39,6 @@ spec:
                       - Delete
                       - Orphan
                     environment:
-                      description: Provision topic in either prod or dev environment.
+                      description: Specify the target environment
                       type: string
                       enum: ["prod", "dev"]
