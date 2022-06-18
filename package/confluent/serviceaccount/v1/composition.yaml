@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xconfluenttopicaccessv1s.messaging.xplane.dfds.cloud
+  name: xconfluentserviceaccountv1s.messaging.xplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-    kind: XConfluentTopicAccessV1
+    kind: XConfluentServiceAccountV1
   resources:
   - name: serviceaccount
     base:
@@ -116,7 +116,7 @@ spec:
             apiVersion: v1
             kind: Secret
             metadata:
-              name: kafka-cluster-info
+              name: connection-string
             type: Opaque
         providerConfigRef:
           name: kubernetes-provider
@@ -125,7 +125,7 @@ spec:
       transforms:
       - type: string
         string:
-          fmt: "%s-clusterinfo"
+          fmt: "%s-connection"
     - fromFieldPath: spec.claimRef.namespace
       toFieldPath: spec.forProvider.manifest.metadata.namespace
     - fromFieldPath: spec.parameters.environment
@@ -147,12 +147,12 @@ spec:
       transforms:
       - type: string
         string:
-          fmt: "kafka-cluster-info-%s"
+          fmt: "kafka-connection-%s"
 
   - name: acl-0
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-0
         aclRule:
@@ -176,7 +176,7 @@ spec:
   - name: acl-1
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-1
         aclRule:
@@ -200,7 +200,7 @@ spec:
   - name: acl-2
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-2
         aclRule:
@@ -224,7 +224,7 @@ spec:
   - name: acl-3
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-3
         aclRule:
@@ -252,7 +252,7 @@ spec:
   - name: acl-4
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-4
         aclRule:
@@ -280,7 +280,7 @@ spec:
   - name: acl-5
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-5
         aclRule:
@@ -308,7 +308,7 @@ spec:
   - name: acl-6
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-6
         aclRule:
@@ -336,7 +336,7 @@ spec:
   - name: acl-7
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-7
         aclRule:
@@ -364,7 +364,7 @@ spec:
   - name: acl-8
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-8
         aclRule:
@@ -388,7 +388,7 @@ spec:
   - name: acl-9
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-9
         aclRule:
@@ -412,7 +412,7 @@ spec:
   - name: acl-10
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-10
         aclRule:
@@ -436,7 +436,7 @@ spec:
   - name: acl-11
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-11
         aclRule:
@@ -460,7 +460,7 @@ spec:
   - name: acl-12
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-12
         aclRule:
@@ -484,7 +484,7 @@ spec:
   - name: acl-13
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-13
         aclRule:
@@ -507,7 +507,7 @@ spec:
   - name: acl-14
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-14
         aclRule:
@@ -530,7 +530,7 @@ spec:
   - name: acl-15
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-15
         aclRule:
@@ -553,7 +553,7 @@ spec:
   - name: acl-16
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-16
         aclRule:
@@ -576,7 +576,7 @@ spec:
   - name: acl-17
     base:
       apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-      kind: XConfluentTopicAccessACLV1
+      kind: XConfluentServiceAccountACLV1
       spec:
         name: acl-17
         aclRule:

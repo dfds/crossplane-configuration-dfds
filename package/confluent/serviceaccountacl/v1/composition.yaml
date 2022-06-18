@@ -1,11 +1,11 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: xconfluenttopicaccessaclv1s.messaging.xplane.dfds.cloud
+  name: xconfluentserviceaccountaclv1s.messaging.xplane.dfds.cloud
 spec:
   compositeTypeRef:
     apiVersion: messaging.xplane.dfds.cloud/v1alpha1
-    kind: XConfluentTopicAccessACLV1
+    kind: XConfluentServiceAccountACLV1
   resources:
   - name: acl
     base:

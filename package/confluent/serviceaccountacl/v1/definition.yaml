@@ -1,14 +1,14 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xconfluenttopicaccessaclv1s.messaging.xplane.dfds.cloud
+  name: xconfluentserviceaccountaclv1s.messaging.xplane.dfds.cloud
 spec:
   defaultCompositionRef:
-    name: xconfluenttopicaccessaclv1s.messaging.xplane.dfds.cloud
+    name: xconfluentserviceaccountaclv1s.messaging.xplane.dfds.cloud
   group: messaging.xplane.dfds.cloud
   names:
-    kind: XConfluentTopicAccessACLV1
-    plural: xconfluenttopicaccessaclv1s
+    kind: XConfluentServiceAccountACLV1
+    plural: xconfluentserviceaccountaclv1s
   versions:
     - name: v1alpha1
       served: true
